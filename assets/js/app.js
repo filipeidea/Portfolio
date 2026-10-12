@@ -133,9 +133,13 @@
     var n = lbItems.length; lbIndex = (i + n) % n;
     var it = lbItems[lbIndex], im = lb.querySelector(".lb-stage img"), stage = lb.querySelector(".lb-stage");
     stage.classList.add("lb-loading");
-    im.onload = function () { stage.classList.remove("lb-loading"); };
+    im.style.opacity = "0";
+    im.onload = function () { stage.classList.remove("lb-loading"); im.style.opacity = "1"; };
     im.onerror = function () { stage.classList.remove("lb-loading"); lb.querySelector(".lb-cap").textContent = "This image could not be loaded."; };
     im.className = it.light ? "light" : "";
+    var m = IMAGES[it.key];
+    im.removeAttribute("srcset");
+    if (m) { im.sizes = "100vw"; im.srcset = m.w.map(function (w) { return src(it.key, w) + " " + w + "w"; }).join(", "); }
     im.src = largest(it.key); im.alt = it.alt;
     lb.querySelector(".lb-cap").textContent = it.caption || it.alt;
     lb.querySelector(".lb-count").textContent = pad(lbIndex + 1) + " / " + pad(n);
