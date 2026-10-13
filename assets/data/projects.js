@@ -278,11 +278,12 @@ window.PROJECTS = [
     cover: "tramandai/canopy",
     gallery: [
       { layout: "full", img: "tramandai/canopy", alt: "Dusk view of the long timber canopy and a dark concrete volume beside a reflecting pool" },
+      { layout: "wide", img: "tramandai/lagoon", alt: "The complex seen from the lagoon, with a timber deck and trees on the water's edge" },
       { layout: "wide", img: "tramandai/masterplan", alt: "Coloured site plan of the complex winding along the lagoon edge", caption: "Masterplan" },
-      { layout: "pair", images: [
-        { img: "tramandai/square", alt: "People gathering under the timber arches at the entrance square" },
-        { img: "tramandai/hall", alt: "Interior hall with a large suspended sculptural installation" }
-      ] },
+      { layout: "wide", img: "tramandai/square", alt: "People gathering under the timber arches at the entrance square" },
+      { layout: "wide", img: "tramandai/hall", alt: "Interior hall with a large suspended sculptural installation" },
+      { layout: "wide", img: "tramandai/boardwalk", alt: "Cyclists and café tables on the boardwalk along the curved timber building" },
+      { layout: "wide", img: "tramandai/approach", alt: "The long curved building seen across the street, with a cyclist in the foreground" },
       { layout: "wide", img: "tramandai/street", alt: "The canopy at the end of a street framing the lagoon and hills" },
       { layout: "pair", images: [
         { img: "tramandai/elevations", alt: "Five long elevations of the complex", caption: "Elevations" },

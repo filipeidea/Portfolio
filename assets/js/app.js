@@ -105,7 +105,8 @@
     var stage = $(".lb-stage", lb), big = $(".lb-stage img", lb);
     items = links.map(function (a) {
       var im = $("img", a);
-      return { href: a.getAttribute("href"), srcset: im.getAttribute("srcset") || im.getAttribute("data-srcset"), alt: im.alt, cap: a.getAttribute("data-caption"), light: a.classList.contains("light") };
+      // the link holds the image, or describes it in data- attributes (Sketchbook)
+      return { href: a.getAttribute("href"), srcset: im ? im.getAttribute("srcset") || im.getAttribute("data-srcset") : a.getAttribute("data-srcset"), alt: im ? im.alt : a.getAttribute("data-alt") || "", cap: a.getAttribute("data-caption"), light: a.classList.contains("light") };
     });
     var show = function (i) {
       idx = (i + items.length) % items.length;
@@ -226,6 +227,91 @@
       closeTyp(null);
       if (document.activeElement && document.activeElement.classList.contains("typ-row")) document.activeElement.blur();
     });
+  }
+
+  /* ---------- Sketchbook: each drawing draws itself as its scene scrolls past ----------
+     Every pixel has a moment (0..1) in a time map made by tools/build_draw.py. The
+     pixels are sorted by that moment once; scrolling then only copies the pixels between
+     the last moment and the new one. Only the scenes near the screen keep their data. */
+  var scenes = $$(".dw-scene[data-draw]");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var canDraw = (function () { try { var c = document.createElement("canvas"); return !!(c.getContext && c.getContext("2d")); } catch (e) { return false; } })();
+  if (scenes.length && !reduce && canDraw) {
+    document.documentElement.classList.add("dw-on");
+    var hint = $(".dw-hint"); if (hint) hint.hidden = false;
+    var loadImg = function (src) {
+      return new Promise(function (ok, bad) { var im = new Image(); im.decoding = "async"; im.onload = function () { ok(im); }; im.onerror = bad; im.src = src; });
+    };
+    var pixels = function (im, w, h) {
+      var c = document.createElement("canvas"); c.width = w; c.height = h;
+      var x = c.getContext("2d", { willReadFrequently: true }); x.drawImage(im, 0, 0, w, h);
+      return x.getImageData(0, 0, w, h).data;
+    };
+    var S = scenes.map(function (el) {
+      var w = +el.getAttribute("data-w"), h = +el.getAttribute("data-h");
+      var art = $(".dw-art", el), cv = document.createElement("canvas");
+      cv.width = w; cv.height = h; cv.setAttribute("aria-hidden", "true");
+      art.appendChild(cv);
+      var bar = document.createElement("div"); bar.className = "dw-progress"; bar.innerHTML = "<span></span>";
+      $(".dw-steps", el).after(bar);
+      return { el: el, w: w, h: h, cv: cv, ctx: cv.getContext("2d"), bar: $("span", bar), steps: $$(".dw-steps li", el),
+        base: el.getAttribute("data-draw"), state: 0, t: -1 };
+    });
+    var build = function (sc) {
+      sc.state = 1;
+      Promise.all([loadImg(sc.base + ".webp"), loadImg(sc.base + "-t.webp")]).then(function (ims) {
+        if (sc.state !== 1) return;
+        var w = sc.w, h = sc.h, n = w * h;
+        var src = pixels(ims[0], w, h), map = pixels(ims[1], w, h);
+        var time = new Uint16Array(n), count = new Uint32Array(65537), i, v;
+        for (i = 0; i < n; i++) { v = (map[i * 4] << 8) | map[i * 4 + 1]; if (v === 0) v = 64880; time[i] = v; count[v + 1]++; } // paper (0) shows its faint tints last
+        for (i = 1; i < 65537; i++) count[i] += count[i - 1];  // count[v] = pixels with time < v
+        var order = new Uint32Array(n), pos = count.slice(0, 65536);
+        for (i = 0; i < n; i++) order[pos[time[i]]++] = i;
+        var out = sc.ctx.createImageData(w, h), o = out.data;
+        o.fill(255);
+        sc.src = src; sc.order = order; sc.cum = count; sc.out = out; sc.k = 0; sc.state = 2; sc.t = -1;
+        update(sc);
+      }).catch(function () { sc.state = 0; sc.el.classList.add("dw-fail"); });
+    };
+    var drop = function (sc) { if (sc.state === 2) { sc.src = sc.order = sc.cum = sc.out = null; } sc.state = 0; };
+    var progress = function (sc) {
+      var r = sc.el.getBoundingClientRect(), vh = window.innerHeight;
+      var run = r.height - vh;
+      return Math.max(0, Math.min(1, (-r.top) / (run * 0.88)));
+    };
+    var update = function (sc) {
+      var t = progress(sc);
+      // captions follow the drawing
+      var now = -1;
+      sc.steps.forEach(function (li, i) { var on = t > 0 && t >= +li.getAttribute("data-t"); li.classList.toggle("on", on); if (on) now = i; });
+      sc.steps.forEach(function (li, i) { li.classList.toggle("now", i === now); });
+      if (now < 0 && sc.steps[0]) sc.steps[0].classList.add("now");
+      sc.bar.style.transform = "scaleX(" + t + ")";
+      if (sc.state !== 2 || t === sc.t) return;
+      sc.t = t;
+      var target = sc.cum[Math.min(65536, Math.floor(t * 65535) + 1)], k = sc.k, o = sc.out.data, src = sc.src, ord = sc.order, i, p;
+      if (target > k) for (i = k; i < target; i++) { p = ord[i] * 4; o[p] = src[p]; o[p + 1] = src[p + 1]; o[p + 2] = src[p + 2]; }
+      else for (i = target; i < k; i++) { p = ord[i] * 4; o[p] = o[p + 1] = o[p + 2] = 255; }
+      sc.k = target;
+      sc.ctx.putImageData(sc.out, 0, 0);
+    };
+    var ticking = false;
+    var frame = function () {
+      ticking = false;
+      var vh = window.innerHeight;
+      S.forEach(function (sc) {
+        var r = sc.el.getBoundingClientRect();
+        var near = r.bottom > -vh * 1.5 && r.top < vh * 2.5;
+        if (near && sc.state === 0) build(sc);
+        else if (!near && sc.state) drop(sc);
+        if (r.bottom > 0 && r.top < vh) update(sc);
+      });
+    };
+    var onScroll = function () { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    frame();
   }
 
   /* ---------- print button on the résumé ---------- */

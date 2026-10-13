@@ -68,10 +68,13 @@ MANIFEST = {
     "barrinhas/pool": ("C", "barrinhas-311.png"),
     "barrinhas/sketch-1": ("C", "barrinhas-sketch-1.jpg"),
     "barrinhas/sketch-2": ("C", "barrinhas-sketch-2.jpg"),
-    "tramandai/canopy": ("C", "tcc-render-2.png"),
-    "tramandai/square": ("C", "tcc-render-1.png"),
-    "tramandai/hall": ("C", "tcc-render-3.png"),
-    "tramandai/street": ("C", "tcc-render-4.png"),
+    "tramandai/canopy": ("C", "tcc-02.png"),  # TCC\Renderizado\02-cinza.png
+    "tramandai/square": ("C", "tcc-oficial.png"),  # RENDER OFICIAL- cinza.png
+    "tramandai/hall": ("C", "tcc-interna2.png"),  # IMAGEM INTERNA2-cinza.png
+    "tramandai/lagoon": ("C", "tcc-05.png"),  # 05-cinza.png
+    "tramandai/approach": ("C", "tcc-081.png"),  # 081-cinza.png
+    "tramandai/boardwalk": ("C", "tcc-oficial2.png"),  # RENDER OFICIAL2-cinza.png
+    "tramandai/street": ("C", "tcc-091.png"),  # 091-cinza.png
     "tramandai/masterplan": ("C", "tcc-masterplan.png"),
     "tramandai/siteplan": ("C", "tcc-siteplan.png"),
     "tramandai/elevations": ("C", "tcc-elevations.png"),

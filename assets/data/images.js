@@ -398,12 +398,28 @@ window.IMAGES = {
    513
   ]
  },
- "tramandai/canopy": {
-  "r": 2.3654,
+ "tramandai/approach": {
+  "r": 2.4,
   "w": [
    640,
    1280,
-   1327
+   2000
+  ]
+ },
+ "tramandai/boardwalk": {
+  "r": 2.4,
+  "w": [
+   640,
+   1280,
+   2000
+  ]
+ },
+ "tramandai/canopy": {
+  "r": 2.4,
+  "w": [
+   640,
+   1280,
+   2000
   ]
  },
  "tramandai/elevations": {
@@ -415,11 +431,19 @@ window.IMAGES = {
   ]
  },
  "tramandai/hall": {
-  "r": 2.3654,
+  "r": 2.4,
   "w": [
    640,
    1280,
-   1327
+   2000
+  ]
+ },
+ "tramandai/lagoon": {
+  "r": 2.4,
+  "w": [
+   640,
+   1280,
+   2000
   ]
  },
  "tramandai/masterplan": {
@@ -447,19 +471,19 @@ window.IMAGES = {
   ]
  },
  "tramandai/square": {
-  "r": 2.324,
+  "r": 2.4,
   "w": [
    640,
    1280,
-   1327
+   2000
   ]
  },
  "tramandai/street": {
-  "r": 2.3612,
+  "r": 2.4,
   "w": [
    640,
    1280,
-   1327
+   2000
   ]
  },
  "urucuca/canopy": {

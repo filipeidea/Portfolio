@@ -23,10 +23,11 @@ const SITE_URL = "https://filipeidea.github.io/Portfolio/"; // public address, u
 
 // ---------- load data (the data files are plain browser scripts) ----------
 globalThis.window = {};
-for (const f of ["projects.js", "images.js", "facts.js"]) {
+for (const f of ["projects.js", "images.js", "facts.js", "draw.js"]) {
   new Function(fs.readFileSync(path.join(ROOT, "assets/data", f), "utf8"))();
 }
-const { PROJECTS, IMAGES, FACTS } = globalThis.window;
+const { PROJECTS, IMAGES, FACTS, DRAW } = globalThis.window;
+const DRAW_CFG = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/draw.json"), "utf8")); // steps and captions of each drawing
 
 // ---------- figures computed from the project ledger (assets/data/facts.js) ----------
 const LEDGER = FACTS.ledger;
@@ -275,10 +276,10 @@ function project(p, i) {
     ["Published", p.publications?.length ? "<ul>" + p.publications.map((x) => `<li>${x.url ? `<a href="${esc(x.url)}" rel="noopener">${esc(x.label)}</a>` : esc(x.label)}</li>`).join("") + "</ul>" : ""]
   ].filter((f) => f[1]).map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
   const teamHtml = p.team ? esc(p.team).replace("Filipe Meltzer", "<strong>Filipe Meltzer</strong>") : "";
-  /* Fixed frames keep every image on the same lines: wide images 16:9 (or 3:2 when the
+  /* Fixed frames keep every image on the same lines: wide images 16:9 (12:5 for panoramas, 3:2 when the
      image is close to square), pairs 4:3, trios 1:1. Drawings are shown whole (contain) on
      white inside the same frames. The viewer always shows the complete image. */
-  const FR = { "f-169": 16 / 9, "f-32": 3 / 2, "f-43": 4 / 3, "f-11": 1 };
+  const FR = { "f-125": 12 / 5, "f-169": 16 / 9, "f-32": 3 / 2, "f-43": 4 / 3, "f-11": 1 };
   const frameSizes = (key, frame, colVw) => { const k = Math.max(1, need(key).r / FR[frame]); return `(min-width: 760px) ${Math.min(200, Math.round(colVw * k))}vw, ${Math.min(200, Math.round(100 * k))}vw`; };
   const gfig = (o, frame, colVw, extra = "") => `<figure class="gf ${frame}${o.caption ? " drawing" : ""}${extra}">${zoom(r, o, o.caption ? `(min-width: 760px) ${colVw}vw, 100vw` : frameSizes(o.img, frame, colVw), !!o.caption)}` +
     (o.caption ? `<figcaption class="mono">${esc(o.caption)}</figcaption>` : "") + "</figure>";
@@ -286,7 +287,7 @@ function project(p, i) {
     if (g.layout === "pair") return `<div class="g-row g-2">${g.images.map((o) => gfig(o, "f-43", 50)).join("")}</div>`;
     if (g.layout === "trio") return `<div class="g-row g-3">${g.images.map((o) => gfig(o, "f-11", 33)).join("")}</div>`;
     if (g.layout === "small") return gfig(g, "f-169", 100);
-    const frame = need(g.img).r >= 1.5 ? "f-169" : "f-32";
+    const rr = need(g.img).r, frame = rr >= 2.2 ? "f-125" : rr >= 1.5 ? "f-169" : "f-32"; // panoramas keep their 12:5 frame
     return gfig(g, frame, 100, g.layout === "full" ? " g-full" : "");
   }).join("\n");
   const body = `<main id="main">
@@ -359,22 +360,42 @@ const SKETCHBOOK = [
       ["barrinhas/sketch-1", "Coloured axonometric sketch of hotel pavilions, pools and dunes", "Site sketch", "c7"],
       ["barrinhas/sketch-2", "Line sketches of guest buildings around a pool", "Guest buildings", "c5"]] }
 ];
+/* Sketchbook: every drawing draws itself while the page is scrolled (assets/js/app.js,
+   data from tools/build_draw.py). Without JavaScript, or with reduced motion, the
+   drawings and all their captions are simply shown. */
 function sketchbook() {
   const r = "";
-  const groups = SKETCHBOOK.map((g) => `<section id="${g.id}" class="sk-group" aria-labelledby="${g.id}-h">
-<div class="sk-head"><p class="mono">${esc(g.label)}</p><h2 id="${g.id}-h" class="h3">${esc(g.title)}</h2><p>${esc(g.text)}</p>${g.link ? `<p class="more"><a class="link-arrow" href="${g.link[0]}">${g.link[1]} ${ARROW}</a></p>` : ""}</div>
-<ul class="sk-tiles" role="list">${g.items.map(([key, alt, cap]) => `<li class="sk-tile"><a class="zoom light" href="${largest(r, key)}" data-caption="${esc(cap)}">${img(r, key, alt, { sizes: "(min-width: 760px) 480px, 50vw" })}<span class="sr-only"> (open full size)</span></a><span class="sk-cap">${esc(cap)}</span></li>`).join("")}</ul>
+  let n = 0;
+  const scene = ([key, alt, cap]) => {
+    const c = DRAW_CFG.find((x) => x.img === key), d = c && DRAW[c.id];
+    const num = pad(++n);
+    const steps = c ? c.steps.map((st, i) => `<li data-t="${d.steps[i]}" data-n="${pad(i + 1)}">${esc(st.text)}</li>`).join("") : "";
+    return `<section class="dw-scene" id="d-${c ? c.id : n}"${c ? ` data-draw="${r}assets/draw/${c.id}" data-w="${d.w}" data-h="${d.h}" style="--steps:${c.steps.length}"` : ""}>
+<div class="dw-stage">
+<div class="dw-text">
+<p class="dw-num mono">${num}</p>
+<h3 class="dw-title">${esc(cap)}</h3>
+<ol class="dw-steps">${steps}</ol>
+<p class="dw-open"><a class="zoom light" href="${largest(r, key)}" data-caption="${esc(cap)}" data-srcset="${need(key).w.map((w) => `${src(r, key, w)} ${w}w`).join(", ")}" data-alt="${esc(alt)}">Open full size</a></p>
+</div>
+<figure class="dw-art">${img(r, key, alt, { sizes: "(min-width: 1000px) 60vw, 100vw" })}</figure>
+</div>
+</section>`;
+  };
+  const groups = SKETCHBOOK.map((g) => `<section id="${g.id}" class="dw-chapter" aria-labelledby="${g.id}-h">
+<div class="wrap dw-head"><p class="mono">${esc(g.label)}</p><h2 id="${g.id}-h" class="h2">${esc(g.title)}</h2><p class="dw-intro">${esc(g.text)}</p>${g.link ? `<p class="more"><a class="link-arrow" href="${g.link[0]}">${g.link[1]} ${ARROW}</a></p>` : ""}</div>
+${g.items.map(scene).join("\n")}
 </section>`).join("\n");
-  const body = `<main id="main">
+  const index = SKETCHBOOK.map((g) => `<li><a href="#${g.id}"><span class="mono">${esc(g.label.split(" · ")[0])}</span> ${esc(g.title)}</a></li>`).join("");
+  const body = `<main id="main" class="dw-page">
 <header class="wrap p-head">
 <p class="mono kicker">Sketchbook</p>
 <h1 class="h1">Thinking with the hand</h1>
 <p class="lede">I start most projects on paper. These freehand drawings were made to read existing architecture, test spatial ideas, brief the people producing renders and tell the story of a concept — most of them for projects at Architects Office.</p>
-<p class="hint mono-plain">Hover over a drawing to enlarge it; click to see it full size.</p>
+<p class="hint mono-plain dw-hint" hidden>Scroll, and each drawing draws itself again — line first, then colour.</p>
+<ol class="dw-index">${index}</ol>
 </header>
-<div class="wrap">
 ${groups}
-</div>
 </main>`;
   return layout({ file: "sketchbook.html", page: "sketchbook", og: "sketchbook", title: "Sketchbook — Filipe Meltzer, Architect & Urbanist",
     description: "Freehand sketches by architect Filipe Meltzer: studies of Portuguese architecture, housing concepts, atmosphere drawings for renders and visual storytelling.", body });
@@ -597,7 +618,7 @@ function copy(dir) { fs.cpSync(path.join(ROOT, dir), path.join(OUT, dir), { recu
 
 fs.mkdirSync(OUT, { recursive: true });
 for (const f of fs.readdirSync(OUT)) fs.rmSync(path.join(OUT, f), { recursive: true, force: true }); // empty, keep the folder
-for (const d of ["assets/css", "assets/js", "assets/img", "assets/docs", "assets/og"]) copy(d);
+for (const d of ["assets/css", "assets/js", "assets/img", "assets/draw", "assets/docs", "assets/og"]) copy(d);
 fs.copyFileSync(path.join(ROOT, "assets/favicon.svg"), path.join(OUT, "assets/favicon.svg"));
 fs.writeFileSync(path.join(OUT, ".nojekyll"), "");
 write("index.html", home());
