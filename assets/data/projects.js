@@ -182,10 +182,13 @@ window.PROJECTS = [
         { img: "iguatemi/street", alt: "The tower seen from the street beside a lower building with a planted facade" },
         { img: "iguatemi/facade", alt: "Close view of the facade grid with plants spilling from every bay" }
       ] },
-      { layout: "trio", images: [
+      { layout: "pair", images: [
         { img: "iguatemi/sketch", alt: "Watercolour sketch of a green twisting tower among existing buildings", caption: "Concept sketch" },
-        { img: "iguatemi/model", alt: "Physical model of stacked offset blocks", caption: "Block model" },
         { img: "iguatemi/axo", alt: "White massing model of the tower in its urban context", caption: "Massing study" }
+      ] },
+      { layout: "pair", images: [
+        { img: "iguatemi/model", alt: "Physical model of stacked offset blocks", caption: "Block model" },
+        { img: "iguatemi/model-hand", alt: "A hand placing the top block on the physical model of the tower", caption: "Stacking the blocks by hand" }
       ] }
     ],
     team: "Greg Bousquet, Sávio Jobim, Larissa Oliveira, Rafael Igayara, Fiama Costa, Filipe Meltzer, Caio Caccaos, Stephany Smynniuk, Thiago Buccieri Santana, Pedro Teixeira",

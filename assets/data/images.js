@@ -180,6 +180,13 @@ window.IMAGES = {
    539
   ]
  },
+ "iguatemi/model-hand": {
+  "r": 0.7449,
+  "w": [
+   640,
+   657
+  ]
+ },
  "iguatemi/sketch": {
   "r": 1.3437,
   "w": [

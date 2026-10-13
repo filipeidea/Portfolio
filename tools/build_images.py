@@ -46,6 +46,7 @@ MANIFEST = {
     "iguatemi/facade": ("S", "aeb/AAM_IGUATEMI_EV02_C04_240618_R00.jpg"),
     "iguatemi/sketch": ("C", "k-arvore-pedra-4.png"),  # croquis\ÁRVORE PEDRA 4.png (was aeb/croqui.jpg)
     "iguatemi/model": ("S", "aeb/maquete.jpg"),
+    "iguatemi/model-hand": ("C", "iguatemi-model-hand.png"),  # photo sent in the conversation, 13 Oct 2026
     "iguatemi/axo": ("S", "aeb/iso.jpg"),
     "gaivota/tower": ("S", "NORTIS/NORTIS_GAIVOTA 530_EV02_C02-01.jpg"),
     "gaivota/entrance": ("S", "NORTIS/NORTIS_GAIVOTA 530_EV02_C01-01.jpg"),
