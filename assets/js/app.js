@@ -147,6 +147,51 @@
     });
   }
 
+  /* ---------- map: the city list and the map pins highlight each other ---------- */
+  var pins = $$(".pin"), rows = $$(".city-list li");
+  if (pins.length && rows.length) {
+    var mark = function (city, on) {
+      pins.concat(rows).forEach(function (el) { if (el.getAttribute("data-city") === city) el.classList.toggle("hl", on); });
+    };
+    pins.concat(rows).forEach(function (el) {
+      var c = el.getAttribute("data-city");
+      el.addEventListener("mouseenter", function () { mark(c, true); });
+      el.addEventListener("mouseleave", function () { mark(c, false); });
+      el.addEventListener("focusin", function () { mark(c, true); });
+      el.addEventListener("focusout", function () { mark(c, false); });
+    });
+    // taps (touch screens): open one card at a time, close by tapping elsewhere
+    pins.forEach(function (pin) {
+      $(".pin-dot", pin).addEventListener("click", function (e) {
+        e.stopPropagation();
+        var was = pin.classList.contains("open");
+        pins.forEach(function (x) { x.classList.remove("open"); });
+        if (!was) pin.classList.add("open");
+      });
+    });
+    // on the list, clicking a city name opens its card on the map (useful where dots sit close together)
+    rows.forEach(function (row) {
+      var name = $(".cl-city", row);
+      name.setAttribute("role", "button"); name.setAttribute("tabindex", "0");
+      var open = function (e) {
+        e.stopPropagation();
+        var c = row.getAttribute("data-city");
+        pins.forEach(function (x) { x.classList.toggle("open", x.getAttribute("data-city") === c); });
+        var map = $(".map-frame"), r = map.getBoundingClientRect();
+        if (r.top < 0 || r.bottom > window.innerHeight) map.scrollIntoView({ behavior: "smooth", block: "center" });
+      };
+      name.addEventListener("click", open);
+      name.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(e); } });
+    });
+    document.addEventListener("click", function (e) { if (!e.target.closest(".pin")) pins.forEach(function (x) { x.classList.remove("open"); }); });
+    // Escape closes an open card by moving focus off the pin
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      pins.forEach(function (x) { x.classList.remove("open"); });
+      if (document.activeElement && document.activeElement.classList.contains("pin-dot")) document.activeElement.blur();
+    });
+  }
+
   /* ---------- print button on the résumé ---------- */
   var pb = $(".print-btn");
   if (pb) { pb.hidden = false; pb.addEventListener("click", function () { window.print(); }); }
@@ -155,7 +200,7 @@
      Anything that has reached or passed the bottom of the screen is shown, so fast
      scrolling or jumping to an anchor can never leave an element hidden. */
   if (!reduceMotion && window.requestAnimationFrame) {
-    var pending = $$(".card, .gallery > figure, .gallery > div, .sk-grid figure").filter(function (e) {
+    var pending = $$(".card, .gallery > figure, .gallery > div").filter(function (e) {
       return e.getBoundingClientRect().top > window.innerHeight; // already visible: never hide it
     });
     pending.forEach(function (e) { e.classList.add("reveal"); });

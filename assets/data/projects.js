@@ -23,6 +23,7 @@
  *                or "pair" | "trio" (several, in "images"). Add "caption" for drawings.
  *   team         credits exactly as listed in the source portfolio
  *   aka          another name the project is known by (optional)
+ *   position     Filipe's role title on the project (from the project spreadsheet)
  *   credit       image credit; if left out, team projects show "Images © <practice>"
  *
  * Image keys ("<folder>/<name>") must exist in assets/img — see tools/build_images.py.
@@ -39,10 +40,17 @@ window.PROJECTS = [
     category: "Residential",
     year: "2022",
     yearNote: "design",
-    area: "11,098 m²",
+    area: "11,474 m²",
     practice: "Architects Office",
+    position: "Architect",
     stages: ["Feasibility study", "Schematic design"],
     role: "Member of the concept team during the feasibility study and schematic design. The two awards were given to the office’s project team.",
+    publications: [
+      { label: "Architects Office — project page", url: "https://www.architectsoffice.co/projeto/monolyt" },
+      { label: "Exame, April 2024", url: "https://exame.com/casual/predio-de-balneario-camboriu-ganha-premiacao-internacional-da-arquitetura/" },
+      { label: "NSC Total, April 2024", url: "https://www.nsctotal.com.br/colunista/dagmara-spautz/projeto-de-predio-para-praia-agreste-em-balneario-camboriu-ganha-premio-internacional" },
+      { label: "The Architecture Community", url: "https://www.thearchitecturecommunity.com/monolyt-ao-world-design-awards-2023/" }
+    ],
     awards: [
       "Gold Winner — Urban Design & Architecture Design Awards (APR) 2024, Housing Multi-Family (Concept)",
       "Winner — World Design Awards 2023, Housing Concept"
@@ -50,6 +58,7 @@ window.PROJECTS = [
     summary:
       "A multi-family residential building in Balneário Camboriú with glazed living floors, generous terraces and a stone-lined base.",
     description: [
+      "On Praia do Estaleiro, the office describes the building as taking its form from erosion — natural rock and human intervention combined. Native vegetation is preserved, reflecting pools occupy the ground floor and private pools in the units meet the original rock (Architects Office project description).",
       "Glazed floors with deep terraces sit above a solid base, where a carved, stone-lined void with planting creates an outdoor room at the foot of the building."
     ],
     cover: "monolyt/front",
@@ -66,19 +75,23 @@ window.PROJECTS = [
     featured: true
   },
   {
-    slug: "masterplan-urucuca", // CONFIRM: area not shown — the portfolio sheet repeats the Quinta area (1,896.20 m²); CV masterplan total 27,771 m² is site area.
+    slug: "masterplan-urucuca", // area from SHEET (site area)
     title: "Masterplan Uruçuca",
     location: "Serra Grande, Uruçuca, BA, Brazil",
     typology: "Masterplan · hospitality · multi-family",
     category: "Urban & Hospitality",
     year: "2023",
     yearNote: "design",
-    area: null,
+    area: "27,771 m² (site)",
     practice: "Architects Office",
+    position: "Dedicated architect",
     stages: ["Feasibility study", "Schematic design", "Design development", "Permit drawings"],
     role: "Member of the project team from the feasibility study through schematic design, design development and the permit drawings. The award was given to the office’s project team.",
     awards: [
       "Third Award — Rethinking The Future Awards 2024, Urban Design (Concept)"
+    ],
+    publications: [
+      { label: "Rethinking The Future Awards — project page", url: "https://awards.re-thinkingthefuture.com/masterplan-urucuca-architects-office/" }
     ],
     summary:
       "A masterplan in Serra Grande, on the coast of southern Bahia, with timber houses and hospitality buildings set within the forest and beside the water.",
@@ -109,6 +122,7 @@ window.PROJECTS = [
     yearNote: "design",
     area: "49,811 m²",
     practice: "Architects Office",
+    position: "Dedicated architect",
     stages: ["Feasibility study"],
     role: "Member of the concept team during the feasibility study.",
     awards: [],
@@ -136,13 +150,15 @@ window.PROJECTS = [
   {
     slug: "quinta",
     title: "Quinta",
+    aka: "Marateca",
     location: "Marateca, Portugal",
     typology: "Single-family residential",
     category: "Residential",
-    year: "2023",
+    year: "2024",
     yearNote: "design",
-    area: "1,896 m²",
+    area: "1,458 m²",
     practice: "Architects Office",
+    position: "Dedicated architect",
     stages: ["Feasibility study", "Schematic design"],
     role: "Member of the concept team during the feasibility study and schematic design. I drew the freehand studies of Portuguese architecture made for the project, shown in the Sketchbook.",
     awards: [],
@@ -169,21 +185,22 @@ window.PROJECTS = [
     featured: true
   },
   {
-    slug: "casa-sapucaia", // also known as Casa BVV; a Triptyque Architecture project (confirmed by Filipe, 12 Oct 2026). Old address projects/casa-bvv.html forwards here.
-    title: "Casa Sapucaia",
+    slug: "casa-sapucai", // also known as Casa BVV; Triptyque Architecture (confirmed by Filipe). Location, area and year from SHEET. Old addresses casa-bvv / casa-sapucaia forward here.
+    title: "Casa Sapucaí",
     aka: "Casa BVV",
-    location: "Boa Vista Village, Porto Feliz, SP, Brazil",
+    location: "Quinta da Baronesa, SP, Brazil",
     typology: "Single-family residential",
     category: "Residential",
     year: "2021",
     yearNote: "design",
-    area: "985 m²",
+    area: "1,291 m²",
     practice: "Triptyque Architecture",
+    position: "Dedicated architect",
     stages: ["Schematic design", "Design development", "Pre-construction documents", "Construction documents", "Issued for construction"],
     role: "Coordinated the architecture with the engineering consultants’ projects in every stage up to issue for construction, except the initial concept.",
     awards: [],
     summary:
-      "A low, horizontal country house in Boa Vista Village, Porto Feliz, with earth-toned walls and timber pavilions arranged around gardens and a long pool.",
+      "A low, horizontal country house in Quinta da Baronesa, São Paulo state, with earth-toned walls and timber pavilions arranged around gardens and a long pool.",
     description: [
       "Long earth-toned walls face the street, while the living spaces open onto gardens and the pool through large glazed timber frames."
     ],
@@ -207,10 +224,11 @@ window.PROJECTS = [
     location: "Monte Mor, SP, Brazil",
     typology: "Single-family residential",
     category: "Residential",
-    year: "2023",
-    yearNote: "completed",
+    year: "2022",
+    yearNote: "design; completed 2023",
     area: "574 m²",
     practice: "Architects Office",
+    position: "Architect",
     stages: ["Construction documents", "Issued for construction"],
     role: "Joined the project in its final phase to coordinate the engineering consultants’ projects with the architecture, through construction documents and issue for construction.",
     awards: [],
@@ -218,7 +236,7 @@ window.PROJECTS = [
       { label: "ArchDaily (English)", url: "https://www.archdaily.com/1014050/par-house-architects-office" },
       { label: "ArchDaily Brasil", url: "https://www.archdaily.com/pt/1013677/casa-par-architects-office" },
       { label: "ArchDaily en Español", url: "https://www.archdaily.com/es/1063189/casa-par-architects-office" },
-      { label: "Espaço de Arquitetura, 2024", url: null }
+      { label: "Espaço de Arquitetura, 2024", url: "https://espacodearquitetura.com/projetos/casa-par/" }
     ],
     summary:
       "A completed country house in a rural setting near São Paulo: pitched timber roofs over white-walled volumes, opening onto a pool deck.",
@@ -278,13 +296,15 @@ window.PROJECTS = [
   {
     slug: "gramado",
     title: "Gramado",
+    aka: "Hortensias SN",
     location: "Gramado, RS, Brazil",
     typology: "Residential building",
     category: "Residential",
     year: "2023",
     yearNote: "design",
-    area: "4,923 m²",
+    area: "6,238 m²",
     practice: "Architects Office",
+    position: "Dedicated architect",
     stages: ["Feasibility study", "Schematic design"],
     role: "Member of the concept team during the feasibility study and schematic design.",
     awards: [],
@@ -307,13 +327,15 @@ window.PROJECTS = [
   {
     slug: "gaivota",
     title: "Gaivota",
+    aka: "Gaivota 530",
     location: "São Paulo, SP, Brazil",
     typology: "Residential tower",
     category: "Residential",
     year: "2024",
     yearNote: "design",
-    area: "20,300 m²",
+    area: "21,726 m²",
     practice: "Architects Office",
+    position: "Dedicated architect",
     stages: ["Feasibility study", "Schematic design"],
     role: "Member of the concept team during the feasibility study and schematic design.",
     awards: [],
@@ -339,10 +361,11 @@ window.PROJECTS = [
     location: "Preá, CE, Brazil",
     typology: "Hospitality",
     category: "Urban & Hospitality",
-    year: "2023",
+    year: "2024",
     yearNote: "design",
-    area: "1,238 m²",
+    area: "2,653 m²",
     practice: "Architects Office",
+    position: "Dedicated architect",
     stages: ["Feasibility study", "Schematic design"],
     role: "Member of the concept team during the feasibility study and schematic design.",
     awards: [],

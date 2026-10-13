@@ -13,7 +13,8 @@ Edits (approved by Filipe, 12 Oct 2026):
   p1  "over seven years" -> "over eight years"; remove "Passionate about…" sentence;
       add email filipemeltzer@outlook.com; Iguatemi 306 area 41,400 -> 49,811 m²;
       LinkedIn and email as clickable links
-  p2  "more than 450,000" -> "458,000+"
+  p1  "458,000+ m²" -> "492,000+ m²" (project spreadsheet, 13 Oct 2026)
+  p2  "more than 450,000" -> "492,000+"; corporate 68,504 -> 76,947 m²; hotels 5,109 -> 2,653 m²
   p3  add Balneário Camboriú to the map
   all metadata (title, author, language)
 """
@@ -177,43 +178,68 @@ tc_contact, tw_contact = 0.004, -0.004
 LINK_X0 = 28.3465 + 9 * advance(contact_chars[:li], bold1, tc_contact, tw_contact)
 LINK_X1 = 28.3465 + 9 * advance(contact_chars, bold1, tc_contact, tw_contact)
 
-# d) Iguatemi 306: 41,400 -> 49,811 m²
-i = find(ops, "TJ", "Natal) and Iguatemi 306 (41,400", light)
-# graphics state in force for this line
-tc = tw = 0.0
-for o, op in ops[:i]:
-    if str(op) == "Tc": tc = float(o[0])
-    if str(op) == "Tw": tw = float(o[0])
-tm = ops[i - 1]; assert str(tm[1]) == "Tm"
-size, x0, y0 = float(tm[0][0]), float(tm[0][4]), float(tm[0][5])
-chars = text_of(ops[i][0][0], light)
-s = "".join(c for c, _ in chars); j = s.index("41,400")
-prefix = chars[:j + 1]                                   # "... (4"
-suffix = [(c2, k) for (c, k), c2 in zip(chars[j + 2:j + 6], ",811")] + chars[j + 6:]
-x_nine = x0 + size * advance(prefix, light, tc, tw)
-six = light.enc["6"]; w6 = light.width(six)
-xmin, ymin, xmax, ymax = light.glyph_bounds("6")
-x_after = x_nine + size * (w6 / 1000 + tc - chars[j + 1][1] / 1000)
-# the '9': outline of Helvetica Light's own '6', rotated 180° about its bounding box,
-# drawn as a vector shape and tagged with ActualText "9" so text extraction reads "49,811"
+# d) numbers rewritten in Helvetica Light, which has no '9' in its embedded subset:
+#    each '9' is the font's own '6' outline rotated 180° (identical in Helvetica's design),
+#    tagged with ActualText, with an invisible real '9' added on top for text extraction.
 O = pikepdf.Operator
-glyph_ops = light.outline_ops("6")
-k = size / 1000
-new_ops = [
-    ([to_tj(prefix, light)], O("TJ")),
-    ([], O("ET")),
-    ([pikepdf.Name("/Span"), pikepdf.Dictionary(ActualText=pikepdf.String("9"))], O("BDC")),
-    ([], O("q")),
-    ([-k, 0, 0, -k, x_nine + k * (xmin + xmax), y0 + k * (ymin + ymax)], O("cm")),
-    *glyph_ops,
-    ([], O("f")),
-    ([], O("Q")),
-    ([], O("EMC")),
-    ([], O("BT")),
-    ([size, 0, 0, size, x_after, y0], O("Tm")),
-    ([to_tj(suffix, light)], O("TJ")),
-]
-ops[i:i + 1] = new_ops
+NINES = []  # (x, y, size) of every drawn '9', for the invisible text layer
+xmin6, ymin6, xmax6, ymax6 = light.glyph_bounds("6")
+six = light.enc["6"]; w6 = light.width(six)
+glyph6 = light.outline_ops("6")
+
+
+def rewrite_light(ops, line_start, old, new):
+    """locate a Helvetica Light line and return it with `old` replaced by `new` (same length)"""
+    i = find(ops, "TJ", line_start, light)
+    tc = tw = 0.0
+    for o, op in ops[:i]:
+        if str(op) == "Tc": tc = float(o[0])
+        if str(op) == "Tw": tw = float(o[0])
+    # current text position: last Tm, plus whatever was shown after it on the same line
+    t = i - 1
+    while str(ops[t][1]) != "Tm": t -= 1
+    size, x0, y0 = float(ops[t][0][0]), float(ops[t][0][4]), float(ops[t][0][5])
+    line_x, line_y = x0, y0
+    for o, op in ops[t + 1:i]:
+        n = str(op)
+        if n in ("Tj", "TJ"):
+            arr = o[0] if n == "TJ" else [o[-1]]
+            x0 += size * advance(text_of(arr, light), light, tc, tw)
+        elif n == "Td":  # new line start, relative to the previous line start
+            line_x += float(o[0]) * size; line_y += float(o[1]) * size
+            x0, y0 = line_x, line_y
+        elif n not in ("Tc", "Tw", "Tf", "Tz", "TL", "Ts", "BDC", "EMC", "BMC"):
+            raise SystemExit("unexpected operator before line: " + n)
+    chars = text_of(ops[i][0][0], light)
+    s = "".join(c for c, _ in chars); j = s.index(old); assert len(old) == len(new)
+    chars = chars[:j] + [(n, k) for (c, k), n in zip(chars[j:j + len(old)], new)] + chars[j + len(old):]
+    return i, chars, size, x0, y0, tc, tw
+
+
+def emit(ops, i, chars, size, x0, y0, tc, tw):
+    """re-draw the line; the first run keeps the current text position, later runs get a Tm"""
+    k = size / 1000
+    out, run, before = [], [], []
+    for n, (ch, kern) in enumerate(chars):
+        if ch != "9":
+            run.append((ch, kern)); continue
+        if run: out.append(([to_tj(run, light)], O("TJ")))
+        xn = x0 + size * advance(chars[:n], light, tc, tw)
+        NINES.append((xn, y0, size))
+        x_next = xn + size * (w6 / 1000 + tc - kern / 1000)
+        out += [([], O("ET")),
+                ([pikepdf.Name("/Span"), pikepdf.Dictionary(ActualText=pikepdf.String("9"))], O("BDC")),
+                ([], O("q")), ([-k, 0, 0, -k, xn + k * (xmin6 + xmax6), y0 + k * (ymin6 + ymax6)], O("cm")),
+                *glyph6, ([], O("f")), ([], O("Q")), ([], O("EMC")),
+                ([], O("BT")), ([size, 0, 0, size, x_next, y0], O("Tm"))]
+        run = []
+    if run: out.append(([to_tj(run, light)], O("TJ")))
+    ops[i:i + 1] = out
+
+
+for start, old, new in (("Natal) and Iguatemi 306 (41,400", "41,400", "49,811"),
+                        ("23 projects totalling 458,000+", "458,000+", "492,000+")):
+    emit(ops, *rewrite_light(ops, start, old, new))
 p1.Contents = pdf.make_stream(pikepdf.unparse_content_stream(ops))
 
 # ---------- page 2: "more than 450,000" -> "458,000+" ----------
@@ -228,13 +254,27 @@ shift_num = None
 for i, (o, op) in enumerate(ops):
     if str(op) == "TJ" and len(o[0]) and all(isinstance(e, pikepdf.String) or True for e in o[0]) and _safe(o[0], b2) == "450,000":
         chars = text_of(o[0], b2)
-        chars[2] = ("8", chars[2][1])
+        chars = [(n, k) for (c, k), n in zip(chars, "492,000")]
         chars.append(("+", 0.0))
         ops[i] = ([to_tj(chars, b2)], op)
         tm = ops[i - 1]; assert str(tm[1]) == "Tm"
         # left edge aligned optically with the "23" above (x 28.72 at 48 pt)
         shift_num = 29.0 - float(tm[0][4])
         ops[i - 1] = ([*tm[0][:4], float(tm[0][4]) + shift_num, tm[0][5]], tm[1])
+# typology areas updated from the project spreadsheet (Iguatemi 306 at 49,811 m²;
+# hotels count Barrinhas only, Uruçuca's area being counted under masterplan)
+for old, new in (("68,504 m²", "76,947 m²"), ("5,109 m²", "2,653 m²")):
+    for i, (o, op) in enumerate(ops):
+        if str(op) in ("Tj", "TJ"):
+            arr = o[0] if str(op) == "TJ" else [o[-1]]
+            t = _safe(arr, b2)
+            if t and t.replace("˚", "²") == old:
+                chars = text_of(arr, b2)
+                chars = [(n, k) for (c, k), n in zip(chars, new[:len(new) - 3])] + chars[len(new) - 3:]
+                ops[i] = ([to_tj(chars, b2)], op) if str(op) == "TJ" else ([pikepdf.String(b"".join(b2.encode(c) for c, _ in chars))], op)
+                break
+    else:
+        raise SystemExit("not found " + old)
 # "m²" and "approved by clients" sit on the same baseline to the right of the number
 for i, (o, op) in enumerate(ops):
     if str(op) == "Tm" and abs(float(o[5]) - 21.1666) < .01 and float(o[4]) > 200:
@@ -269,8 +309,9 @@ buf = io.BytesIO(); c = canvas.Canvas(buf, pagesize=(W, H))
 c.setFillColorCMYK(*NAVY); c.setFont("HerosBold", 9)
 t = c.beginText(28.3465, EMAIL_Y); t.setFont("HerosBold", 9); t.setCharSpace(0.036); t.textOut(EMAIL); c.drawText(t)
 email_w = pdfmetrics.stringWidth(EMAIL, "HerosBold", 9) + 0.036 * len(EMAIL)
-# invisible '9' (render mode 3) over the drawn one, so copy/paste and ATS read "49,811"
-t = c.beginText(x_nine, y0); t.setFont("HerosBold", size); t.setTextRenderMode(3); t.textOut("9"); c.drawText(t)
+# invisible '9's (render mode 3) over the drawn ones, so copy/paste and ATS read the numbers
+for xn, yn, sz in NINES:
+    t = c.beginText(xn, yn); t.setFont("HerosBold", sz); t.setTextRenderMode(3); t.textOut("9"); c.drawText(t)
 c.showPage()
 c.showPage()
 # page 3: label to the right of the new dot, white, 6 pt like the other labels

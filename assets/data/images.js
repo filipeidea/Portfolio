@@ -241,6 +241,14 @@ window.IMAGES = {
    2000
   ]
  },
+ "profile/places-base": {
+  "r": 0.7751,
+  "w": [
+   640,
+   1280,
+   1647
+  ]
+ },
  "profile/places-map": {
   "r": 0.7075,
   "w": [

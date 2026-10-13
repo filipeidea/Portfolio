@@ -4,7 +4,9 @@
  * site, the résumé page and the PDF can be kept consistent.
  *
  * Sources:
- *   CV   = assets/docs/Filipe-Meltzer-CV.pdf (2026, "REV01") — primary source
+ *   SHEET = Filipe's project spreadsheet "projetos FILIPE + AO" (Google Sheets, read 13 Oct 2026)
+ *           — primary source for every project's area, year, city, role and stage
+ *   CV   = assets/docs/Filipe-Meltzer-CV.pdf (2026, "REV01")
  *   PF   = portfolio filipe 2025_web.pdf — project sheets, roles, dates
  *   PRESS = public articles (linked where used)
  */
@@ -17,29 +19,77 @@ window.FACTS = {
   linkedin: "https://www.linkedin.com/in/filipemeltzer", // CV
   cv: "assets/docs/Filipe-Meltzer-CV.pdf",
 
-  /* Home page figures.
-   * projects: CV ("23 projects"). Check: CV typology counts 1+2+2+3+3+5+8 = 24,
-   *   minus Masterplan Uruçuca, which the CV lists under both masterplan and hotels = 23.
-   * area: CV ("458,000+ m²"). Check: CV typology areas add up to 486,119 m²; minus the
-   *   masterplan site area (27,771 m², which the CV notes is site area, not floor area)
-   *   = 458,348 m². The CV's other phrase, "more than 450,000 m² approved by clients",
-   *   is consistent with this but less precise; the site uses 458,000+ everywhere.
-   * locations: CV says 17. The CV map named 16 places; the 17th is Balneário Camboriú (SC),
-   *   the location of Monolyt — confirmed by Filipe (12 Oct 2026) and added to the CV map.
-   * awards: three awards for two team projects (CV, PF).
+  /* LEDGER — every project since 2021, from SHEET (client names deliberately left out).
+   * stage = last stage delivered: EV feasibility study · EP schematic design ·
+   *         AP design development · PE construction documents
+   * area in m² (null when the sheet has none); slug = page on this site, if any.
+   * Casa Sapucaí was a Triptyque Architecture project; all others Architects Office.
    */
-  figures: [
-    { value: "23", label: "projects in the concept team at Architects Office since 2021" },
-    { value: "458,000+", unit: "m²", label: "total floor area of those projects" },
-    { value: "17", label: "locations in Brazil and Portugal" },
-    { value: "3", label: "international awards for team projects" }
+  ledger: [
+    { name: "Floriano 310", year: 2024, type: "Corporate", area: 9769.16, city: "São Paulo, SP", role: "Dedicated architect", stage: "EV" },
+    { name: "Iguatemi 306", year: 2024, type: "Corporate", area: 49811.18, city: "São Paulo, SP", role: "Dedicated architect", stage: "EV", slug: "iguatemi-306" },
+    { name: "UDI", year: 2024, type: "Corporate", area: 17366.66, city: "Uberlândia, MG", role: "Dedicated architect", stage: "EP" },
+    { name: "Barrinhas", year: 2024, type: "Hotel", area: 2652.74, city: "Preá, CE", role: "Dedicated architect", stage: "EP", slug: "hotel-barrinhas" },
+    { name: "Masterplan Uruçuca", year: 2023, type: "Hotel and masterplan", area: 27771.00, city: "Uruçuca, BA", role: "Dedicated architect", stage: "EP", slug: "masterplan-urucuca" },
+    { name: "Dulcídio 1202", year: 2022, type: "Mixed-use", area: null, city: "Curitiba, PR", role: "Architect", stage: "EV" },
+    { name: "Mussi 226", year: 2026, type: "Mixed-use", area: 40897.40, city: "Itajaí, SC", role: "Dedicated architect", stage: "EV" },
+    { name: "INC 17", year: 2025, type: "Mixed-use", area: 29512.85, city: "Itapema, SC", role: "Architect", stage: "EP" },
+    { name: "Moraes SN", year: 2025, type: "Mixed-use", area: 51591.73, city: "Natal, RN", role: "Dedicated architect", stage: "EV" },
+    { name: "Pamplona 1704", year: 2026, type: "Mixed-use", area: 125490.67, city: "São Paulo, SP", role: "Dedicated architect", stage: "EV" },
+    { name: "Valente-Meireles", year: 2024, type: "Residential building", area: 9874.19, city: "Fortaleza, CE", role: "Architect", stage: "EP" },
+    { name: "1144", year: 2024, type: "Residential building", area: 42708.29, city: "Goiânia, GO", role: "Dedicated architect", stage: "AP" },
+    { name: "Hortensias SN", year: 2023, type: "Residential building", area: 6238.04, city: "Gramado, RS", role: "Dedicated architect", stage: "EP", slug: "gramado" },
+    { name: "Monolyt", year: 2022, type: "Residential building", area: 11473.58, city: "Balneário Camboriú, SC", role: "Architect", stage: "EP", slug: "monolyt" },
+    { name: "Murata 157", year: 2025, type: "Residential building", area: 21394.86, city: "Londrina, PR", role: "Project Leader", stage: "EP" },
+    { name: "Penteado 84", year: 2022, type: "Residential building", area: 3367.12, city: "São Paulo, SP", role: "Dedicated architect", stage: "EV" },
+    { name: "Gaivota 530", year: 2024, type: "Residential building", area: 21725.63, city: "São Paulo, SP", role: "Dedicated architect", stage: "EV", slug: "gaivota" },
+    { name: "Leite 668", year: 2025, type: "Residential building", area: 6564.54, city: "São Paulo, SP", role: "Dedicated architect", stage: "EP" },
+    { name: "Casa PAR", year: 2022, type: "Residential house", area: 574, city: "Monte Mor, SP", role: "Architect", stage: "PE", slug: "casa-par" },
+    { name: "Marateca (Quinta)", year: 2024, type: "Residential house", area: 1458.25, city: "Marateca, Portugal", role: "Dedicated architect", stage: "EV", slug: "quinta" },
+    { name: "Casa Sapucaí", year: 2021, type: "Residential house", area: 1290.89, city: "Quinta da Baronesa, SP", role: "Dedicated architect", stage: "AP", slug: "casa-sapucai", office: "Triptyque" },
+    { name: "Antonio 3227", year: 2026, type: "Retrofit", area: 10572.63, city: "São Paulo, SP", role: "Dedicated architect", stage: "EP" },
+    { name: "Gleba AB", year: 2026, type: "Urban design", area: null, city: "Araçariguama, SP", role: "Dedicated architect", stage: "EV" }
+  ],
+  stageNames: { EV: "Feasibility study", EP: "Schematic design", AP: "Design development", PE: "Construction documents" },
+
+  /* Typology table (home page). Counts and areas computed from the ledger by tools/build.mjs:
+   * Masterplan Uruçuca counts under both hotels and masterplan; its area (27,771 m², site)
+   * is counted once, under masterplan. Projects without area data are excluded from totals.
+   * Check: total 492,105.41 m² = SHEET total. 23 projects, 17 locations.
+   */
+  typologies: [
+    { label: "Residential buildings", match: ["Residential building"] },
+    { label: "Mixed-use", match: ["Mixed-use"] },
+    { label: "Corporate", match: ["Corporate"] },
+    { label: "Residential houses", match: ["Residential house"] },
+    { label: "Masterplan & urban design", match: ["Hotel and masterplan", "Urban design"] },
+    { label: "Hotels", match: ["Hotel", "Hotel and masterplan"], areaOnly: ["Hotel"] },
+    { label: "Retrofit", match: ["Retrofit"] }
   ],
 
-  places: [ // as on the CV map
-    "São Paulo, SP", "Araçariguama, SP", "Monte Mor, SP", "Baronesa, SP",
-    "Londrina, PR", "Curitiba, PR", "Balneário Camboriú, SC", "Itapema, SC", "Itajaí, SC",
-    "Gramado, RS", "Uberlândia, MG", "Goiânia, GO", "Uruçuca, BA",
-    "Natal, RN", "Fortaleza, CE", "Preá, CE", "Marateca, Portugal"
+  awardsCount: 3, // three awards for two team projects (Monolyt ×2, Masterplan Uruçuca)
+
+  /* Map of locations (profile page). x, y = position on assets/img/profile/places-base, in %
+   * of its width/height, taken from the dots on the CV map (page 3). Marateca, Portugal is
+   * off the map: shown at the "+ marateca, portugal" note in the top-right corner. */
+  mapPoints: [
+    { city: "Gramado, RS", x: 29.65, y: 91.29, side: "l" },
+    { city: "Itajaí, SC", x: 39.06, y: 84.12, side: "l" },
+    { city: "Itapema, SC", x: 39.06, y: 82.78, side: "l" },
+    { city: "Balneário Camboriú, SC", x: 41.09, y: 83.92, side: "r" },
+    { city: "Curitiba, PR", x: 36.91, y: 74.24, side: "l" },
+    { city: "Londrina, PR", x: 35.77, y: 71.78, side: "l" },
+    { city: "São Paulo, SP", x: 46.55, y: 70.98, side: "r" },
+    { city: "Araçariguama, SP", x: 43.56, y: 69.10, side: "r" },
+    { city: "Monte Mor, SP", x: 38.02, y: 66.88, side: "r" },
+    { city: "Quinta da Baronesa, SP", x: 50.22, y: 64.16, side: "r" },
+    { city: "Uberlândia, MG", x: 41.26, y: 59.94, side: "r" },
+    { city: "Goiânia, GO", x: 36.91, y: 51.80, side: "r" },
+    { city: "Uruçuca, BA", x: 74.40, y: 49.49, side: "l" },
+    { city: "Fortaleza, CE", x: 80.07, y: 17.14, side: "l" },
+    { city: "Natal, RN", x: 88.07, y: 20.43, side: "l" },
+    { city: "Preá, CE", x: 71.32, y: 12.41, side: "l" },
+    { city: "Marateca, Portugal", x: 86.02, y: 7.22, side: "l", abroad: true },
   ],
 
   experience: [
@@ -47,15 +97,14 @@ window.FACTS = {
       org: "Architects Office", when: "2021 — Present", where: "São Paulo, Brazil",
       role: "Architect, concept team",
       points: [
-        "23 projects totalling 458,000+ m² in 17 locations in Brazil and Portugal: corporate, hospitality, mixed-use, residential and urban design.",
-        "Project Leader for Murata 157, a 21,400 m² residential building in Londrina.",
-        "Delivered 10 feasibility studies, 10 schematic designs, 2 design developments and 1 construction documents package.",
+        "Projects for housing, mixed-use, corporate, hospitality and urban design in Brazil and Portugal — feasibility studies, schematic design and coordination with engineering consultants.",
+        "Project Leader for Murata 157, a 21,395 m² residential building in Londrina.",
         "Zoning, site and area studies for São Paulo and other states; floor plans for the São Paulo housing market; concept presentations and storytelling.",
-        "Key projects: Pamplona 1704 (125,500 m² mixed-use, São Paulo), Moraes SN (51,600 m², Natal) and Iguatemi 306 (49,811 m² corporate, São Paulo)."
+        "Key projects: Pamplona 1704 (125,491 m² mixed-use, São Paulo), Moraes SN (51,592 m² mixed-use, Natal) and Iguatemi 306 (49,811 m² corporate, São Paulo)."
       ]
     },
     { org: "Triptyque Architecture", when: "2021", where: "São Paulo, Brazil", role: "Architect",
-      points: ["Casa Sapucaia (985 m², Boa Vista Village, Porto Feliz): coordinated the architecture with the engineering consultants’ projects from schematic design to issue for construction."] },
+      points: ["Casa Sapucaí (1,291 m², Quinta da Baronesa, SP): coordinated the architecture with the engineering consultants’ projects from schematic design to issue for construction."] },
     {
       org: "Independent practice", when: "2018 — 2021", where: null, role: "Architect",
       points: [
@@ -90,7 +139,10 @@ window.FACTS = {
         { label: "Portuguese", url: "https://www.archdaily.com/pt/1013677/casa-par-architects-office" },
         { label: "Spanish", url: "https://www.archdaily.com/es/1063189/casa-par-architects-office" }
       ] },
-    { title: "Casa PAR", outlet: "Espaço de Arquitetura", year: "2024", slug: "casa-par", links: [] }
+    { title: "Casa PAR", outlet: "Espaço de Arquitetura", year: "2024", slug: "casa-par",
+      links: [{ label: "Portuguese", url: "https://espacodearquitetura.com/projetos/casa-par/" }] },
+    { title: "Monolyt", outlet: "Exame · NSC Total", year: "2024", slug: "monolyt",
+      links: [{ label: "Exame", url: "https://exame.com/casual/predio-de-balneario-camboriu-ganha-premiacao-internacional-da-arquitetura/" }, { label: "NSC Total", url: "https://www.nsctotal.com.br/colunista/dagmara-spautz/projeto-de-predio-para-praia-agreste-em-balneario-camboriu-ganha-premio-internacional" }] }
   ],
 
   skills: ["Concept design", "Feasibility studies", "Zoning and area studies", "Urban analysis", "Project coordination",

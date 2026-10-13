@@ -28,9 +28,30 @@ for (const f of ["projects.js", "images.js", "facts.js"]) {
 }
 const { PROJECTS, IMAGES, FACTS } = globalThis.window;
 
+// ---------- figures computed from the project ledger (assets/data/facts.js) ----------
+const LEDGER = FACTS.ledger;
+const fmtArea = (n) => Math.round(n).toLocaleString("en-US");
+const TOTAL_AREA = LEDGER.reduce((a, x) => a + (x.area || 0), 0);
+const CITIES = [...new Set(LEDGER.map((x) => x.city))];
+const STAGE_COUNT = Object.fromEntries(Object.keys(FACTS.stageNames).map((k) => [k, LEDGER.filter((x) => x.stage === k).length]));
+const FIGURES = [
+  { value: String(LEDGER.length), label: "projects since 2021, at Architects Office and Triptyque" },
+  { value: (Math.floor(TOTAL_AREA / 1000) * 1000).toLocaleString("en-US") + "+", unit: "m²", label: "of floor area across those projects" },
+  { value: String(CITIES.length), label: "cities in Brazil and Portugal" },
+  { value: String(FACTS.awardsCount), label: "international awards for team projects" }
+];
+const TYPOLOGY = FACTS.typologies.map((t) => {
+  const list = LEDGER.filter((x) => t.match.includes(x.type));
+  const area = LEDGER.filter((x) => (t.areaOnly || t.match).includes(x.type)).reduce((a, x) => a + (x.area || 0), 0);
+  return { label: t.label, count: list.length, area, partial: list.some((x) => x.area == null) };
+}).sort((a, b) => b.count - a.count || b.area - a.area);
+const PLURAL = { EV: ["feasibility study", "feasibility studies"], EP: ["schematic design", "schematic designs"],
+  AP: ["design development", "design developments"], PE: ["construction documents package", "construction documents packages"] };
+const STAGE_LINE = Object.entries(STAGE_COUNT).map(([k, n]) => `${n} ${PLURAL[k][n === 1 ? 0 : 1]}`).join(" · ");
+
 // ---------- helpers ----------
 const isTeam = (p) => !!p.practice && !/UNISINOS/.test(p.practice); // office projects are team work
-const ALIASES = { "casa-bvv": "casa-sapucaia" };                     // old project addresses → new
+const ALIASES = { "casa-bvv": "casa-sapucai", "casa-sapucaia": "casa-sapucai" }; // old project addresses → new
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const pad = (n) => String(n).padStart(2, "0");
 const hash = (f) => crypto.createHash("md5").update(fs.readFileSync(path.join(ROOT, f))).digest("hex").slice(0, 8);
@@ -91,11 +112,11 @@ function layout({ r = "", file, title, description, page, body, og = "home", jso
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#f3f2ee">
+<meta name="theme-color" content="#ffffff">
 <link rel="icon" href="${r}assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
 <link rel="stylesheet" href="${r}assets/css/style.css?v=${V.css}">
 ${extraHead}${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script>\n` : ""}</head>
 <body data-page="${page}">
@@ -140,7 +161,7 @@ const person = {
 const HERO_SIZES = "(max-aspect-ratio: 3/2) 125vh, 100vw";
 function home() {
   const r = "";
-  const heroes = [["masterplan-urucuca", "urucuca/canopy"], ["monolyt", "monolyt/corner"], ["quinta", "quinta/pool"], ["casa-sapucaia", "bvv/pavilion"]];
+  const heroes = [["masterplan-urucuca", "urucuca/canopy"], ["monolyt", "monolyt/corner"], ["quinta", "quinta/pool"], ["casa-sapucai", "bvv/pavilion"]];
   const altFor = (p, key) => { for (const g of p.gallery) for (const x of g.images || [g]) if (x.img === key) return x.alt; return p.title; };
   const slides = heroes.map(([slug, key], i) => {
     const p = PROJECTS.find((x) => x.slug === slug);
@@ -148,28 +169,20 @@ function home() {
       img(r, key, altFor(p, key), { eager: i === 0, lazyData: i > 0, sizes: HERO_SIZES }) + "</figure>";
   }).join("");
   const first = PROJECTS.find((x) => x.slug === heroes[0][0]);
-  const SIZES = ["s-xl", "s-l", "s-r", "s-m", "s-a", "s-b"];
   const cats = ["All", ...new Set(PROJECTS.map((p) => p.category))];
-  /* Cards crop the image to a fixed shape, so a wide image in a tall frame needs more pixels
-     than the column width. Ask the browser for: column width × (image ratio ÷ frame ratio). */
-  const FRAME = { "s-xl": [100, 21 / 9], "s-l": [58, 4 / 3], "s-r": [42, 4 / 5], "s-m": [67, 16 / 9], "s-a": [50, 1], "s-b": [50, 1] };
-  const cardSizes = (size, ratio) => {
-    const [col, fr] = FRAME[size];
-    const desk = Math.round(col * Math.max(1, ratio / fr));
-    const phone = Math.round(100 * Math.max(1, ratio / (4 / 3))); // cards are 4:3 on phones
-    return `(min-width: 760px) ${Math.min(desk, 200)}vw, ${Math.min(phone, 200)}vw`;
-  };
+  /* Every card has the same 3:2 frame so the grid lines up exactly. A wide image cropped
+     into the frame needs width × (image ratio ÷ 1.5) pixels to stay sharp. */
+  const cardSizes = (ratio) => { const k = Math.max(1, ratio / 1.5); return `(min-width: 760px) ${Math.round(50 * k)}vw, ${Math.round(100 * k)}vw`; };
   const cards = PROJECTS.map((p, i) => {
-    const size = SIZES[i % SIZES.length];
     const authorship = isTeam(p) ? "Team project · " + p.practice : "Individual work · " + p.practice.split(" — ")[0];
-    return `<li class="card ${size}" data-cat="${esc(p.category)}"><a href="projects/${p.slug}.html">` +
-      `<span class="ph">${img(r, p.cover, "", { sizes: cardSizes(size, need(p.cover).r) })}</span>` +
+    return `<li class="card" data-cat="${esc(p.category)}"><a href="projects/${p.slug}.html">` +
+      `<span class="ph">${img(r, p.cover, "", { sizes: cardSizes(need(p.cover).r) })}</span>` +
       `<span class="meta"><span class="num" aria-hidden="true">${pad(i + 1)}</span><h3>${esc(p.title)}</h3>` +
       `<span class="sub">${esc(p.typology)} · ${esc(p.location)}${p.year ? " · " + esc(p.year) : ""}</span>` +
       `<span class="tags"><span>${esc(authorship)}</span>${p.awards?.length ? `<span class="award">${p.awards.length > 1 ? p.awards.length + " awards" : "Award"}</span>` : ""}</span>` +
       "</span></a></li>";
   }).join("");
-  const figures = FACTS.figures.map((f) => `<div class="figure"><dt>${esc(f.label)}</dt><dd>${esc(f.value)}${f.unit ? ` <small>${esc(f.unit)}</small>` : ""}</dd></div>`).join("");
+  const figures = FIGURES.map((f) => `<div class="figure"><dt>${esc(f.label)}</dt><dd>${esc(f.value)}${f.unit ? ` <small>${esc(f.unit)}</small>` : ""}</dd></div>`).join("");
   const body = `<main id="main">
 <section class="wrap intro" aria-labelledby="intro-h">
 <div class="intro-grid">
@@ -195,6 +208,14 @@ function home() {
 <section class="wrap figures-wrap" aria-labelledby="fig-h">
 <h2 id="fig-h" class="mono">In numbers</h2>
 <dl class="figures">${figures}</dl>
+</section>
+<section class="wrap section typology" aria-labelledby="typ-h">
+<div class="typ-head">
+<h2 id="typ-h" class="h2">Projects<br>by typology</h2>
+<p class="typ-note">Number of projects and total floor area per typology, since 2021.</p>
+</div>
+<ul class="typ-grid" role="list">${TYPOLOGY.map((t) => `<li><span class="typ-num" aria-hidden="true">${pad(t.count)}</span><span class="typ-txt"><span class="typ-label">${esc(t.label)}</span><span class="typ-area mono-plain">${t.count} project${t.count > 1 ? "s" : ""} · ${fmtArea(t.area)}${t.partial ? "*" : ""} m²</span></span></li>`).join("")}</ul>
+<p class="typ-foot">* Some projects have no area on record and are not included in that total. Masterplan Uruçuca counts as both hotel and masterplan; its ${fmtArea(27771)} m² site area is counted once, under masterplan. Total ${fmtArea(TOTAL_AREA)} m² across ${LEDGER.length} projects.</p>
 </section>
 <section id="projects" class="wrap section" aria-labelledby="proj-h">
 <div class="section-head">
@@ -251,15 +272,24 @@ function project(p, i) {
     ["Year", p.year ? esc(p.year) + (p.yearNote ? ` <span class="muted">(${esc(p.yearNote)})</span>` : "") : ""],
     ["Area", p.area ? esc(p.area) : ""],
     [team ? "Office" : "Context", esc(team ? p.practice + " — team project" : p.practice)],
+    ["Position", p.position ? esc(p.position) : ""],
     ["Awards", p.awards?.length ? "<ul>" + p.awards.map((a) => `<li>${esc(a)}</li>`).join("") + "</ul>" : ""],
     ["Published", p.publications?.length ? "<ul>" + p.publications.map((x) => `<li>${x.url ? `<a href="${esc(x.url)}" rel="noopener">${esc(x.label)}</a>` : esc(x.label)}</li>`).join("") + "</ul>" : ""]
   ].filter((f) => f[1]).map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
   const teamHtml = p.team ? esc(p.team).replace("Filipe Meltzer", "<strong>Filipe Meltzer</strong>") : "";
+  /* Fixed frames keep every image on the same lines: wide images 16:9 (or 3:2 when the
+     image is close to square), pairs 4:3, trios 1:1. Drawings are shown whole (contain) on
+     white inside the same frames. The viewer always shows the complete image. */
+  const FR = { "f-169": 16 / 9, "f-32": 3 / 2, "f-43": 4 / 3, "f-11": 1 };
+  const frameSizes = (key, frame, colVw) => { const k = Math.max(1, need(key).r / FR[frame]); return `(min-width: 760px) ${Math.min(200, Math.round(colVw * k))}vw, ${Math.min(200, Math.round(100 * k))}vw`; };
+  const gfig = (o, frame, colVw, extra = "") => `<figure class="gf ${frame}${o.caption ? " drawing" : ""}${extra}">${zoom(r, o, o.caption ? `(min-width: 760px) ${colVw}vw, 100vw` : frameSizes(o.img, frame, colVw), !!o.caption)}` +
+    (o.caption ? `<figcaption class="mono">${esc(o.caption)}</figcaption>` : "") + "</figure>";
   const gallery = p.gallery.filter((g) => g.img !== p.cover).map((g) => {
-    if (g.images) return `<div class="g-${g.layout}">` + g.images.map((o) => fig(r, o, g.layout === "pair" ? "(min-width: 760px) 50vw, 100vw" : "(min-width: 760px) 33vw, 100vw", o.caption ? "drawing" : "", !!o.caption)).join("") + "</div>";
-    const ratio = need(g.img).r;
-    const cls = `g-${g.layout}${g.tall || (g.layout !== "small" && ratio < 1.25) ? " tall" : ""}${g.caption ? " drawing" : ""}`;
-    return fig(r, g, g.layout === "small" ? "(min-width: 760px) 58vw, 100vw" : "100vw", cls, !!g.caption);
+    if (g.layout === "pair") return `<div class="g-row g-2">${g.images.map((o) => gfig(o, "f-43", 50)).join("")}</div>`;
+    if (g.layout === "trio") return `<div class="g-row g-3">${g.images.map((o) => gfig(o, "f-11", 33)).join("")}</div>`;
+    if (g.layout === "small") return gfig(g, "f-169", 100);
+    const frame = need(g.img).r >= 1.5 ? "f-169" : "f-32";
+    return gfig(g, frame, 100, g.layout === "full" ? " g-full" : "");
   }).join("\n");
   const body = `<main id="main">
 <article>
@@ -268,7 +298,7 @@ function project(p, i) {
 <h1 class="h1">${esc(p.title)}</h1>
 <p class="lede">${esc(p.summary)}</p>
 </header>
-<div class="p-hero">${zoom(r, { img: p.cover, alt: altFor(p.cover) }, "100vw").replace('loading="lazy"', 'fetchpriority="high"')}</div>
+<div class="p-hero">${zoom(r, { img: p.cover, alt: altFor(p.cover) }, `${Math.min(200, Math.round(100 * Math.max(1, need(p.cover).r / (16 / 9))))}vw`).replace('loading="lazy"', 'fetchpriority="high"')}</div>
 <div class="wrap">
 <div class="p-body">
 <dl class="facts">${facts}</dl>
@@ -333,17 +363,16 @@ const SKETCHBOOK = [
 ];
 function sketchbook() {
   const r = "";
-  const sizesFor = (c) => c.startsWith("c12") ? "100vw" : c.startsWith("c4") ? "(min-width: 760px) 33vw, 100vw" : "(min-width: 760px) 58vw, 100vw";
   const groups = SKETCHBOOK.map((g) => `<section id="${g.id}" class="sk-group" aria-labelledby="${g.id}-h">
-<div class="sk-head"><p class="mono">${esc(g.label)}</p><div><h2 id="${g.id}-h" class="h3">${esc(g.title)}</h2><p>${esc(g.text)}</p></div></div>
-<div class="sk-grid">${g.items.map(([key, alt, cap, c]) => fig(r, { img: key, alt, caption: cap }, sizesFor(c), c, true)).join("")}</div>
-${g.link ? `<p class="more"><a class="link-arrow" href="${g.link[0]}">${g.link[1]} ${ARROW}</a></p>` : ""}
+<div class="sk-head"><p class="mono">${esc(g.label)}</p><h2 id="${g.id}-h" class="h3">${esc(g.title)}</h2><p>${esc(g.text)}</p>${g.link ? `<p class="more"><a class="link-arrow" href="${g.link[0]}">${g.link[1]} ${ARROW}</a></p>` : ""}</div>
+<ul class="sk-tiles" role="list">${g.items.map(([key, alt, cap]) => `<li class="sk-tile"><a class="zoom light" href="${largest(r, key)}" data-caption="${esc(cap)}">${img(r, key, alt, { sizes: "(min-width: 760px) 480px, 50vw" })}<span class="sr-only"> (open full size)</span></a><span class="sk-cap">${esc(cap)}</span></li>`).join("")}</ul>
 </section>`).join("\n");
   const body = `<main id="main">
 <header class="wrap p-head">
 <p class="mono kicker">Sketchbook</p>
 <h1 class="h1">Thinking with the hand</h1>
 <p class="lede">I start most projects on paper. These freehand drawings were made to read existing architecture, test spatial ideas, brief the people producing renders and tell the story of a concept — most of them for projects at Architects Office.</p>
+<p class="hint mono-plain">Hover over a drawing to enlarge it; click to see it full size.</p>
 </header>
 <div class="wrap">
 ${groups}
@@ -364,8 +393,35 @@ function awardsList(r) {
 }
 function pubsList(r) {
   return FACTS.publications.map((p) => `<li><span><b>${esc(p.outlet)}</b> — <a href="${r}projects/${p.slug}.html">${esc(p.title)}</a>` +
-    (p.links.length ? `<br><span class="muted">Editions: ${p.links.map((l) => `<a href="${l.url}" rel="noopener" hreflang="${l.label === "English" ? "en" : l.label === "Portuguese" ? "pt" : "es"}">${l.label}</a>`).join(", ")}</span>` : "") +
+    (p.links.length ? `<br><span class="muted">${p.links.map((l) => `<a href="${l.url}" rel="noopener">${l.label}</a>`).join(" · ")}</span>` : "") +
     `</span><span class="mono">${p.year}</span></li>`).join("");
+}
+/* Interactive map: each city is a button; hovering, focusing or tapping it shows the
+   projects there (pure CSS, works without JavaScript). The same list follows as text. */
+function placesMap(r) {
+  const byCity = (c) => LEDGER.filter((x) => x.city === c).sort((a, b) => b.year - a.year);
+  const item = (x) => `<li><span class="pc-name">${x.slug ? `<a href="${r}projects/${x.slug}.html">${esc(x.name)}</a>` : esc(x.name)}</span>` +
+    `<span class="pc-meta">${esc(x.type)}${x.area ? " · " + fmtArea(x.area) + " m²" : ""} · ${x.year}${x.office ? " · " + esc(x.office) : ""}</span></li>`;
+  const pins = FACTS.mapPoints.map((pt, i) => {
+    const list = byCity(pt.city);
+    const short = pt.city.split(",")[0].toLowerCase();
+    const flipX = pt.x > 55 ? " fx" : "", flipY = pt.y > 58 ? " fy" : "";
+    return `<div class="pin side-${pt.side}${flipX}${flipY}${pt.abroad ? " abroad" : ""}" style="left:${pt.x}%;top:${pt.y}%" data-city="${esc(pt.city)}">` +
+      `<button type="button" class="pin-dot" aria-describedby="pc-${i}"><span class="pin-label">${pt.abroad ? "+ " : ""}${esc(short)}</span><span class="sr-only">: ${list.length} project${list.length > 1 ? "s" : ""}</span></button>` +
+      `<div class="pin-card" role="tooltip" id="pc-${i}"><p class="pc-city">${esc(pt.city)}<span>${list.length} project${list.length > 1 ? "s" : ""}</span></p><ul>${list.map(item).join("")}</ul></div></div>`;
+  }).join("");
+  const cityList = [...FACTS.mapPoints].sort((a, b) => byCity(b.city).length - byCity(a.city).length || a.city.localeCompare(b.city))
+    .map((pt) => `<li data-city="${esc(pt.city)}"><span class="cl-city">${esc(pt.city)}</span><span class="cl-projects">${byCity(pt.city).map((x) => x.slug ? `<a href="${r}projects/${x.slug}.html">${esc(x.name)}</a>` : esc(x.name)).join(", ")}</span></li>`).join("");
+  return `<div class="places">
+<div class="map">
+<div class="map-frame">${img(r, "profile/places-base", "Satellite map of Brazil with the cities where projects were developed", { sizes: "(min-width: 900px) 55vw, 100vw" })}${pins}</div>
+<p class="map-hint mono-plain">Hover or tap a city to see its projects.</p>
+</div>
+<div>
+<p class="lede">From the south of Brazil to Portugal: ${LEDGER.length} projects in ${CITIES.length} cities, across residential, hospitality, corporate, urban and mixed-use work.</p>
+<ul class="city-list" role="list">${cityList}</ul>
+</div>
+</div>`;
 }
 function profile() {
   const r = "";
@@ -378,7 +434,7 @@ function profile() {
 <h1 id="p-h" class="h1">Architect &amp; Urbanist</h1>
 <div class="prose">
 <p class="lede">I’m an architect and urbanist focused on concept design and architectural development. My work starts with the brief, the zoning rules and the site: what can be built, how much, and in what form — and how to turn that into a clear architectural proposal.</p>
-<p>Since 2021 I have worked in the concept team at Architects Office in São Paulo, on ${FACTS.figures[0].value} projects in Brazil and Portugal: feasibility studies, zoning and area analyses for São Paulo and other states, schematic designs, coordination with engineering consultants, and the presentation of each concept. I was Project Leader for Murata 157, a 21,400 m² residential building in Londrina.</p>
+<p>Since 2021 I have worked in the concept team at Architects Office in São Paulo, on projects in Brazil and Portugal: feasibility studies, zoning and area analyses for São Paulo and other states, schematic designs, coordination with engineering consultants, and the presentation of each concept. I was Project Leader for Murata 157, a 21,395 m² residential building in Londrina. Since 2021, at Architects Office and Triptyque, I have worked on ${LEDGER.length} projects in ${CITIES.length} cities: ${STAGE_LINE}.</p>
 <p>Before that I ran my own practice (2018–2021), taking residential and interior projects from first design through permit approval, construction drawings and site management, after two years as a designer at Schelle Architecture + Design. Hand sketching remains central to how I think and communicate.</p>
 <p>I graduated in Architecture and Urbanism from UNISINOS in Rio Grande do Sul, with an academic exchange at the Universidad Nacional de Mar del Plata, Argentina.</p>
 </div>
@@ -399,15 +455,9 @@ function profile() {
 </div>
 </section>
 
-<section class="cv-block" aria-labelledby="pl">
+<section class="cv-block places-block" aria-labelledby="pl">
 <h2 id="pl" class="mono">Projects across places</h2>
-<div class="places">
-${fig(r, { img: "profile/places-map", alt: "Map of Brazil marking the cities where projects were developed, and Marateca, Portugal", caption: "Map from my CV" }, "(min-width: 900px) 55vw, 100vw", "")}
-<div>
-<p class="lede">From the south of Brazil to Portugal: ${FACTS.places.length} locations, across residential, hospitality, urban and mixed-use projects.</p>
-<ul class="places-list">${FACTS.places.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-</div>
-</div>
+${placesMap(r)}
 </section>
 
 <section class="cv-block" aria-labelledby="sk">
@@ -451,6 +501,9 @@ ${entries(FACTS.experience.slice(1), true)}
 <ul class="small-list">${FACTS.education.map((e) => `<li>${esc(e.what)}<span>${esc(e.where)} · ${e.when}</span></li>`).join("")}</ul>
 </div>
 <div>
+<h2>Projects since 2021</h2>
+<p>${LEDGER.length} projects · ${(Math.floor(TOTAL_AREA / 1000) * 1000).toLocaleString("en-US")}+ m² · ${CITIES.length} cities in Brazil and Portugal</p>
+<p class="muted-s">${STAGE_LINE}</p>
 <h2>Awards</h2>
 <ul class="small-list">${FACTS.awards.map((a) => `<li>${esc(a.title)} — ${esc(a.project)}<span>${esc(a.org)}, ${a.year} · ${esc(a.category)}</span></li>`).join("")}<li><span>Team projects at Architects Office</span></li></ul>
 <h2>Publications</h2>

@@ -43,8 +43,10 @@ old `project.html?p=<slug>` links to the new addresses.
 - **Projects** — `assets/data/projects.js`. The comment at the top explains every field and the
   English names used for design stages. Leave a field `null` to hide it. The order of the list
   is the order on the home page. Open questions are marked `// CONFIRM:`.
-- **Profile, résumé, figures, contact** — `assets/data/facts.js`. Each number has its source and
-  counting rule written next to it. Set `email` to show an email address.
+- **Profile, résumé, figures, contact** — `assets/data/facts.js`. The `ledger` lists every project
+  since 2021 (from the project spreadsheet); the home page figures, the typology table and the
+  map on the Profile page are all computed from it. Add a project there and they update.
+  New cities also need a point in `mapPoints` (position in % on the map image).
 - **Sketchbook** — the `SKETCHBOOK` list in `tools/build.mjs`.
 
 You can edit these files directly on github.com (pencil icon → *Commit changes*); the site
@@ -82,7 +84,8 @@ If a custom domain is added later, change `SITE_URL` and the `<base href>` used 
 
 `assets/docs/Filipe-Meltzer-CV.pdf` is the CV exported from InDesign on 10 Oct 2026, corrected by
 `tools/edit_cv_pdf.py` (eight years, no "Passionate…" sentence, email, Iguatemi 306 at 49,811 m²,
-458,000+ m², Balneário Camboriú on the map, clickable links, metadata). The original fonts and
+492,000+ m² and typology areas from the project spreadsheet, Balneário Camboriú on the map,
+clickable links, metadata). The original fonts and
 layout are kept. **Make the same changes in the InDesign source** so the next export already
 contains them; after that, the next PDF can be copied here directly.
 
