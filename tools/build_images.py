@@ -97,10 +97,18 @@ MANIFEST = {
     "sketch/towers": ("C", "k-arvore-pedra-3.png"),  # ÁRVORE PEDRA 3.png
     "sketch/hortensias": ("C", "k-av-hortensias.png"),  # Av. das Hortensias.png
     "sketch/houses-story": ("C", "k-casinhas-historia.png"),  # Casinhas história.png
-    "sketch/cathedral": ("C", "sk-quinta-cathedral.png"),
-    "sketch/lisbon": ("C", "sk-quinta-lisbon.png"),
-    "sketch/details": ("C", "sk-quinta-details.png"),
-    "sketch/arch": ("C", "sk-quinta-arch.png"),
+    # Quinta studies, from portfólio\manuel marateca (one PSD per drawing, flattened and trimmed;
+    # "details" and "houses" are six drawings each on a 3x2 sheet)
+    "sketch/q-manueline": ("C", "mm-manueline.png"),  # CROQUI 07.png
+    "sketch/q-mafra": ("C", "mm-mafra.png"),  # CROQUI 10- Palacio nacional de mafra.png
+    "sketch/q-augusta": ("C", "mm-augusta.png"),  # CROQUI 13- Arco da augusta.psd
+    "sketch/q-queluz": ("C", "mm-queluz.png"),  # CROQUI 12- palacio de queluz.psd
+    "sketch/q-palmela": ("C", "mm-palmela.png"),  # CROQUI 09- castelo de palmela.psd
+    "sketch/q-sintra": ("C", "mm-sintra.png"),  # CROQUI 20- palacio de sintra.psd
+    "sketch/q-saojorge": ("C", "mm-saojorge.png"),  # CROQUI 11- castelo são jorge de lisboa.psd
+    "sketch/q-pavilion": ("C", "mm-pavilion.png"),  # CROQUI 21- pavilhão de lisboa.psd
+    "sketch/q-details": ("C", "mm-details.png"),  # CROQUI 01, 03, 15 chaminés, 16 quina, 18 revestimento, 19 muxarabi
+    "sketch/q-houses": ("C", "mm-houses.png"),  # CROQUI 02, 04, 06, 05, 15 Casa de Mateus, 14 Casa Contemporânea
     "profile/portrait": ("C", "portrait.png"),
     "profile/places-map": ("C", "places-map.png"),
     "profile/places-america": ("C", "america.png"),  # exported by Filipe from the map PSD (América.png)

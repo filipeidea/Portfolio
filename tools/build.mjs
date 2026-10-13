@@ -160,7 +160,7 @@ const person = {
 // ---------- home ----------
 /* Opening: a static composition of three existing project images on the grid — one main
    image and two smaller ones beside it, each linked to its project. No slideshow. */
-const OPENING = [["monolyt", "monolyt/corner"], ["masterplan-urucuca", "urucuca/canopy"], ["quinta", "quinta/pool"]];
+const OPENING = [["monolyt", "monolyt/corner"], ["quinta", "quinta/court"], ["masterplan-urucuca", "urucuca/canopy"]];
 const OPEN_SIZES = ["(min-width: 900px) 64vw, 100vw", "(min-width: 900px) 32vw, 50vw", "(min-width: 900px) 32vw, 50vw"];
 function home() {
   const r = "";
@@ -221,7 +221,7 @@ function home() {
 <section class="section sketch-teaser" aria-labelledby="sk-h">
 <div class="wrap split rev">
 <div class="sketch-strip">
-<a href="sketchbook.html#quinta">${img(r, "sketch/cathedral", "Pen drawing of an ornate Portuguese church facade", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
+<a href="sketchbook.html#quinta">${img(r, "sketch/q-manueline", "Pen drawing of an ornate Manueline church facade", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
 <a href="sketchbook.html#storytelling">${img(r, "sketch/tree", "Ink and watercolour drawing of a tree growing among rocks", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
 <a href="sketchbook.html#housing">${img(r, "sketch/multifamily-house", "Coloured sketch of a dwelling with terraces and planting", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
 </div>
@@ -319,13 +319,19 @@ ${gallery}
 // ---------- sketchbook ----------
 const SKETCHBOOK = [
   { id: "quinta", label: "01 · For the project Quinta, Portugal", title: "Reading Portuguese architecture through time",
-    text: "Before the design of the Quinta, I drew the architecture of Portugal — monasteries, palaces, squares, chimneys, tiles and openings — to understand its proportions and details and reinterpret them in a contemporary estate.",
+    text: "Before the design of the Quinta, I drew the architecture of Portugal — palaces, castles, churches, squares, houses, chimneys, tiles and openings — to understand its proportions and details and reinterpret them in a contemporary estate.",
     link: ["projects/quinta.html", "See the Quinta project"],
     items: [
-      ["sketch/cathedral", "Detailed pen drawing of an ornate Portuguese church facade", "Church facade", "c5"],
-      ["sketch/details", "Grid of twelve small sketches of Portuguese buildings and details: houses, a church, a tiled facade and a wooden balcony", "Chimneys, tiles, openings, balconies", "c7"],
-      ["sketch/lisbon", "Panorama sketches of Portuguese landmarks including a domed palace, a triumphal arch and a bridge", "Panorama studies", "c12"],
-      ["sketch/arch", "Pen sketch of the Portugal Pavilion in Lisbon, its concrete canopy hanging between two porticoes", "Portugal Pavilion, Lisbon", "c8 o3"],
+      ["sketch/q-manueline", "Detailed pen drawing of an ornate Manueline church facade with pinnacles and a carved portal", "Church facade"],
+      ["sketch/q-mafra", "Pen drawing of the Palace of Mafra: the basilica's two bell towers and dome, and the long palace front", "Palácio Nacional de Mafra"],
+      ["sketch/q-queluz", "Coloured drawing of a gateway and facades at the Palace of Queluz", "Palácio de Queluz"],
+      ["sketch/q-sintra", "Pen drawing of the Palace of Sintra with its two conical chimneys", "Palácio Nacional de Sintra"],
+      ["sketch/q-palmela", "Watercolour drawing of Palmela Castle: the keep, walls on the rock and cypresses", "Castelo de Palmela"],
+      ["sketch/q-saojorge", "Pen drawing of the towers and walls of São Jorge Castle in Lisbon", "Castelo de São Jorge, Lisbon"],
+      ["sketch/q-augusta", "Pen drawing of the Rua Augusta Arch between the arcades of the square", "Arco da Rua Augusta, Lisbon"],
+      ["sketch/q-pavilion", "Pen sketch of the Portugal Pavilion in Lisbon, its concrete canopy hanging between two porticoes", "Portugal Pavilion, Lisbon"],
+      ["sketch/q-details", "Six drawings of details: a window with a balcony, a Gothic window, a chimney, a street corner, a tiled facade and a wooden balcony", "Openings, chimneys, tiles, balconies"],
+      ["sketch/q-houses", "Six drawings: a manor house, stacked roofs, two small houses, a church front, Casa de Mateus and a contemporary house", "Houses and churches"],
       ["quinta/axo-sketch", "Hand-drawn axonometric of the Quinta estate with courtyards and pool", "Quinta — axonometric sketch", "c6"],
       ["quinta/elevations", "Hand-drawn elevations of the Quinta buildings in the landscape", "Quinta — elevation sketches", "c6"]] },
   { id: "housing", label: "02 · Multi-family project", title: "Concept sketches for a housing scheme",
