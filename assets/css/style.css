@@ -524,6 +524,8 @@ figcaption { margin-top: 10px; }
 
 /* the small figure on the home page: the way into the unlisted travel notebook */
 .foot-base { align-items: flex-end; }
+.foot-end { display: inline-flex; align-items: flex-end; gap: 10px; }
+.foot-end .secret { margin-bottom: -2px; }
 .secret { position: relative; display: block; padding: 4px 6px; opacity: .9; transition: transform .35s var(--ease), opacity .2s; transform-origin: 50% 100%; }
 .secret img { width: auto; height: 44px; display: block; }
 .secret:hover, .secret:focus-visible { opacity: 1; transform: rotate(-6deg) translateY(-2px); }

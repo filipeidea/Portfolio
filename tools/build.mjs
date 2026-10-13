@@ -141,7 +141,7 @@ ${body}
 <div><p class="mono">Reach</p><ul class="foot-links">${reach}</ul></div>
 <div><p class="mono">Pages</p><ul class="foot-links"><li><a href="${r}index.html#projects">Projects</a></li><li><a href="${r}sketchbook.html">Sketchbook</a></li><li><a href="${r}profile.html">Profile</a></li><li><a href="${r}recognition.html">Recognition</a></li><li><a href="${r}lab.html">Lab</a></li><li><a href="${r}resume.html">Résumé</a></li></ul></div>
 </div>
-<div class="foot-base"><span>© ${new Date().getFullYear()} Filipe Meltzer · ${esc(FACTS.registration)}</span><a class="secret" href="${r}notebook.html" title="Off the record"><img src="${r}assets/img/notebook-icon-64.webp" srcset="${r}assets/img/notebook-icon-64.webp 1x, ${r}assets/img/notebook-icon-128.webp 2x" width="19" height="64" alt="Travel notebook" loading="lazy"></a><span>${esc(FACTS.base)}</span></div>
+<div class="foot-base"><span>© ${new Date().getFullYear()} Filipe Meltzer · ${esc(FACTS.registration)}</span><span class="foot-end"><span>${esc(FACTS.base)}</span><a class="secret" href="${r}notebook.html" title="Off the record"><img src="${r}assets/img/notebook-icon-64.webp" srcset="${r}assets/img/notebook-icon-64.webp 1x, ${r}assets/img/notebook-icon-128.webp 2x" width="19" height="64" alt="Travel notebook" loading="lazy"></a></span></div>
 </div>
 </footer>
 <script src="${r}assets/js/app.js?v=${V.js}" defer></script>
