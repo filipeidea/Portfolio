@@ -222,7 +222,7 @@ function home() {
 <div class="wrap split rev">
 <div class="sketch-strip">
 <a href="sketchbook.html#quinta">${img(r, "sketch/q-manueline", "Pen drawing of an ornate Manueline church facade", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
-<a href="sketchbook.html#storytelling">${img(r, "sketch/tree", "Ink and watercolour drawing of a tree growing among rocks", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
+<a href="sketchbook.html#atmosphere">${img(r, "sketch/valley", "Watercolour aerial view of a green valley with a road, gardens and rocky peaks behind", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
 <a href="sketchbook.html#housing">${img(r, "sketch/multifamily-house", "Coloured sketch of a dwelling with terraces and planting", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
 </div>
 <div>
@@ -347,13 +347,10 @@ const SKETCHBOOK = [
       ["sketch/village", "Watercolour view of a hillside village of terraced buildings below rocky peaks", "The hillside village"],
       ["sketch/terrace", "Watercolour view of a roof terrace with lawn, planting and a pool beside a timber wall", "The roof terrace"],
       ["sketch/plaza", "Watercolour perspective of a palm-lined public plaza with people walking", "The plaza"]] },
-  { id: "storytelling", label: "04 · Storytelling", title: "A concept told in drawings",
-    text: "Drawings used to tell the concept of a project as a sequence: rocks, a tree growing among them, and the building volumes that follow.",
+  { id: "storytelling", label: "04 · Iguatemi 306, São Paulo", title: "A tower among its neighbours",
+    text: "A concept sketch for Iguatemi 306: a green, twisting tower drawn among the existing buildings around the site.",
+    link: ["projects/iguatemi-306.html", "See the Iguatemi 306 project"],
     items: [
-      ["sketch/rocks", "Ink and wash drawing of a pile of rocks", "Rocks"],
-      ["sketch/rocks-few", "Ink and wash drawing of a few rocks set apart", "Fewer rocks"],
-      ["sketch/tree", "Ink and watercolour drawing of a tree growing among rocks", "A tree among the rocks"],
-      ["sketch/towers", "Ink and grey wash drawing of towers, one of them traced in green", "The towers"],
       ["iguatemi/sketch", "Watercolour sketch of a green, twisting tower among existing buildings", "Iguatemi 306 — the green tower"]] },
   { id: "barrinhas", label: "05 · Hotel Barrinhas, Ceará", title: "Arranging a hotel by the sea",
     text: "Early sketches for the arrangement of guest buildings, pools and gardens on the site.",

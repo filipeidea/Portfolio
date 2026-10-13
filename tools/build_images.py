@@ -91,10 +91,6 @@ MANIFEST = {
     "sketch/village": ("C", "k-20240612192042.jpg"),
     "sketch/plaza": ("C", "k-20240612154429.jpg"),
     "sketch/plaza-pencil": ("C", "k-20240612151817.jpg"),
-    "sketch/rocks": ("C", "k-arvore-pedra-12.png"),  # ÁRVORE PEDRA 12.png
-    "sketch/rocks-few": ("C", "k-arvore-pedra-1.png"),  # ÁRVORE PEDRA 1.png
-    "sketch/tree": ("C", "k-arvore-pedra.png"),  # ÁRVORE PEDRA.png
-    "sketch/towers": ("C", "k-arvore-pedra-3.png"),  # ÁRVORE PEDRA 3.png
     "sketch/hortensias": ("C", "k-av-hortensias.png"),  # Av. das Hortensias.png
     "sketch/houses-story": ("C", "k-casinhas-historia.png"),  # Casinhas história.png
     # Quinta studies, from portfólio\manuel marateca (one PSD per drawing, flattened and trimmed;
