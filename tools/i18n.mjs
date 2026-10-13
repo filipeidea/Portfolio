@@ -20,6 +20,9 @@ const DICT_FILE = path.join(ROOT, "tools/pt.json");
 const DICT = fs.existsSync(DICT_FILE) ? JSON.parse(fs.readFileSync(DICT_FILE, "utf8")) : {};
 const SITE_URL = "https://filipeidea.github.io/Portfolio/";
 const todo = new Set();
+// language switch: the flag of the language the link leads to, in black and white (24 × 16)
+const FLAG_US = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 16\" width=\"24\" height=\"16\" aria-hidden=\"true\" focusable=\"false\"><rect x=\".5\" y=\".5\" width=\"23\" height=\"15\" fill=\"#fff\" stroke=\"#111\"/><rect x=\"0\" y=\"0.000\" width=\"24\" height=\"1.231\" fill=\"#111\"/><rect x=\"0\" y=\"2.462\" width=\"24\" height=\"1.231\" fill=\"#111\"/><rect x=\"0\" y=\"4.923\" width=\"24\" height=\"1.231\" fill=\"#111\"/><rect x=\"0\" y=\"7.385\" width=\"24\" height=\"1.231\" fill=\"#111\"/><rect x=\"0\" y=\"9.846\" width=\"24\" height=\"1.231\" fill=\"#111\"/><rect x=\"0\" y=\"12.308\" width=\"24\" height=\"1.231\" fill=\"#111\"/><rect x=\"0\" y=\"14.769\" width=\"24\" height=\"1.231\" fill=\"#111\"/><rect x=\"0\" y=\"0\" width=\"10.080\" height=\"8.615\" fill=\"#111\"/><circle cx=\"1.68\" cy=\"1.08\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"3.55\" cy=\"1.08\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"5.41\" cy=\"1.08\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"7.28\" cy=\"1.08\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"9.15\" cy=\"1.08\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"2.52\" cy=\"3.23\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"4.39\" cy=\"3.23\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"6.25\" cy=\"3.23\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"8.12\" cy=\"3.23\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"1.68\" cy=\"5.38\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"3.55\" cy=\"5.38\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"5.41\" cy=\"5.38\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"7.28\" cy=\"5.38\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"9.15\" cy=\"5.38\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"2.52\" cy=\"7.54\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"4.39\" cy=\"7.54\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"6.25\" cy=\"7.54\" r=\"0.40\" fill=\"#fff\"/><circle cx=\"8.12\" cy=\"7.54\" r=\"0.40\" fill=\"#fff\"/></svg>";
+const FLAG_BR = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 16\" width=\"24\" height=\"16\" aria-hidden=\"true\" focusable=\"false\"><rect width=\"24\" height=\"16\" fill=\"#111\"/><path d=\"M2.04 8L12 1.6320000000000001L21.96 8L12 14.368Z\" fill=\"#fff\"/><circle cx=\"12\" cy=\"8\" r=\"4\" fill=\"#111\"/><clipPath id=\"flag-br-globe\"><circle cx=\"12\" cy=\"8\" r=\"4\"/></clipPath><path clip-path=\"url(#flag-br-globe)\" d=\"M7 6.8Q12 4.4 17 8.8\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.04\"/></svg>";
 
 const decode = (s) => s.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'");
 const encode = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -102,10 +105,10 @@ for (const r of results) {
   const up = "../".repeat(depth);
   if (r.html.includes('hreflang="pt-BR"')) continue; // already done (i18n run twice without a new build)
   const enHtml = r.html.replace("</head>", alt + "</head>")
-    .replace('<span class="lang-switch"></span>', `<a class="lang-switch" href="${up}pt/${r.rel}" hreflang="pt-BR" lang="pt-BR">Português</a>`);
+    .replace('<span class="lang-switch"></span>', `<a class="lang-switch" href="${up}pt/${r.rel}" hreflang="pt-BR" lang="pt-BR" title="Português" aria-label="Português">${FLAG_BR}</a>`);
   fs.writeFileSync(r.f, enHtml);
   const ptHtml = r.out.replace("</head>", alt + "</head>")
-    .replace('<span class="lang-switch"></span>', `<a class="lang-switch" href="../${up}${r.rel}" hreflang="en" lang="en">English</a>`);
+    .replace('<span class="lang-switch"></span>', `<a class="lang-switch" href="../${up}${r.rel}" hreflang="en" lang="en" title="English" aria-label="English">${FLAG_US}</a>`);
   const dest = path.join(OUT, r.rel);
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   fs.writeFileSync(dest, ptHtml);
