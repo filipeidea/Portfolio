@@ -1,13 +1,32 @@
 /*
  * PROJECT DATA — the single place to add or edit projects.
+ * After editing, the site is rebuilt automatically when the change is pushed
+ * to GitHub (or locally with:  node tools/build.mjs).
  *
- * Each project needs: slug (used in the URL), title, and the fields below.
- * Images are referenced by key ("<folder>/<name>") and must exist in
- * assets/img (generate them with tools/build_images.py).
- * Gallery "layout" values: "full" (edge to edge), "wide" (text-column wide),
- * "pair" (two images side by side, give "images": [a, b]), "small".
- * Leave a field out (or set it to null) when the fact is not documented.
+ * Fields
+ *   slug         used in the page address: projects/<slug>.html
+ *   title, location, typology, category (used by the home page filter)
+ *   year, yearNote ("design" or "completed"), area — leave null when not documented
+ *   practice     office or institution; "Architects Office" marks a team project
+ *   stages       the design stages Filipe took part in, using these terms:
+ *                Feasibility study · Schematic design · Design development ·
+ *                Pre-construction documents · Construction documents ·
+ *                Permit drawings · Issued for construction
+ *                (Brazilian equivalents: estudo de viabilidade · estudo preliminar ·
+ *                 anteprojeto · pré-executivo · projeto executivo · projeto legal ·
+ *                 liberado para obra)
+ *   role         one or two sentences, first person, on Filipe's own contribution
+ *   summary      one sentence shown under the title and in link previews
+ *   description  paragraphs about the project itself — only verifiable content
+ *   cover        image key used on the home page and at the top of the project page
+ *   gallery      images in order. layout: "full" | "wide" | "small" (one image)
+ *                or "pair" | "trio" (several, in "images"). Add "caption" for drawings.
+ *   team         credits exactly as listed in the source portfolio
+ *
+ * Image keys ("<folder>/<name>") must exist in assets/img — see tools/build_images.py.
  * The order of this list is the order on the home page.
+ *
+ * Open questions are recorded as  // CONFIRM:  comments next to the field.
  */
 window.PROJECTS = [
   {
@@ -20,7 +39,8 @@ window.PROJECTS = [
     yearNote: "design",
     area: "11,098 m²",
     practice: "Architects Office",
-    stages: ["Feasibility study", "Preliminary design"],
+    stages: ["Feasibility study", "Schematic design"],
+    role: "Member of the concept team during the feasibility study and schematic design. The two awards were given to the office’s project team.",
     awards: [
       "Gold Winner — Urban Design & Architecture Design Awards (APR) 2024, Housing Multi-Family (Concept)",
       "Winner — World Design Awards 2023, Housing Concept"
@@ -28,8 +48,7 @@ window.PROJECTS = [
     summary:
       "A multi-family residential building in Balneário Camboriú with glazed living floors, generous terraces and a stone-lined base.",
     description: [
-      "Glazed floors with deep terraces sit above a solid base, where a carved, stone-lined void with planting creates an outdoor room at the foot of the building.",
-      "Developed at Architects Office through the feasibility and preliminary design stages. The project received two international awards as a team project."
+      "Glazed floors with deep terraces sit above a solid base, where a carved, stone-lined void with planting creates an outdoor room at the foot of the building."
     ],
     cover: "monolyt/front",
     gallery: [
@@ -45,7 +64,7 @@ window.PROJECTS = [
     featured: true
   },
   {
-    slug: "masterplan-urucuca",
+    slug: "masterplan-urucuca", // CONFIRM: area not shown — the portfolio sheet repeats the Quinta area (1,896.20 m²); CV masterplan total 27,771 m² is site area.
     title: "Masterplan Uruçuca",
     location: "Serra Grande, Uruçuca, BA, Brazil",
     typology: "Masterplan · hospitality · multi-family",
@@ -54,15 +73,15 @@ window.PROJECTS = [
     yearNote: "design",
     area: null,
     practice: "Architects Office",
-    stages: ["Feasibility study", "Preliminary design", "Schematic design", "Planning approval"],
+    stages: ["Feasibility study", "Schematic design", "Design development", "Permit drawings"],
+    role: "Member of the project team from the feasibility study through schematic design, design development and the permit drawings. The award was given to the office’s project team.",
     awards: [
       "Third Award — Rethinking The Future Awards 2024, Urban Design (Concept)"
     ],
     summary:
       "A masterplan in Serra Grande, on the coast of southern Bahia, with timber houses and hospitality buildings set within the forest and beside the water.",
     description: [
-      "Small buildings are distributed through the trees, and a large radial timber canopy marks a communal space by the water.",
-      "Developed at Architects Office from feasibility through schematic design and planning approval drawings. The project received the Rethinking The Future Award as a team project."
+      "Small buildings are distributed through the trees, and a large radial timber canopy marks a communal space by the water."
     ],
     cover: "urucuca/lagoon",
     gallery: [
@@ -79,6 +98,40 @@ window.PROJECTS = [
     featured: true
   },
   {
+    slug: "iguatemi-306", // CONFIRM: CV gives 41,400 m² corporate; the 2025 portfolio sheet gives 49,811.18 m² and also ticks "residential building". CV used.
+    title: "Iguatemi 306",
+    location: "São Paulo, SP, Brazil",
+    typology: "Corporate tower",
+    category: "Corporate",
+    year: "2024",
+    yearNote: "design",
+    area: "41,400 m²",
+    practice: "Architects Office",
+    stages: ["Feasibility study"],
+    role: "Member of the concept team during the feasibility study.",
+    awards: [],
+    summary:
+      "A corporate tower in São Paulo whose stacked, shifting volumes are wrapped in a deep planted grid.",
+    description: [
+      "The tower is composed of offset blocks that open terraces at different heights, letting vegetation climb the facade. Early concept work moved between hand sketches, a physical block model and digital massing studies."
+    ],
+    cover: "iguatemi/tower",
+    gallery: [
+      { layout: "wide", img: "iguatemi/tower", alt: "Glazed tower with offset volumes and planted terraces against a stormy sky", tall: true },
+      { layout: "pair", images: [
+        { img: "iguatemi/street", alt: "The tower seen from the street beside a lower building with a planted facade" },
+        { img: "iguatemi/facade", alt: "Close view of the facade grid with plants spilling from every bay" }
+      ] },
+      { layout: "trio", images: [
+        { img: "iguatemi/sketch", alt: "Watercolour sketch of a green twisting tower among existing buildings", caption: "Concept sketch" },
+        { img: "iguatemi/model", alt: "Physical model of stacked offset blocks", caption: "Block model" },
+        { img: "iguatemi/axo", alt: "White massing model of the tower in its urban context", caption: "Massing study" }
+      ] }
+    ],
+    team: "Greg Bousquet, Sávio Jobim, Larissa Oliveira, Rafael Igayara, Fiama Costa, Filipe Meltzer, Caio Caccaos, Stephany Smynniuk, Thiago Buccieri Santana, Pedro Teixeira",
+    featured: true
+  },
+  {
     slug: "quinta",
     title: "Quinta",
     location: "Marateca, Portugal",
@@ -88,13 +141,13 @@ window.PROJECTS = [
     yearNote: "design",
     area: "1,896 m²",
     practice: "Architects Office",
-    stages: ["Feasibility study", "Preliminary design"],
+    stages: ["Feasibility study", "Schematic design"],
+    role: "Member of the concept team during the feasibility study and schematic design. I drew the freehand studies of Portuguese architecture made for the project, shown in the Sketchbook.",
     awards: [],
     summary:
       "A country estate in Marateca that reinterprets Portuguese rural architecture: whitewashed volumes, pitched roofs and stone bases arranged around courtyards.",
     description: [
-      "The design grew out of a series of hand sketches studying Portuguese architecture across the centuries — palaces, monasteries, chimneys, tiles and openings — which informed the design of the new buildings.",
-      "Developed at Architects Office through the feasibility and preliminary design stages. The sketch studies for the project are shown in the Sketchbook."
+      "The design grew out of a series of hand sketches studying Portuguese architecture across the centuries — palaces, monasteries, chimneys, tiles and openings — which informed the design of the new buildings."
     ],
     cover: "quinta/approach",
     gallery: [
@@ -114,41 +167,7 @@ window.PROJECTS = [
     featured: true
   },
   {
-    slug: "iguatemi-306",
-    title: "Iguatemi 306",
-    location: "São Paulo, SP, Brazil",
-    typology: "Corporate tower",
-    category: "Corporate",
-    year: "2024",
-    yearNote: "design",
-    area: "41,400 m²",
-    practice: "Architects Office",
-    stages: ["Feasibility study"],
-    awards: [],
-    summary:
-      "A corporate tower in São Paulo whose stacked, shifting volumes are wrapped in a deep planted grid.",
-    description: [
-      "The tower is composed of offset blocks that open terraces at different heights, letting vegetation climb the facade. Early concept work moved between hand sketches, a physical block model and digital massing studies.",
-      "Developed at Architects Office at feasibility stage."
-    ],
-    cover: "iguatemi/tower",
-    gallery: [
-      { layout: "wide", img: "iguatemi/tower", alt: "Glazed tower with offset volumes and planted terraces against a stormy sky", tall: true },
-      { layout: "pair", images: [
-        { img: "iguatemi/street", alt: "The tower seen from the street beside a lower building with a planted facade" },
-        { img: "iguatemi/facade", alt: "Close view of the facade grid with plants spilling from every bay" }
-      ] },
-      { layout: "trio", images: [
-        { img: "iguatemi/sketch", alt: "Watercolour sketch of a green twisting tower among existing buildings", caption: "Concept sketch" },
-        { img: "iguatemi/model", alt: "Physical model of stacked offset blocks", caption: "Block model" },
-        { img: "iguatemi/axo", alt: "White massing model of the tower in its urban context", caption: "Massing study" }
-      ] }
-    ],
-    team: "Greg Bousquet, Sávio Jobim, Larissa Oliveira, Rafael Igayara, Fiama Costa, Filipe Meltzer, Caio Caccaos, Stephany Smynniuk, Thiago Buccieri Santana, Pedro Teixeira",
-    featured: true
-  },
-  {
-    slug: "casa-bvv",
+    slug: "casa-bvv", // CONFIRM: 2021 project — Triptyque or Architects Office? The portfolio sheet says Architects Office.
     title: "Casa BVV",
     location: "Boa Vista Village, Porto Feliz, SP, Brazil",
     typology: "Single-family residential",
@@ -157,13 +176,13 @@ window.PROJECTS = [
     yearNote: "design",
     area: "985 m²",
     practice: "Architects Office",
-    stages: ["Preliminary design", "Schematic design", "Design development", "Construction documents", "Released for construction"],
+    stages: ["Schematic design", "Design development", "Pre-construction documents", "Construction documents", "Issued for construction"],
+    role: "Coordinated the architecture with the engineering consultants’ projects in every stage up to issue for construction, except the initial concept.",
     awards: [],
     summary:
       "A low, horizontal country house of rammed-earth-toned walls and timber pavilions arranged around gardens and a long pool.",
     description: [
-      "Long earth-toned walls face the street, while the living spaces open onto gardens and the pool through large glazed timber frames.",
-      "At Architects Office, Filipe coordinated the architecture with the consultant engineering projects through every stage up to the release for construction, except the initial concept."
+      "Long earth-toned walls face the street, while the living spaces open onto gardens and the pool through large glazed timber frames."
     ],
     cover: "bvv/garden",
     gallery: [
@@ -189,7 +208,8 @@ window.PROJECTS = [
     yearNote: "completed",
     area: "574 m²",
     practice: "Architects Office",
-    stages: ["Construction documents", "Released for construction"],
+    stages: ["Construction documents", "Issued for construction"],
+    role: "Joined the project in its final phase to coordinate the engineering consultants’ projects with the architecture, through construction documents and issue for construction.",
     awards: [],
     publications: [
       { label: "ArchDaily (English)", url: "https://www.archdaily.com/1014050/par-house-architects-office" },
@@ -200,8 +220,7 @@ window.PROJECTS = [
     summary:
       "A completed country house in a rural setting near São Paulo: pitched timber roofs over white-walled volumes, opening onto a pool deck.",
     description: [
-      "Exposed timber trusses define the large living spaces under the pitched roofs, with full-height glazing towards the landscape.",
-      "Filipe joined the project in its final phase, coordinating the consultant engineering projects with the architecture during construction documents and release for construction. The house was published by ArchDaily in 2024."
+      "Exposed timber trusses define the large living spaces under the pitched roofs, with full-height glazing towards the landscape."
     ],
     credit: "Photography: Felco (as credited on ArchDaily)",
     cover: "casa-par/pool",
@@ -216,98 +235,6 @@ window.PROJECTS = [
     featured: true
   },
   {
-    slug: "gaivota",
-    title: "Gaivota",
-    location: "São Paulo, SP, Brazil",
-    typology: "Residential tower",
-    category: "Residential",
-    year: "2024",
-    yearNote: "design",
-    area: "20,300 m²",
-    practice: "Architects Office",
-    stages: ["Feasibility study", "Preliminary design"],
-    awards: [],
-    summary:
-      "A slender residential tower in São Paulo with a warm, vertical facade rhythm and a planted, double-height entrance.",
-    description: [
-      "The study tested the tower's massing within its dense urban block before developing the facade and the ground-floor entrance.",
-      "Developed at Architects Office through the feasibility and preliminary design stages."
-    ],
-    cover: "gaivota/tower",
-    gallery: [
-      { layout: "wide", img: "gaivota/tower", alt: "Tall slender residential tower with a warm vertical facade among city buildings" },
-      { layout: "pair", images: [
-        { img: "gaivota/entrance", alt: "Double-height entrance with planting and a cyclist passing on the pavement" },
-        { img: "gaivota/axo", alt: "Axonometric of the tower within its city block", caption: "Urban massing study" }
-      ] }
-    ],
-    team: "Greg Bousquet, Sávio Jobim, Larissa Oliveira, Rafael Igayara, Maria Gabriela Stabile, Filipe Meltzer, Livia Frugoli, Thiago Buccieri Santana",
-    featured: false
-  },
-  {
-    slug: "gramado",
-    title: "Gramado",
-    location: "Gramado, RS, Brazil",
-    typology: "Residential building",
-    category: "Residential",
-    year: "2023",
-    yearNote: "design",
-    area: "4,923 m²",
-    practice: "Architects Office",
-    stages: ["Feasibility study", "Preliminary design"],
-    awards: [],
-    summary:
-      "A residential building in Gramado, in the Serra Gaúcha, composed of dark, steep-roofed volumes among the araucaria trees.",
-    description: [
-      "The building is divided into several gabled volumes clad in dark materials rather than a single block.",
-      "Developed at Architects Office through the feasibility and preliminary design stages."
-    ],
-    cover: "gramado/corner",
-    gallery: [
-      { layout: "wide", img: "gramado/corner", alt: "Dark gabled residential volumes among araucaria pines at dusk" },
-      { layout: "pair", images: [
-        { img: "gramado/street", alt: "The building from the street on a rainy day, with a cyclist" },
-        { img: "gramado/forest", alt: "The gabled facades framed by trees and lit windows" }
-      ] }
-    ],
-    team: "Sávio Jobim, Larissa Oliveira, Maria Gabriella Stabile, Fiama Costa, Filipe Meltzer, Herbert Anthony, Ícaro Epifânio, Thiago Buccieri, Marcelo Checchia",
-    featured: false
-  },
-  {
-    slug: "hotel-barrinhas",
-    title: "Hotel Barrinhas",
-    location: "Preá, CE, Brazil",
-    typology: "Hospitality",
-    category: "Urban & Hospitality",
-    year: "2023",
-    yearNote: "design",
-    area: "1,238 m²",
-    practice: "Architects Office",
-    stages: ["Feasibility study", "Preliminary design"],
-    awards: [],
-    summary:
-      "A beach hotel on the coast of Ceará: low pitched-roof pavilions among coconut palms, facing the sea.",
-    description: [
-      "Hand sketches explored the arrangement of guest buildings, pools and gardens across the site.",
-      "Developed at Architects Office through the feasibility and preliminary design stages."
-    ],
-    cover: "barrinhas/palms",
-    gallery: [
-      { layout: "wide", img: "barrinhas/beach", alt: "Aerial view of turquoise sea, beach and the hotel among coconut palms" },
-      { layout: "wide", img: "barrinhas/palms", alt: "Low pavilions with pitched roofs among palms under a blue sky" },
-      { layout: "pair", images: [
-        { img: "barrinhas/court", alt: "Pitched-roof pavilions around a garden courtyard" },
-        { img: "barrinhas/pool", alt: "Pool in front of a two-storey guest building with palms" }
-      ] },
-      { layout: "pair", images: [
-        { img: "barrinhas/sketch-1", alt: "Coloured axonometric sketch of the hotel pavilions, pools and dunes", caption: "Concept sketch" },
-        { img: "barrinhas/sketch-2", alt: "Line sketches of guest buildings around a pool", caption: "Concept sketch" }
-      ] }
-    ],
-    team: "Sávio Jobim, Larissa Oliveira, Maria Gabriella Stabile, Filipe Meltzer, Luisa Bolsas, Thiago Buccieri",
-    featured: false
-  },
-  {
     slug: "porto-cultural-tramandai",
     title: "Porto Cultural Tramandaí",
     location: "Tramandaí, RS, Brazil",
@@ -316,8 +243,9 @@ window.PROJECTS = [
     year: null,
     yearNote: null,
     area: null,
-    practice: "UNISINOS — final thesis project (individual work)",
+    practice: "UNISINOS — undergraduate final thesis",
     stages: null,
+    role: "Individual work: my undergraduate final thesis project at UNISINOS, from site analysis to construction details.",
     awards: [],
     summary:
       "A cultural port on the shore of a lagoon in Tramandaí: a long linear structure of glued-laminated eucalyptus arches with a viewing park on its roof.",
@@ -344,16 +272,97 @@ window.PROJECTS = [
     ],
     team: null,
     featured: true
+  },
+  {
+    slug: "gramado",
+    title: "Gramado",
+    location: "Gramado, RS, Brazil",
+    typology: "Residential building",
+    category: "Residential",
+    year: "2023",
+    yearNote: "design",
+    area: "4,923 m²",
+    practice: "Architects Office",
+    stages: ["Feasibility study", "Schematic design"],
+    role: "Member of the concept team during the feasibility study and schematic design.",
+    awards: [],
+    summary:
+      "A residential building in Gramado, in the Serra Gaúcha, composed of dark, steep-roofed volumes among the araucaria trees.",
+    description: [
+      "The building is divided into several gabled volumes clad in dark materials rather than a single block."
+    ],
+    cover: "gramado/corner",
+    gallery: [
+      { layout: "wide", img: "gramado/corner", alt: "Dark gabled residential volumes among araucaria pines at dusk" },
+      { layout: "pair", images: [
+        { img: "gramado/street", alt: "The building from the street on a rainy day, with a cyclist" },
+        { img: "gramado/forest", alt: "The gabled facades framed by trees and lit windows" }
+      ] }
+    ],
+    team: "Sávio Jobim, Larissa Oliveira, Maria Gabriella Stabile, Fiama Costa, Filipe Meltzer, Herbert Anthony, Ícaro Epifânio, Thiago Buccieri, Marcelo Checchia",
+    featured: false
+  },
+  {
+    slug: "gaivota",
+    title: "Gaivota",
+    location: "São Paulo, SP, Brazil",
+    typology: "Residential tower",
+    category: "Residential",
+    year: "2024",
+    yearNote: "design",
+    area: "20,300 m²",
+    practice: "Architects Office",
+    stages: ["Feasibility study", "Schematic design"],
+    role: "Member of the concept team during the feasibility study and schematic design.",
+    awards: [],
+    summary:
+      "A slender residential tower in São Paulo with a warm, vertical facade rhythm and a planted, double-height entrance.",
+    description: [
+      "The study tested the tower's massing within its dense urban block before developing the facade and the ground-floor entrance."
+    ],
+    cover: "gaivota/tower",
+    gallery: [
+      { layout: "wide", img: "gaivota/tower", alt: "Tall slender residential tower with a warm vertical facade among city buildings" },
+      { layout: "pair", images: [
+        { img: "gaivota/entrance", alt: "Double-height entrance with planting and a cyclist passing on the pavement" },
+        { img: "gaivota/axo", alt: "Axonometric of the tower within its city block", caption: "Urban massing study" }
+      ] }
+    ],
+    team: "Greg Bousquet, Sávio Jobim, Larissa Oliveira, Rafael Igayara, Maria Gabriela Stabile, Filipe Meltzer, Livia Frugoli, Thiago Buccieri Santana",
+    featured: false
+  },
+  {
+    slug: "hotel-barrinhas",
+    title: "Hotel Barrinhas",
+    location: "Preá, CE, Brazil",
+    typology: "Hospitality",
+    category: "Urban & Hospitality",
+    year: "2023",
+    yearNote: "design",
+    area: "1,238 m²",
+    practice: "Architects Office",
+    stages: ["Feasibility study", "Schematic design"],
+    role: "Member of the concept team during the feasibility study and schematic design.",
+    awards: [],
+    summary:
+      "A beach hotel on the coast of Ceará: low pitched-roof pavilions among coconut palms, facing the sea.",
+    description: [
+      "Hand sketches explored the arrangement of guest buildings, pools and gardens across the site."
+    ],
+    cover: "barrinhas/palms",
+    gallery: [
+      { layout: "wide", img: "barrinhas/beach", alt: "Aerial view of turquoise sea, beach and the hotel among coconut palms" },
+      { layout: "wide", img: "barrinhas/palms", alt: "Low pavilions with pitched roofs among palms under a blue sky" },
+      { layout: "pair", images: [
+        { img: "barrinhas/court", alt: "Pitched-roof pavilions around a garden courtyard" },
+        { img: "barrinhas/pool", alt: "Pool in front of a two-storey guest building with palms" }
+      ] },
+      { layout: "pair", images: [
+        { img: "barrinhas/sketch-1", alt: "Coloured axonometric sketch of the hotel pavilions, pools and dunes", caption: "Concept sketch" },
+        { img: "barrinhas/sketch-2", alt: "Line sketches of guest buildings around a pool", caption: "Concept sketch" }
+      ] }
+    ],
+    team: "Sávio Jobim, Larissa Oliveira, Maria Gabriella Stabile, Filipe Meltzer, Luisa Bolsas, Thiago Buccieri",
+    featured: false
   }
 ];
-
-/* Site-wide facts and contact details. Leave a value as null to hide it. */
-window.SITE = {
-  name: "Filipe Meltzer",
-  title: "Architect & Urbanist",
-  base: "São Paulo, Brazil",
-  registration: "CAU/BR 145917-1",
-  email: null, // e.g. "name@example.com" — not in the source documents, add it to show it
-  linkedin: "https://www.linkedin.com/in/filipemeltzer",
-  cv: "assets/docs/Filipe-Meltzer-CV.pdf"
-};
