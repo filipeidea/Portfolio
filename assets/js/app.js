@@ -30,44 +30,6 @@
     window.addEventListener("resize", function () { if (window.innerWidth > 820) setMenu(false); });
   }
 
-  /* ---------- home slideshow ---------- */
-  var slides = $$(".hero-slide");
-  if (slides.length > 1) {
-    var cur = 0, timer = null, controls = $(".hero-controls"), cap = $(".hero-caption"), count = $(".hero-count"), play = $(".hero-play");
-    var PAUSE = '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><rect x="2" y="1" width="2.5" height="10"/><rect x="7.5" y="1" width="2.5" height="10"/></svg>';
-    var PLAY = '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg>';
-    controls.hidden = false;
-    var load = function (s) {
-      var im = $("img", s);
-      if (im && im.getAttribute("data-srcset")) {
-        im.srcset = im.getAttribute("data-srcset"); im.src = im.getAttribute("data-src");
-        im.removeAttribute("data-srcset"); im.removeAttribute("data-src");
-      }
-    };
-    var go = function (i) {
-      slides[cur].classList.remove("is-active"); slides[cur].setAttribute("aria-hidden", "true");
-      cur = (i + slides.length) % slides.length;
-      var s = slides[cur]; load(s); load(slides[(cur + 1) % slides.length]);
-      s.classList.add("is-active"); s.removeAttribute("aria-hidden");
-      cap.innerHTML = '<a href="' + s.getAttribute("data-href") + '"></a> <span class="mono"></span>';
-      cap.firstChild.textContent = s.getAttribute("data-title");
-      cap.lastChild.textContent = s.getAttribute("data-location");
-      count.textContent = pad(cur + 1) + " / " + pad(slides.length);
-    };
-    var start = function () { stop(); timer = setInterval(function () { go(cur + 1); }, 6500); play.innerHTML = PAUSE; play.setAttribute("aria-label", "Pause slideshow"); };
-    var stop = function () { if (timer) clearInterval(timer); timer = null; play.innerHTML = PLAY; play.setAttribute("aria-label", "Play slideshow"); };
-    $(".hero-prev").addEventListener("click", function () { go(cur - 1); if (timer) start(); });
-    $(".hero-next").addEventListener("click", function () { go(cur + 1); if (timer) start(); });
-    play.addEventListener("click", function () { timer ? stop() : start(); });
-    // preload the second slide once the page has loaded, then autoplay unless reduced motion is requested
-    window.addEventListener("load", function () { load(slides[1]); });
-    if (reduceMotion) stop(); else start();
-    document.addEventListener("visibilitychange", function () {
-      if (document.hidden && timer) { stop(); play.dataset.resume = "1"; }
-      else if (!document.hidden && play.dataset.resume) { delete play.dataset.resume; start(); }
-    });
-  }
-
   /* ---------- project filter ---------- */
   var filters = $(".filters");
   if (filters) {

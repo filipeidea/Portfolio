@@ -118,7 +118,7 @@ function layout({ r = "", file, title, description, page, body, og = "home", jso
 <link rel="icon" href="${r}assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&amp;family=Newsreader:opsz,wght@6..72,400&amp;display=swap">
 <link rel="stylesheet" href="${r}assets/css/style.css?v=${V.css}">
 ${extraHead}${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script>\n` : ""}</head>
 <body data-page="${page}">
@@ -158,19 +158,18 @@ const person = {
 };
 
 // ---------- home ----------
-/* The slideshow fills 76% of the screen height and crops to fill the width, so on tall
-   (portrait) screens the image must be wider than the screen to stay sharp. */
-const HERO_SIZES = "(max-aspect-ratio: 3/2) 125vh, 100vw";
+/* Opening: a static composition of three existing project images on the grid — one main
+   image and two smaller ones beside it, each linked to its project. No slideshow. */
+const OPENING = [["monolyt", "monolyt/corner"], ["masterplan-urucuca", "urucuca/canopy"], ["quinta", "quinta/pool"]];
+const OPEN_SIZES = ["(min-width: 900px) 64vw, 100vw", "(min-width: 900px) 32vw, 50vw", "(min-width: 900px) 32vw, 50vw"];
 function home() {
   const r = "";
-  const heroes = [["masterplan-urucuca", "urucuca/canopy"], ["monolyt", "monolyt/corner"], ["quinta", "quinta/pool"], ["casa-sapucai", "bvv/pavilion"]];
   const altFor = (p, key) => { for (const g of p.gallery) for (const x of g.images || [g]) if (x.img === key) return x.alt; return p.title; };
-  const slides = heroes.map(([slug, key], i) => {
+  const opening = OPENING.map(([slug, key], i) => {
     const p = PROJECTS.find((x) => x.slug === slug);
-    return `<figure class="hero-slide${i === 0 ? " is-active" : ""}" data-title="${esc(p.title)}" data-location="${esc(p.location)}" data-href="projects/${slug}.html"${i ? ' aria-hidden="true"' : ""}>` +
-      img(r, key, altFor(p, key), { eager: i === 0, lazyData: i > 0, sizes: HERO_SIZES }) + "</figure>";
+    return `<figure class="op op-${i}"><a href="projects/${slug}.html"><span class="op-ph">${img(r, key, altFor(p, key), { eager: i === 0, sizes: OPEN_SIZES[i] })}</span>` +
+      `<figcaption><span class="op-title">${esc(p.title)}</span> <span class="op-loc">${esc(p.location)}</span></figcaption></a></figure>`;
   }).join("");
-  const first = PROJECTS.find((x) => x.slug === heroes[0][0]);
   const cats = ["All", ...new Set(PROJECTS.map((p) => p.category))];
   /* Every card has the same 3:2 frame so the grid lines up exactly. A wide image cropped
      into the frame needs width × (image ratio ÷ 1.5) pixels to stay sharp. */
@@ -191,17 +190,20 @@ function home() {
 <p class="lede">Architect and urbanist in São Paulo, turning briefs, zoning rules and site conditions into feasibility studies and schematic designs.</p>
 <p class="intro-links"><a class="link-arrow" href="#projects">Selected projects ${ARROW}</a> <a class="link-arrow" href="profile.html">Profile ${ARROW}</a> <a class="link-arrow" href="#contact">Contact ${ARROW}</a></p>
 </section>
-<section class="hero" aria-label="Featured projects">
-<div class="hero-frame">${slides}</div>
-<div class="wrap hero-bar">
-<p class="hero-caption" aria-live="polite"><a href="projects/${first.slug}.html">${esc(first.title)}</a> <span class="mono">${esc(first.location)}</span></p>
-<div class="hero-controls" hidden>
-<span class="hero-count mono">01 / ${pad(heroes.length)}</span>
-<button type="button" class="hero-prev" aria-label="Previous image">${ARROW_L}</button>
-<button type="button" class="hero-next" aria-label="Next image">${ARROW}</button>
-<button type="button" class="hero-play" aria-label="Pause slideshow"></button>
+<section class="wrap opening" aria-label="Featured projects">
+<div class="op-grid">${opening}</div>
+</section>
+<section id="projects" class="wrap section" aria-labelledby="proj-h">
+<div class="section-head">
+<p class="mono">Selected projects</p>
+<h2 id="proj-h" class="h2">From a single house to a masterplan in the forest — ${PROJECTS.length} projects across scales and programmes.</h2>
 </div>
-</div>
+<div class="filters" role="group" aria-label="Filter projects by category" hidden>${cats.map((c) => {
+    const n = c === "All" ? PROJECTS.length : PROJECTS.filter((p) => p.category === c).length;
+    return `<button type="button" aria-pressed="${c === "All"}" data-cat="${esc(c)}">${esc(c)} <span class="count">${n}</span></button>`;
+  }).join("")}</div>
+<p class="sr-only filter-status" aria-live="polite"></p>
+<ul class="index" role="list">${cards}</ul>
 </section>
 <section class="wrap figures-wrap" aria-labelledby="fig-h">
 <h2 id="fig-h" class="mono">In numbers</h2>
@@ -215,18 +217,6 @@ function home() {
 <ul class="typ-grid" role="list">${TYPOLOGY.map((t, i) => `<li class="typ-item"><button type="button" class="typ-row" aria-expanded="false" aria-controls="typ-${i}"><span class="typ-num" aria-hidden="true">${pad(t.count)}</span><span class="typ-txt"><span class="typ-label">${esc(t.label)}</span><span class="typ-area mono-plain">${t.count} project${t.count > 1 ? "s" : ""} · ${fmtArea(t.area)}${t.partial ? "*" : ""} m²</span></span><span class="typ-chev" aria-hidden="true"></span></button>` +
   `<div class="typ-panel" id="typ-${i}"><ul>${t.list.map((x) => `<li><span class="tp-name">${x.slug ? `<a href="projects/${x.slug}.html">${esc(x.name)}</a>` : esc(x.name)}</span><span class="tp-meta">${esc(x.city)}${x.area ? " · " + fmtArea(x.area) + " m²" : ""} · ${x.year}</span></li>`).join("")}</ul></div></li>`).join("")}</ul>
 <p class="typ-foot">* Some projects have no area on record and are not included in that total. Masterplan Uruçuca counts as both hotel and masterplan; its ${fmtArea(27771)} m² site area is counted once, under masterplan. Total ${fmtArea(TOTAL_AREA)} m² across ${LEDGER.length} projects.</p>
-</section>
-<section id="projects" class="wrap section" aria-labelledby="proj-h">
-<div class="section-head">
-<p class="mono">Selected projects</p>
-<h2 id="proj-h" class="h2">From a single house to a masterplan in the forest — ${PROJECTS.length} projects across scales and programmes.</h2>
-</div>
-<div class="filters" role="group" aria-label="Filter projects by category" hidden>${cats.map((c) => {
-    const n = c === "All" ? PROJECTS.length : PROJECTS.filter((p) => p.category === c).length;
-    return `<button type="button" aria-pressed="${c === "All"}" data-cat="${esc(c)}">${esc(c)} <span class="count">${n}</span></button>`;
-  }).join("")}</div>
-<p class="sr-only filter-status" aria-live="polite"></p>
-<ul class="index" role="list">${cards}</ul>
 </section>
 <section class="section sketch-teaser" aria-labelledby="sk-h">
 <div class="wrap split rev">
@@ -257,7 +247,7 @@ function home() {
 </main>`;
   return layout({ file: "index.html", page: "home", title: "Filipe Meltzer — Architect & Urbanist, São Paulo",
     description: "Portfolio of Filipe Meltzer, architect and urbanist in São Paulo: concept design and feasibility studies for housing, hospitality, mixed-use, corporate and urban projects in Brazil and Portugal.",
-    body, jsonld: person, extraHead: `<link rel="preload" as="image" href="${src(r, heroes[0][1], need(heroes[0][1]).w.at(-2))}" imagesrcset="${need(heroes[0][1]).w.map((w) => `${src(r, heroes[0][1], w)} ${w}w`).join(", ")}" imagesizes="${HERO_SIZES}" fetchpriority="high">\n` });
+    body, jsonld: person, extraHead: `<link rel="preload" as="image" href="${src(r, OPENING[0][1], need(OPENING[0][1]).w.at(-2))}" imagesrcset="${need(OPENING[0][1]).w.map((w) => `${src(r, OPENING[0][1], w)} ${w}w`).join(", ")}" imagesizes="${OPEN_SIZES[0]}" fetchpriority="high">\n` });
 }
 
 // ---------- project pages ----------

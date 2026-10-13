@@ -10,8 +10,7 @@ small Node script and published with GitHub Pages.
 
 All pages are generated as complete HTML by `tools/build.mjs`, so every text, image and
 link is readable without JavaScript (search engines, LinkedIn link previews, screen readers,
-slow connections). `assets/js/app.js` only adds interaction: the mobile menu, the home
-slideshow, the project filter, the image viewer and tap support for the map and typology lists. If it fails, the site still works.
+slow connections). `assets/js/app.js` only adds interaction: the mobile menu, the project filter, the image viewer and tap support for the map and typology lists. If it fails, the site still works.
 
 Every push to `main` runs `.github/workflows/pages.yml`, which builds the site and
 publishes it. Nothing has to be built by hand to publish.
@@ -59,6 +58,15 @@ old `project.html?p=<slug>` links to the new addresses.
 
 You can edit these files directly on github.com (pencil icon → *Commit changes*); the site
 rebuilds and updates in about a minute.
+
+## Visual rules
+
+Pure white background on every page; near-black text; the CV blue as the only supporting
+colour, used sparingly (big numbers, links on hover, active states); navy only in the footer.
+Two typefaces: Archivo (sans, main) and Newsreader (serif, upright, labels and data), no italics.
+Moderate type sizes. The home page opens with a static composition of three project images
+(`OPENING` in `tools/build.mjs`), never a slideshow. Colours and fonts are CSS variables at the
+top of `assets/css/style.css`.
 
 ## Preview locally
 
