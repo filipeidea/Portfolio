@@ -238,7 +238,9 @@
           if (!pair) { if (v === 0) v = 64880; tA[i] = v; count[v + 1]++; m++; continue; } // paper shows its faint tints last
           if (v) { tA[i] = v; count[v + 1]++; m++; }
           b = map[i * 4 + 2];
-          if (b) { v = Math.round((split + (b - 1) / 254 * (0.98 - split)) * 65535); tB[i] = v; count[v + 1]++; m++; }
+          // pixels the colour stage does not cover (paper, stray pencil) take the coloured sheet last
+          v = b ? Math.round((split + (b - 1) / 254 * (0.98 - split)) * 65535) : 64880;
+          tB[i] = v; count[v + 1]++; m++;
         }
         for (i = 1; i < 65537; i++) count[i] += count[i - 1];  // count[k] = events before moment k
         var ev = new Uint32Array(m), pos = count.slice(0, 65536);
@@ -255,10 +257,14 @@
       }).catch(function () { sc.state = 0; sc.el.classList.add("dw-fail"); });
     };
     var drop = function (sc) { if (sc.state === 2) { sc.srcA = sc.srcB = sc.tA = sc.ev = sc.cum = sc.out = null; } sc.state = 0; };
+    /* The stage is pinned while the scene scrolls by (run = scene height − screen height).
+       The drawing starts when the stage pins and is finished DWELL screens before it
+       unpins, so the complete drawing always rests fully on screen for a moment. */
+    var DWELL = 0.45;
     var progress = function (sc) {
       var r = sc.el.getBoundingClientRect(), vh = window.innerHeight;
-      var run = r.height - vh;
-      return Math.max(0, Math.min(1, (-r.top) / (run * 0.88)));
+      var run = Math.max(1, r.height - vh - DWELL * vh);
+      return Math.max(0, Math.min(1, (-r.top) / run));
     };
     var update = function (sc) {
       var t = progress(sc);
