@@ -116,7 +116,7 @@ function layout({ r = "", file, title, description, page, body, og = "home", jso
 <link rel="icon" href="${r}assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500&amp;display=swap">
 <link rel="stylesheet" href="${r}assets/css/style.css?v=${V.css}">
 ${extraHead}${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script>\n` : ""}</head>
 <body data-page="${page}">
@@ -185,13 +185,9 @@ function home() {
   const figures = FIGURES.map((f) => `<div class="figure"><dt>${esc(f.label)}</dt><dd>${esc(f.value)}${f.unit ? ` <small>${esc(f.unit)}</small>` : ""}</dd></div>`).join("");
   const body = `<main id="main">
 <section class="wrap intro" aria-labelledby="intro-h">
-<div class="intro-grid">
-<h1 id="intro-h" class="display">Filipe Meltzer <span class="role">Architect &amp; Urbanist</span></h1>
-<div>
-<p class="lede">Architect and urbanist in São Paulo. In the concept team at Architects Office I turn briefs, zoning rules, area targets and site conditions into feasibility studies and schematic designs — for housing, hospitality, mixed-use, corporate and urban projects in Brazil and Portugal.</p>
+<h1 id="intro-h" class="sr-only">Filipe Meltzer — Architect &amp; Urbanist</h1>
+<p class="lede">Architect and urbanist in São Paulo, turning briefs, zoning rules and site conditions into feasibility studies and schematic designs.</p>
 <p class="intro-links"><a class="link-arrow" href="#projects">Selected projects ${ARROW}</a> <a class="link-arrow" href="profile.html">Profile ${ARROW}</a> <a class="link-arrow" href="#contact">Contact ${ARROW}</a></p>
-</div>
-</div>
 </section>
 <section class="hero" aria-label="Featured projects">
 <div class="hero-frame">${slides}</div>
