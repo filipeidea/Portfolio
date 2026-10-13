@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escadas de emergência — Filipe Meltzer</title>
+<meta name="description" content="Quantas escadas de emergência e de que tipo, pelas normas do Corpo de Bombeiros de SP, PR, GO, RS e MG. Triagem preliminar.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&amp;family=Newsreader:opsz,wght@6..72,400&amp;display=swap">
+<link rel="stylesheet" href="../lab.css">
+<style>
+/* Layout: folha técnica de coluna única, assistente em etapas; resultado em placa de saída verde com fichas abaixo.
+   Cor: papel azulado, tinta marinho, verde de sinalização de saída (acento), vermelho só para alerta. */
+:root{--bg:#e9edf0;--surface:#ffffff;--ink:#0f2236;--ink2:#4a5d6f;--line:#cbd5dd;--soft:#e1ebee;--exit:#087a4c;--exit-ink:#ffffff;--warn:#b3261e;--warn-bg:#fbeae8;--amber:#7a5200;--amber-bg:#fbf1da;--ok-bg:#e0f2e9;
+ --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;--f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--f-body);padding-inline:16px;padding-block:20px 48px}
+.wrap{max-width:720px;margin:0 auto;display:grid;gap:16px}
+header{display:flex;gap:12px;align-items:center}
+.sign{flex:none;width:44px;height:44px;border-radius:6px;background:var(--exit);color:var(--exit-ink);display:grid;place-items:center}
+h1{font:700 1.7rem/1 var(--f-display);text-transform:none;letter-spacing:.04em;margin:0;text-wrap:balance}
+.tag{color:var(--ink2);font-size:.85rem;margin-top:3px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px}
+.prog{display:flex;gap:4px;margin-bottom:18px}
+.prog i{flex:1;height:5px;border-radius:2px;background:var(--line)}
+.prog i.on{background:var(--exit)}
+.step-n{font:500 .78rem var(--f-mono);color:var(--ink2);text-transform:none;letter-spacing:.08em}
+h2{font:700 1.5rem/1.15 var(--f-display);letter-spacing:.01em;margin:4px 0 6px;text-wrap:balance}
+.hint{color:var(--ink2);font-size:.9rem;margin:0 0 16px;max-width:62ch}
+.fields{display:grid;gap:14px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label.l{display:block;font-weight:600;font-size:.9rem;margin-bottom:5px}
+select,input[type=number]{width:100%;font:inherit;font-size:1rem;padding:11px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);min-width:0}
+select:focus-visible,input:focus-visible,button:focus-visible,.seg label:focus-within{outline:3px solid var(--exit);outline-offset:1px}
+.seg{display:flex;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg label{flex:1;text-align:center;padding:10px 8px;cursor:pointer;background:var(--bg);font-size:.95rem;border-right:1px solid var(--line)}
+.seg label:last-child{border-right:0}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg input:checked+span{font-weight:600}
+.seg label:has(input:checked){background:var(--exit);color:var(--exit-ink)}
+.tog{display:grid;grid-template-columns:1fr auto;gap:8px 14px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.tog:first-child{border-top:0;padding-top:0}
+.tog b{font-weight:600;display:block}.tog small{color:var(--ink2);font-size:.82rem;display:block}
+.tog .seg{width:150px}
+.cons{display:grid;gap:8px}
+.cons label{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:start;padding:12px;border:1px solid var(--line);border-radius:6px;cursor:pointer;background:var(--bg)}
+.cons label:has(input:checked){border-color:var(--exit);box-shadow:inset 0 0 0 1px var(--exit);background:var(--ok-bg)}
+.cons small{grid-column:2;color:var(--ink2);font-size:.84rem}
+.cons input{margin-top:5px;accent-color:var(--exit)}
+.calc{background:var(--soft);border-radius:6px;padding:12px;display:grid;gap:8px}
+.calc .m{font:500 .82rem var(--f-mono);color:var(--ink2)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+button{font:600 1rem var(--f-body);padding:11px 20px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button.p{background:var(--exit);border-color:var(--exit);color:var(--exit-ink)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.err{color:var(--warn);font-size:.85rem;margin-top:4px}
+/* resultado */
+.plate{background:var(--exit);color:var(--exit-ink);border-radius:10px;padding:20px 20px 18px}
+.plate .k{font:500 .75rem var(--f-mono);text-transform:none;letter-spacing:.1em;opacity:.85}
+.plate .big{font:700 clamp(2.1rem,9vw,3.1rem)/1 var(--f-display);text-transform:none;letter-spacing:.02em;margin:6px 0 4px;text-wrap:balance}
+.plate .sub{font-size:.98rem;opacity:.95}
+.plate .ctx{margin-top:12px;padding-top:12px;border-top:1px solid color-mix(in srgb,var(--exit-ink) 30%,transparent);font-size:.88rem;opacity:.92}
+.band{display:grid;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.band .c{padding:10px 6px;text-align:center;border-right:1px solid var(--line);min-width:0}
+.band .c:last-child{border-right:0}
+.band .c small{display:block;font:500 .72rem var(--f-mono);color:var(--ink2);overflow-wrap:anywhere}
+.band .c b{display:block;font:700 1.25rem var(--f-display);letter-spacing:.03em}
+.band .c.cur{background:var(--ok-bg);box-shadow:inset 0 -4px 0 var(--exit)}
+.cards{display:grid;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.card h3{margin:0 0 6px;font:500 .75rem var(--f-mono);text-transform:none;letter-spacing:.09em;color:var(--ink2)}
+.card .v{font:700 1.45rem/1.1 var(--f-display);letter-spacing:.01em}
+.card p{margin:6px 0 0;font-size:.92rem}
+.card ul{margin:6px 0 0;padding-left:18px;font-size:.92rem}.card li+li{margin-top:4px}
+.pill{display:inline-block;font:600 .78rem var(--f-body);padding:2px 9px;border-radius:99px;margin-left:6px;vertical-align:middle;letter-spacing:0}
+.pill.ok{background:var(--ok-bg);color:var(--exit)}.pill.no{background:var(--warn-bg);color:var(--warn)}.pill.mid{background:var(--amber-bg);color:var(--amber)}
+.alert{border-radius:8px;padding:12px 14px;font-size:.9rem;background:var(--amber-bg);color:var(--ink);border-left:4px solid var(--amber)}
+.alert.bad{background:var(--warn-bg);border-left-color:var(--warn)}
+.alert ul{margin:4px 0 0;padding-left:18px}
+.fine{color:var(--ink2);font-size:.82rem;max-width:68ch}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+@media(max-width:520px){.row2{grid-template-columns:1fr}.tog{grid-template-columns:1fr}.tog .seg{width:100%}}
+@media(prefers-reduced-motion:no-preference){.panel,.plate,.card{animation:in .25s ease-out}@keyframes in{from{opacity:.0;transform:translateY(4px)}to{opacity:1;transform:none}}}
+:root{--bg:#fff;--surface:#fff;--ink:#111;--ink2:#5a5a5a;--line:#e1e1e1;--soft:#f6f6f6;--exit:#23308a;--exit-ink:#fff;--ok-bg:#eef0f9;
+ --f-display:"Archivo",Arial,sans-serif;--f-body:"Archivo",Arial,sans-serif;--f-mono:"Archivo",Arial,sans-serif}
+h1{font-size:1.5rem;font-weight:600;letter-spacing:-.02em}
+h2{font-weight:600;letter-spacing:-.015em;font-size:1.35rem}
+.step-n,.card h3,.plate .k{letter-spacing:0;font-size:.85rem}
+select,input[type=number]{background:#fff}
+.panel,.card{border-radius:2px}
+.plate{background:#fff;color:var(--ink);border:1px solid var(--line);border-left:3px solid var(--exit);border-radius:2px}
+.plate .big{color:var(--exit);font-weight:600;letter-spacing:-.02em;font-size:clamp(1.8rem,6vw,2.4rem)}
+.plate .ctx{border-top-color:var(--line)}
+.band .c b{font-weight:600}
+.card .v{font-weight:600;letter-spacing:-.01em}
+.sign{background:none;color:var(--exit);border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<nav class="lab-bar" aria-label="Portfólio"><a class="lab-home" href="../../pt/index.html">Filipe Meltzer <small>Arquiteto e Urbanista</small></a><a class="lab-back" href="../../pt/lab.html">Lab</a></nav>
+<script>(function(){var r=document.referrer;if(r&&/\/Portfolio\/(?!pt\/)/.test(r)){var b=document.querySelectorAll(".lab-bar a");b[0].href="../../index.html";b[0].lastChild.textContent="Architect & Urbanist";b[1].href="../../lab.html"}})()</script>
+<div class="wrap">
+ <header>
+  <div class="sign" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M3 24h6v-5h6v-5h6V9h4"/><path d="M21 9l3-3M24 6h-3.5M24 6v3.5"/></svg></div>
+  <div><h1>Escadas de emergência</h1><div class="tag">Quantas escadas e de que tipo, pela norma do Corpo de Bombeiros do estado</div></div>
+ </header>
+ <main id="app"></main>
+ <p class="fine" id="fine">Triagem preliminar com base em tabelas extraídas das instruções técnicas de SP, PR, GO, RS e MG (base v<span id="ver"></span>). Não substitui o projeto assinado por profissional habilitado nem a análise do Corpo de Bombeiros. Confira sempre na norma vigente.</p>
+</div>
+<script>
+const DATA={"_meta":{"versao_base":"0.3","data":"2026-10-05","status":"SP, PR, GO, RS e MG extraídos dos PDFs oficiais (MG: IT 08 2ª ed., Tabelas 1-6 completas). SC parcial: regras da IN 9/2024 sim, Tabela de escadas vigente NÃO (o PDF anexado é rascunho de 2018 sem valor normativo).","aviso":"Tabelas extraidas por texto de PDF. Conferir celula a celula com o original antes de uso em projeto. Divergencias entre estados estao marcadas em 'divergencias'.","colunas_altura_SP_PR":["H<=6","6<H<=12","12<H<=30","H>30"],"colunas_altura_GO":["H<=6","6<H<=12","12<H<=30","30<H<=90","H>90"],"tipos":{"NE":"Escada nao enclausurada (comum)","EP":"Enclausurada protegida (PCF P-90, ventilacao por janelas)","PF":"Enclausurada a prova de fumaca (antecamara + dutos, PCF P-60)","PFP":"A prova de fumaca pressurizada (substitui EP e PF)","AE":"Aberta externa (ate 45 m; pode ser uma das escadas quando ha 2 ou mais)"},"up_metros":0.55},"estados":{"SP":{"norma":"IT 11/2019 - Saidas de emergencia (CBPMESP)","fonte":"https://ffclrp.usp.br/dc.php?id=17 (copia da IT 11/2019; confirmar versao vigente no site do CBPMESP)","tabela_escadas":{"A-1":["NE","NE","-","-"],"A-2":["NE","NE","EP","PF"],"A-3":["NE","NE","EP","PF"],"B-1":["NE","EP","EP","PF"],"B-2":["NE","EP","EP","PF"],"C-1":["NE","NE","EP","PF"],"C-2":["NE","NE","PF","PF"],"C-3":["NE","EP","PF","PF"],"D":["NE","NE","EP","PF"],"E-1..E-6":["NE","NE","EP","PF"],"F-1":["NE","NE","EP","PF"],"F-2":["NE","EP","PF","PF"],"F-3":["NE","NE","EP","PF"],"F-4":["NE","NE","EP","PF"],"F-5":["NE","NE","EP","PF"],"F-6":["NE","EP","PF","PF"],"F-7":["NE","NE","EP","PF"],"F-8":["NE","EP","PF","PF"],"F-9":["NE","EP","EP","PF"],"F-10":["NE","EP","EP","PF"],"F-11":["NE","EP","PF","PF"],"G-1":["NE","NE","EP","EP"],"G-2":["NE","NE","EP","EP"],"G-3..G-5":["NE","NE","EP","PF"],"H-1":["NE","NE","EP","EP"],"H-2":["NE","EP","PF","PF"],"H-3":["NE","EP","PF","PF"],"H-4":["NE","NE","EP","PF"],"H-5":["NE","NE","EP","PF"],"H-6":["NE","NE","EP","PF"],"I-1":["NE","NE","EP","PF"],"I-2":["NE","NE","PF","PF"],"I-3":["NE","EP","PF","PF"],"J":["NE","NE","EP","PF"],"K":["NE","EP","PF","PF"],"L-1..L-3":["NE","EP","PF","PF"],"M":"consultar IT especifica (simbolo + na tabela)"},"nota_A2":"A-2 com area de pavimento <=750 m2 e altura >30 m ate 50 m: pode ser EP; acima de 50 m, PF.","quantidade_escadas":["Acima de 36 m: minimo 2 escadas, exceto A-2.","A-2 acima de 80 m: minimo 2 escadas.","Demais casos: depende de populacao, largura e distancia maxima (Tabelas 1 e 2).","Grupo F com capacidade >300 pessoas: minimo 2 saidas afastadas 10 m.","Duas ou mais escadas: distancia entre portas de acesso >=10 m. Escadas adicionais sao do mesmo tipo.","Pode ser AE uma das escadas quando ha 2 ou mais."],"elevador_emergencia":"A-2 e A-3 acima de 80 m; demais ocupacoes acima de 60 m (exceto G-1); H-2 e H-3 acima de 12 m.","comissao_tecnica_acima_de_m":150,"subsolo":"Escadas e rampas de subsolo compartimentadas com PCF P-90. NE prevista na tabela deve ser enclausurada. Subsolo com profundidade >12 m e ocupacao diferente de garagem (G-1/G-2): pressurizacao.","largura_minima_m":{"geral":1.2,"H-2_H-3_escadas":1.65,"H-3_rampas":2.2},"area_refugio":"Obrigatoria em E-6 e H-2 acima de 12 m e H-3 acima de 6 m (30% da area do pavimento)."},"PR":{"norma":"NPT 011 v6 - Saidas de Emergencia (CBMPR)","fonte":"https://www.bombeiros.pr.gov.br/sites/bombeiros/arquivos_restritos/files/documento/2023-02/npt11.pdf","baseada_em":"IT 11/2019 CBPMESP","tabela_escadas":{"A-1":["NE","NE","-","-"],"A-2":["NE","NE","EP","PF"],"A-3":["NE","NE","EP","PF"],"B-1":["NE","EP","EP","PF"],"B-2":["NE","EP","EP","PF"],"C-1":["NE","NE","EP","PF"],"C-2":["NE","NE","PF","PF"],"C-3":["NE","EP","PF","PF"],"D":["NE","NE","EP","PF"],"E-1..E-6":["NE","NE","EP","PF"],"F-1":["NE","NE","EP","PF"],"F-2":["NE","EP","PF","PF"],"F-3":["NE","NE","EP","PF"],"F-4":["NE","NE","EP","PF"],"F-5":["NE","NE","EP","PF"],"F-6":["NE","EP","PF","PF"],"F-7":["NE","EP","EP","PF"],"F-8":["NE","EP","PF","PF"],"F-9":["NE","EP","EP","PF"],"F-10":["NE","EP","EP","PF"],"F-11":["NE","EP","PF","PF"],"G-1":["NE","NE","EP","EP"],"G-2":["NE","NE","EP","EP"],"G-3..G-5":["NE","NE","EP","PF"],"H-1":["NE","NE","EP","EP"],"H-2":["NE","EP","PF","PF"],"H-3":["NE","EP","PF","PF"],"H-4":["NE","NE","EP","PF"],"H-5":["NE","NE","EP","PF"],"H-6":["NE","NE","EP","PF"],"I-1":["NE","NE","EP","PF"],"I-2":["NE","NE","PF","PF"],"I-3":["NE","EP","PF","PF"],"J":["NE","NE","EP","PF"],"L-1..L-3":["NE","EP","PF","PF"],"M-1":["NE","NE","EP+","PF+"],"M-2":["NE","EP","PF","PF"],"M-3":["NE","EP","PF","PF"],"M-4":["NE","NE","NE","NE"],"M-5":["NE","EP+","PF+","PF+"]},"nota_pavimentos_recuados":"Edificios com pavimentos recuados (bombeiros nao alcancam) ou sem acesso de viatura, acima de 23 m: PF.","quantidade_escadas":["Acima de 36 m: minimo 2 escadas, exceto A-2.","A-2 acima de 60 m: minimo 2 escadas; a segunda pode ser substituida por elevador de emergencia ligado a GMG.","A-2 acima de 80 m com ate 750 m2 por pavimento e ate 4 unidades por pavimento: segunda escada pode ser dispensada pelo elevador de emergencia obrigatorio.","Demais casos: populacao, largura, distancia maxima e UP minimas (Tabelas 1 e 2).","E-6, F-3, F-5, F-6, F-7, F-11 e H-3 com capacidade >200 pessoas: minimo 2 saidas, afastadas 10 m.","Escadas adicionais sao do mesmo tipo; uma pode ser AE."],"elevador_emergencia":"A-2 e A-3 acima de 80 m; demais acima de 60 m (exceto G-1); H-2 e H-3 acima de 12 m.","comissao_tecnica_acima_de_m":150,"subsolo":"Escada abaixo da descarga em edificios com EP ou PF: enclausurada com PCF P-90, sem ventilacao. Subsolos com altura ascendente >12 m: pressurizacao.","largura_minima_m":{"geral":1.2,"H-2_H-3_escadas":1.65,"H-3_rampas":2.2},"area_refugio":"Obrigatoria em E-5, E-6 e H-2 acima de 12 m e H-3 acima de 6 m (30% do pavimento).","verificar_versao":"Existe NPT 011 versao jan/2024 (bombeiros.pr.gov.br/.../2024-03/npt-011-saidas_de_emergencia_versao_jan_2024.pdf). Os dados acima vieram da versao 6 (arquivo de 2023-02). Comparar."},"GO":{"norma":"NT 11/2025 - Saidas de Emergencia (CBMGO), Portaria 3447 de 19/05/2025","fonte":"https://www.bombeiros.go.gov.br/wp-content/uploads/2021/03/Normas-Tecnicas-do-CBMGO-1.pdf","baseada_em":"IT 11/2019 CBPMESP e IN 09/2024 CBMSC (citadas nas referencias)","tabela_escadas":{"A-1":["NE","NE","-","-","-"],"A-2, A-3":["NE","NE","EP","PF","PFP"],"B-1, B-2":["NE","EP","PF","PF","PFP"],"C-1, C-2":["NE","NE","EP","PF","PFP"],"C-3":["NE","EP","PF","PF","PFP"],"D-1..D-4":["NE","NE","EP","PF","PFP"],"E-1..E-6":["NE","NE","EP","PF","PFP"],"F-1..F-5":["NE","NE","EP","PF","PFP"],"F-6, F-11":["NE","EP","PF","PF","PFP"],"F-7":["NE","EP","EP","PF","PFP"],"F-8":["NE","EP","PF","PF","PFP"],"F-9, F-10":["NE","EP","EP","PF","PFP"],"G-1..G-6":["NE","NE","EP","PF","PFP"],"H-1":["NE","NE","EP","PF","PFP"],"H-2..H-4":["NE","EP","PF","PF","PFP"],"H-5, H-6":["NE","NE","EP","PF","PFP"],"I-1, I-2":["NE","NE","EP","PF","PFP"],"I-3":["NE","EP","PF","PF","PFP"],"J-1..J-4":["NE","NE","EP","PF","PFP"],"L-1..L-3":["NE","EP","PF","PF","PFP"],"M-1":["NE","NE","EP","PF","PFP"],"M-2":["NE","EP","PF","PF","PFP"],"M-3":["NE","NE","EP","PF","PFP"],"M-5":["NE","NE","EP","PF","PFP"],"M-11":["NE","EP","PF","PF","PFP"]},"como_medir_altura":"Do nivel de descarga ate o piso do ultimo pavimento (exclui casa de maquinas, barrilete, reservatorio). Desnivel entre descarga e terreno/via >3 m tambem entra na altura.","quantidade_escadas":["Acima de 60 m: minimo 2 escadas, exceto A-2 (A-2: acima de 120 m).","Segunda escada pode ser substituida por RRF (reduto resistente ao fogo, no maximo a cada 75 m) e/ou elevador de emergencia adicional, conforme combinacoes da Nota (e) do Anexo C.","F-2, F-3, F-5, F-6, F-7 e F-11 com publico >500 pessoas: minimo 2 saidas afastadas 10 m.","Com mais de uma saida, perda de qualquer uma deve deixar >=50% da capacidade requerida.","Escadas adicionais para todos os pavimentos: mesmo tipo; para so alguns pavimentos: tipo conforme divisao e altura dos pavimentos atendidos.","Uma das escadas pode ser AE."],"acima_de_90_m":"Todas as edificacoes: PFP (pressurizada).","elevador_emergencia":"A-2 e A-3 acima de 90 m; demais acima de 60 m (exceto G-1); H-2, H-3 e H-6 quando exigida area de refugio.","rrf_obrigatorio":"A-2 e A-3 acima de 250 m; demais acima de 120 m.","comissao_tecnica_acima_de_m":250,"subsolo":"Altura ascendente ate 6 m: escada enclausurada com PCF P-90 sem ventilacao (NE ou EP); PF: antecamara so com duto de saida. Acima de 6 m: pressurizacao.","largura_minima_m":{"geral":1.2,"corredor_pop_menor_20":1.0,"H-2_H-3_escadas":1.65,"H-3_rampas":2.2},"area_refugio":"Obrigatoria em E-6 e H-2 acima de 12 m e H-3 acima de 6 m (30% do pavimento). Dispensada se pavimento <=750 m2 com chuveiros automaticos."},"SC":{"status":"parcial","norma":"IN 009 - Saidas de Emergencia (CBMSC), vigente a partir de 24/04/2024, 71 paginas","fonte":"https://documentoscbmsc.cbm.sc.gov.br/uploads/95f9038e8f2451e50a6693d998ada729.pdf","tipos_proprios":{"ECM":"comum","EPT":"protegida (PCF P-30, ventilacao por duto ou janela)","EEE":"enclausurada com exaustao (antecamara, duto de extracao, PCF P-60)","EEV":"enclausurada com ventilacao (antecamara, duto entrada+saida, PCF P-90 antecamara e P-60 escada)","EPF":"a prova de fumaca: pressurizada, enclausurada com ventilacao para exterior, ou aberta externa"},"PENDENTE":"Anexo A (Tabela de escadas por altura e ocupacao, pag. 61-63) e Anexo C (distancia maxima) NAO foram lidos: a leitura automatica trunca o PDF antes dos anexos. Nao usar a tabela de blogs: e de versao antiga.","aplicacao":"Parametros valem para A-2 ate 250 m e demais ocupacoes ate 100 m; acima disso a IN e so referencia (estudo especifico).","largura_minima_m":{"rotas_horizontais":{"geral":1.2,"H-2":1.65,"H-3":2.2},"escadas_rampas":{"geral":1.2,"H-2_H-3":1.65},"portas_H2_H3_escada":1.1},"UP_m":0.55,"minimo_2_rotas":["F-6 e F-11 com lotacao >100 pessoas","demais divisoes do grupo F com lotacao >300 pessoas","Alternativa: saida unica ou nao independente com largura total 1,5x a necessaria"],"aumento_distancia_por_pe_direito":{"h<=3":"0%","3-4":"5%","4-5":"10%","5-6":"15%","6-7":"18%","7-8":"21%","8-9":"24%","9-10":"27%","h>10":"30%","limites":"acrescimo maximo 25 m; total maximo 140 m"},"outras_regras":["Sem leiaute definido: distancias -30%.","Escada comum e rampa interna aberta nao sao local seguro: somar trechos horizontais e verticais.","ECM de madeira ou metal: ate 6 m. TRRF 2 h.","Pressurizada: PCF P-90, TRRF 180 min, 50 Pa; com varias escadas, todas pressurizadas (podem coexistir nao pressurizadas EEV/ventiladas se nao interferirem).","Camera de monitoramento na escada: A-2 acima de 150 m e demais acima de 100 m.","Ocupacao mista: tipo e quantidade conforme a ocupacao servida pela escada."]},"RS":{"norma":"RT CBMRS no 11 - Parte 01/2016 - Saidas de Emergencia (em vigor desde 19/09/2016)","fonte":"https://admin.bombeiros.rs.gov.br/upload/arquivos/201706/01155612-rtcbmrs-n-11-parte-01-2016-saidas-de-emergencia-versao-corrigida.pdf","baseada_em":"IT 11/2014 CBPMESP; classificacao de ocupacao e altura vem da LC 14.376/2013 e Decreto 51.803/2014","verificar_versao":"Confirmar se ha revisao posterior a 2016 no site do CBMRS.","colunas":["H<=6","6<H<=12","12<H<=30","H>30"],"tabela_escadas":{"A-1":["NE","NE","-","-"],"A-2":["NE","NE","EP","PF"],"A-3":["NE","NE*","EP","PF"],"B-1, B-2":["NE","EP","PF","PF"],"C-1":["NE","NE","PF","PF"],"C-2":["NE","NE*","PF","PF"],"C-3":["NE","EP","PF","PF"],"D":["NE","NE*","PF","PF"],"E-1..E-4":["NE","NE*","PF","PF"],"E-5, E-6":["NE","EP","PF","PF"],"F-1":["NE","NE","EP","PF"],"F-2":["NE","EP","PF","PF"],"F-3":["NE","NE","EP","PF"],"F-4":["NE","NE","EP","PF"],"F-5..F-12":["NE","EP","PF","PF"],"G-1, G-2":["NE","NE","EP","EP"],"G-3, G-6":["NE","NE*","PF","PF"],"G-4, G-5":["NE","NE","EP","PF"],"H-1":["NE","NE*","PF","PF"],"H-2, H-3":["NE","EP","PF","PF"],"H-4..H-6":["NE","NE*","PF","PF"],"I-1":["NE","NE","EP","PF"],"I-2":["NE","NE","PF","PF"],"I-3":["NE","EP","PF","PF"],"J":["NE","NE","EP","PF"],"L-1..L-3":["NE","EP","PF","PF"],"M":"consultar RT/norma especifica (M-1 e simbolo +)"},"asterisco":"NE* = com area de pavimento acima de 750 m2 exige EP.","nota_A2":"A-2 com pavimento <=750 m2 e altura >30 m ate 50 m: pode ser EP; acima de 50 m, PF.","quantidade_escadas":["Acima de 30 m E area de pavimento >=750 m2: minimo 2 escadas, exceto A-2.","A-2 acima de 72 m: minimo 2 escadas.","F-5, F-6, F-11, F-12, L e M-1: sempre minimo 2 escadas (termea: 2 saidas).","Locais de reuniao F-5, F-6, F-11, F-12: mais de uma saida em paredes diversas, afastamento >=10 m; acesso principal com 60% a 70% das UP.","Escadas adicionais do mesmo tipo; escada pode ser substituida por rampa do mesmo tipo.","Em edificacao com compartimentacao horizontal, saidas independentes.","Mezanino conta como compartimento para tipo de escada."],"comissao_tecnica_acima_de_m":150,"elevador_emergencia":"Nao esta na RT: remete a LC 14.376/2013 e Decreto 51.803/2014 (nao lidos).","subsolo":"Escada abaixo da descarga: EP com PCF P-90 sem ventilacao. Subsolo com altura ascendente >12 m e ocupacao diferente de G-1/G-2: escada pressurizada. Tabela 7 do Decreto 51.803 rege exigencias de subsolo.","largura_minima_m":{"geral":1.1,"H-3_acessos_descarga":2.0,"H-3_escadas_rampas":2.2,"NE_090":"0,90 m se pavimento de maior populacao <=45 pessoas (exceto terreo), grupos A,B,D,G,J-1,J-2 ate 6 m, ou como segunda saida"},"pe_direito_acessos_m":2.2,"area_refugio":"Obrigatoria em todos os pavimentos: E-5/E-6 acima de 6 m (30%); H-2/H-3 exceto terreo (30%), maximo 2000 m2 por area.","caracteristicas_construtivas":"Classe X (propagacao facil): reduzir distancias em 30%; Y: tabela; Z (propagacao dificil): aumentar 30%.","distancias_maximas_m":{"colunas":"mesmas 8 colunas do bloco comum","A_B":{"descarga":[45,55,55,65,60,70,80,95],"demais":[40,45,50,60,55,65,75,90]},"C_D_E_F1-F4_F7-F10_G3-G5_H_L_M":{"descarga":[40,45,50,60,55,65,75,90],"demais":[30,35,40,45,45,55,65,75]},"I1_J1":{"descarga":[80,95,120,140],"demais":[70,80,110,130],"obs":"so colunas sem chuveiro"},"G1_G2_J2":{"descarga":[50,60,60,70,80,95,120,140],"demais":[45,55,55,65,70,80,110,130]},"I2_I3_J3_J4":{"descarga":[40,45,50,60,60,70,100,120],"demais":[30,35,40,45,50,65,80,95]},"F5_F6_F11_F12":{"qualquer_andar":[30,35,45,50],"obs":"mapeamento das 4 colunas a conferir no PDF"},"regras":["Sem leiaute em planta: -30%.","Nao se mede dentro de escada enclausurada.","Mais de uma saida exige >=10 m entre elas."]},"capacidade_UP_e_populacao":"Mesma estrutura de SP/PR/GO (Tabela 1). Diferencas: C-D-F-4 com 1 por 5 m2 (C) / 7 m2 (D) / 3 m2 (F-4); F-3,F-6,F-7,F-9..F-12 = 2 por m2; G-1,G-2,G-3,G-6 = 1 por 40 vagas; apartamento minimo sem divisoes = 3 pessoas."},"MG":{"status":"completo_para_escadas","norma":"IT 08 - Saídas de Emergência em Edificações, 2ª edição (CBMMG), alterada até a Portaria 69 de 25/08/2022","fonte":"PDF oficial anexado pelo usuário (IT_08_2a_Ed_portaria_70.pdf), Tabelas 1 a 6, p. 33-39","colunas_altura":["H<=12","12<H<=30","30<H<=54","H>54"],"classes_altura":{"I":"H<=12","II":"12<H<=30","III":"30<H<=54","IV":">54"},"tabela_escadas":{"A-2":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"EP"},{"n":1,"tipo":"PF"},{"n":1,"tipo":"PF"}],"A-3":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"EP"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"B-1":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"PF"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"B-2":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"PF"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"C-1":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"EP"},{"n":2,"tipo":"EP"},{"n":2,"tipo":"EP"}],"C-2":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"EP"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"C-3":[{"n":1,"tipo":"NE"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"D":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"EP"},{"n":1,"tipo":"PF"},{"n":1,"tipo":"PF"}],"E-1":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"EP"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"E-2":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"EP"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"E-3":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"EP"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"E-4":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"EP"},{"n":3,"tipo":"PF"},{"n":3,"tipo":"PF"}],"E-5":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"EP"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"E-6":[{"n":2,"tipo":"NE"},{"n":2,"tipo":"EP"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"F-1":[{"n":1,"tipo":"NE"},{"n":2,"tipo":"EP"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"F-2":[{"n":1,"tipo":"NE"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"F-3":[{"n":2,"tipo":"NE"},{"n":2,"tipo":"NE"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"F-4":[{"n":2,"tipo":"NE"},"+","+","+"],"F-5":[{"n":2,"tipo":"NE"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"F-6":[{"n":2,"tipo":"NE"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"F-7":[{"n":2,"tipo":"NE"},"-","-","-"],"F-8":[{"n":1,"tipo":"NE"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"F-9":[{"n":2,"tipo":"NE"},{"n":2,"tipo":"EP"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"F-10":[{"n":1,"tipo":"NE"},{"n":2,"tipo":"EP"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"F-11":[{"n":2,"tipo":"NE"},{"n":2,"tipo":"EP"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"G-1":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"NE"},{"n":1,"tipo":"EP"},{"n":1,"tipo":"EP"}],"G-2":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"EP"},{"n":1,"tipo":"EP"},{"n":1,"tipo":"EP"}],"G-3":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"PF"},{"n":1,"tipo":"PF"},{"n":1,"tipo":"PF"}],"G-4":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"EP"},{"n":1,"tipo":"PF"},{"n":1,"tipo":"PF"}],"G-5":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"NE"},"-","-"],"H-1":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"EP"},"-","-"],"H-2":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"PF"},{"n":1,"tipo":"PF"},{"n":1,"tipo":"PF"}],"H-3":[{"n":2,"tipo":"NE"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"H-4":[{"n":2,"tipo":"NE"},{"n":2,"tipo":"EP"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"H-5":[{"n":2,"tipo":"NE"},"+","+","+"],"H-6":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"PF"},{"n":1,"tipo":"PF"},{"n":1,"tipo":"PF"}],"I-1":[{"n":2,"tipo":"NE"},{"n":2,"tipo":"EP"},{"n":2,"tipo":"EP"},{"n":2,"tipo":"EP"}],"I-2":[{"n":2,"tipo":"NE"},{"n":2,"tipo":"EP"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"I-3":[{"n":2,"tipo":"NE"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"J":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"NE"},{"n":1,"tipo":"NE"},{"n":1,"tipo":"NE"}],"L-1":[{"n":1,"tipo":null},"-","-","-"],"L-2":[{"n":2,"tipo":"NE"},{"n":2,"tipo":"PF"},{"n":3,"tipo":"PF"},{"n":3,"tipo":"PF"}],"L-3":[{"n":2,"tipo":"NE"},{"n":2,"tipo":"PF"},{"n":3,"tipo":"PF"},{"n":3,"tipo":"PF"}],"M-1":[{"n":1,"tipo":"NE"},"+","+","+"],"M-2":[{"n":2,"tipo":"EP"},{"n":2,"tipo":"PF"},{"n":3,"tipo":"PF"},{"n":3,"tipo":"PF"}],"M-3":[{"n":2,"tipo":"NE"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"},{"n":2,"tipo":"PF"}],"M-4":[{"n":1,"tipo":"NE"},{"n":1,"tipo":"NE"},{"n":1,"tipo":"NE"},{"n":1,"tipo":"NE"}],"M-5":["+","+","+","+"],"M-8":["+","+","+","+"]},"legenda_tabela":"n = nº mínimo de saídas/escadas; tipo NE/EP/PF; '+' = consultar norma específica; '-' = não se aplica","regras":{"AE":"Havendo 2 ou mais escadas, uma pode ser Aberta Externa (item 5.7.14); AE pode substituir os demais tipos (5.7.14.1), com exigências próprias.","pressurizada":"PFP pode substituir PF (5.7.13, IT 10).","dispensa_numero_minimo":"Nota F: a quantidade mínima da Tabela 6 pode ser desconsiderada, exceto F-6, H-2 e H-3, se H<=36 m, atendida distância máxima (Tab. 5) e UP mínimas da Tab. 4.","H2_H3":"H<=12: se exigidas >1 saídas, ao menos uma por rampa. H>12: além das escadas, elevador de emergência e áreas de refúgio.","area_refugio":"Obrigatória em E-5, E-6, H-2 e H-3 com H>12 m (30% dos leitos do pavimento); subsolo >500 m² não garagem (30% da área).","subsolo":"Área >500 m² ou população >100: mín. 2 saídas em lados opostos (≥10 m entre elas), exceto garagem. Escada EP/PF exigida e H ascendente<=12: enclausurada PCF P-60; acima de 12 m: pressurizada (IT 10).","elevador_emergencia":"Exigência por altura NÃO consta na IT 08 lida (só características, itens 5.9); conferir IT de elevador/SCIP do estado. H-2/H-3 >12 m exigem.","largura_minima_m":{"geral":1.1,"escadas_H2_H3":1.65,"rampas_H2":1.65,"rampas_H3":2.2},"UP_m":0.55},"classes_planta":{"N":"Sp<930 m²","O":"Sp>=930 m²","P":"Ss<500","Q":"Ss>=500","R":"St<930","S":"930-1500","T":"1500-5000","U":">5000"},"classes_construtivas":{"X":"sem TRRF e sem compartimentação vertical","Y":"só uma das duas","Z":"TRRF e compartimentação vertical completa; térreas no mínimo Y"},"populacao_UP":{"A-1/A-2":{"pop":"2 pessoas por dormitório","UP":[60,45,100]},"A-3":{"pop":"2 pess/dorm + 1 por 4 m² alojamento","UP":[60,45,100]},"B":{"pop":"1 por 15 m²","UP":[60,45,100]},"C":{"pop":"1 por 3 m²","UP":[100,60,100]},"D":{"pop":"1 por 7 m²","UP":[100,60,100]},"E-1..E-4":{"pop":"1 por 1,5 m² sala de aula","UP":[100,60,100]},"E-5/E-6":{"pop":"1 por 1,5 m² sala de aula","UP":[30,22,30]},"F-1/F-10/F-4":{"pop":"1 por 3 m²","UP":[100,75,100]},"F-2/F-5/F-8/F-9/F-11":{"pop":"1 por m²","UP":[100,75,100]},"F-3/F-6/F-7":{"pop":"2 por m²","UP":[100,75,100]},"G-1":{"pop":"1 por 40 vagas","UP":[100,60,100]},"G-2..G-5":{"pop":"1 por 20 m²","UP":[100,60,100]},"H-1/H-6":{"pop":"1 por 7 m²","UP":[60,45,100]},"H-2":{"pop":"2 por dorm + 1 por 4 m² alojamento","UP":[30,22,30]},"H-3":{"pop":"1,5 por leito + 1 por 7 m² ambulatório","UP":[30,22,30]},"H-4":{"pop":"1 por 7 m²","UP":[100,60,100]},"H-5":{"pop":"informada pelo responsável","UP":[60,45,100]},"I":{"pop":"1 por 10 m²","UP":[100,60,100]},"J":{"pop":"1 por 30 m²","UP":[100,60,100]},"L-1":{"pop":"1 por 3 m²","UP":[100,60,100]},"L-2/L-3":{"pop":"1 por 10 m²","UP":[100,60,100]},"M-1/M-6":{"pop":"consultar norma específica","UP":[100,75,100]},"M-3/M-7":{"pop":"1 por 10 m²","UP":[100,60,100]},"M-4":{"pop":"1 por 4 m²","UP":[60,45,100]}},"UP_colunas":["acesso e descargas","escadas e rampas","portas"],"reducao_ascendente":"Escadas ascendentes: degrau<=17 cm -10%; <=17,5 -15%; <=18 -20% (cumulativas).","distancias_maximas_m":{"colunas":["sem_spk_unica_sem_det","sem_spk_unica_com_det","sem_spk_mais_de_uma_sem_det","sem_spk_mais_de_uma_com_det","com_spk_unica_sem_det","com_spk_unica_com_det","com_spk_mais_de_uma_sem_det","com_spk_mais_de_uma_com_det"],"X":{"qualquer":{"descarga":[35,50,45,65,50,70,65,85],"demais":[25,40,35,50,40,55,50,65]}},"Y":{"qualquer":{"descarga":[45,65,60,75,65,85,75,95],"demais":[35,50,45,60,50,65,60,75]}},"Z_C_D_E_F_G3_G4_G5_H_I_L_M":{"descarga":[65,85,75,95,85,100,95,110],"demais":[50,65,60,75,65,80,75,90]},"Z_A_B_G1_G2_J":{"descarga":[70,90,85,100,90,105,100,120],"demais":[55,70,65,80,70,85,80,95]},"notas":["Sem layout definido em planta: reduzir 30%.","Com controle de fumaça: +50%.","Detecção/spk/controle de fumaça podem valer só na área compartimentada."]}}},"dimensionamento_comum_SP_PR_GO":{"formula":"N = P / C (N em UP, arredondado para cima); largura = N x 0,55 m; respeitar minimos","capacidade_UP":{"A, B, H-1, H-4, H-5, H-6, M-4":{"acessos_descargas":60,"escadas_rampas":45,"portas":100},"C, D, E-1..E-4, F, M-1":{"acessos_descargas":100,"escadas_rampas":75,"portas":100},"E-5, E-6, H-2, H-3":{"acessos_descargas":30,"escadas_rampas":22,"portas":30},"G, I, J, L, M-3, M-5":{"acessos_descargas":100,"escadas_rampas":60,"portas":100}},"reducao_UP_escada_ascendente":"Degrau ate 17 cm: -10%; ate 17,5 cm: -15%; ate 18 cm: -20% (cumulativas com outras reducoes).","populacao_por_pavimento":{"A-1, A-2":"2 pessoas por dormitorio (sala conta como dormitorio em apto de ate 2 dorm.)","A-3":"2 por dormitorio + 1 por 4 m2 de alojamento","B":"1 por 15 m2","C":"1 por 5 m2 (lojas de shopping/galeria: 1 por 7 m2)","D":"1 por 7 m2 (call center: 1 por 1,5 m2)","E-1..E-6":"1 por 1,5 m2 de sala de aula","F-1, F-10, F-4":"1 por 3 m2","F-2, F-5, F-8":"1 por m2","F-3, F-6, F-7, F-9, F-11":"2 por m2 (SP: F-11 = 3 por m2)","G-1..G-3":"1 por 40 vagas","G-4, G-5":"1 por 20 m2","H-1, H-4, H-5, H-6":"1 por 7 m2","H-2":"2 por dormitorio + 1 por 4 m2 alojamento","H-3":"1,5 por leito + 1 por 7 m2 ambulatorio","I":"1 por 10 m2","J":"1 por 30 m2","L-1":"1 por 3 m2","L-2, L-3":"1 por 10 m2","M-3, M-5":"1 por 10 m2","M-4":"1 por 4 m2"},"distancias_maximas_m":{"colunas":["sem_spk_unica_sem_det","sem_spk_unica_com_det","sem_spk_mais_de_uma_sem_det","sem_spk_mais_de_uma_com_det","com_spk_unica_sem_det","com_spk_unica_com_det","com_spk_mais_de_uma_sem_det","com_spk_mais_de_uma_com_det"],"A_B":{"descarga":[45,55,55,65,60,70,80,95],"demais":[40,45,50,60,55,65,75,90]},"C_D_E_F_G3_G4_G5_H_L_M (+K em SP; +G-2 em PR; GO inclui G-6)":{"descarga":[40,45,50,60,55,65,75,90],"demais_SP_PR":[30,35,40,45,45,55,65,75],"demais_GO":[35,35,40,45,45,55,65,75]},"I1_J1":{"descarga_SP_GO":[80,95,120,140,"-","-","-","-"],"demais_SP_GO":[70,80,110,130,"-","-","-","-"],"descarga_PR":[80,95,120,140,100,130,180,210],"demais_PR":[70,80,100,130,100,115,160,200]},"G1_G2_J2":{"descarga":[50,60,60,70,80,95,120,140],"demais_SP_GO":[45,55,55,65,70,80,110,130],"demais_PR":[40,45,50,60,70,80,110,130]},"I2_I3_J3_J4":{"descarga":[40,45,50,60,60,70,100,120],"demais_SP_PR":[30,35,40,45,50,65,80,95],"demais_GO":[35,35,40,45,50,65,80,95]},"regras":["Sem leiaute definido em planta: reduzir 30%.","Com controle de fumaca: acrescentar 50%.","Coluna 'mais de uma saida' exige >=10 m entre as saidas.","Contagem a partir da porta da unidade autonoma mais distante, caminhamento interno ate 10 m.","Areas tecnicas sem permanencia humana: 140 m."]}},"divergencias_SP_PR_GO":["C-2, I-2: SP/PR exigem PF de 12 a 30 m; GO exige EP.","F-2: SP/PR NE/EP/PF/PF; GO F-1 a F-5 todos NE/NE/EP/PF.","F-7: SP NE/NE/EP/PF; PR e GO NE/EP/EP/PF.","G-1/G-2 e H-1: SP/PR EP acima de 30 m; GO PF.","B: SP/PR NE/EP/EP/PF; GO NE/EP/PF/PF.","Duas escadas: SP/PR acima de 36 m; GO acima de 60 m. A-2: SP 80 m, PR 60 m (substituivel por elevador), GO 120 m.","Acima de 90 m: GO exige PFP; SP/PR nao tem essa regra na tabela (comissao tecnica acima de 150 m).","Pe-direito minimo de acessos: SP/GO 2,30 m; PR 2,50 m.","Subsolo: PR pressuriza acima de 12 m ascendentes; GO acima de 6 m."],"a_conferir_visualmente":["Linhas C, I, F, G, H e M das Tabelas 3/C1 de SP e PR: extraidas por texto, colunas podem ter se misturado.","Confirmar se existe IT 11 do CBPMESP mais recente que a de 2019.","Confirmar se PR tem NPT 011 mais nova que a versao 6.","RS: linhas C, D, E, F, G, H extraidas por texto; conferir asteriscos (NE*) e coluna >30 m."]};
+/* ===== Motor de regras: funções puras sobre DATA ===== */
+const COMPLETE=["SP","PR","GO","RS","MG"];
+const UFN={AC:"Acre",AL:"Alagoas",AP:"Amapá",AM:"Amazonas",BA:"Bahia",CE:"Ceará",DF:"Distrito Federal",ES:"Espírito Santo",GO:"Goiás",MA:"Maranhão",MT:"Mato Grosso",MS:"Mato Grosso do Sul",MG:"Minas Gerais",PA:"Pará",PB:"Paraíba",PR:"Paraná",PE:"Pernambuco",PI:"Piauí",RJ:"Rio de Janeiro",RN:"Rio Grande do Norte",RS:"Rio Grande do Sul",RO:"Rondônia",RR:"Roraima",SC:"Santa Catarina",SP:"São Paulo",SE:"Sergipe",TO:"Tocantins"};
+const GRP={A:"Residencial",B:"Serviço de hospedagem",C:"Comercial",D:"Serviço profissional",E:"Educacional",F:"Reunião de público",G:"Garagem e serviços automotivos",H:"Saúde e institucional",I:"Industrial",J:"Depósito",K:"Grupo K",L:"Explosivos",M:"Ocupação especial"};
+const DIVL={"A-1":"Habitação unifamiliar","A-2":"Habitação multifamiliar (prédio de apartamentos)","A-3":"Habitação coletiva (pensionato, asilo)","B-1":"Hotel e similares","B-2":"Hotel residencial (apart-hotel)","C-1":"Comércio de baixa carga de incêndio","C-2":"Comércio de média e alta carga de incêndio","C-3":"Shopping center","C":"Comércio em geral","D":"Escritórios e serviços profissionais","D-1":"Escritórios e serviços profissionais","D-2":"Agência bancária","D-3":"Serviço de reparação","D-4":"Laboratório","E-1":"Escola em geral","E-2":"Escola especial","E-3":"Espaço de cultura física (academia)","E-4":"Centro de treinamento profissional","E-5":"Pré-escola, creche","E-6":"Escola para pessoas com deficiência","F-1":"Museu, local de objetos de valor","F-2":"Templo, local religioso","F-3":"Centro esportivo e de exibição","F-4":"Estação e terminal de passageiros","F-5":"Teatro, cinema, auditório","F-6":"Clube social, casa noturna","F-7":"Construção provisória (circo)","F-8":"Restaurante, lanchonete","F-9":"Recreação pública","F-10":"Local de exposição","F-11":"Local de reunião (F-11)","F-12":"Local de reunião (F-12)","G-1":"Garagem sem acesso de público","G-2":"Garagem com acesso de público","G-3":"Oficina e local com abastecimento","G-4":"Serviço de manutenção","G-5":"Hangar","G-6":"Garagem (G-6)","H-1":"Hospital veterinário","H-2":"Cuidados especiais (asilo, creche)","H-3":"Hospital e clínica com internação","H-4":"Repartição pública, delegacia","H-5":"Restrição de liberdade (presídio)","H-6":"Clínica e consultório","I-1":"Indústria de baixa carga de incêndio","I-2":"Indústria de média carga de incêndio","I-3":"Indústria de alta carga de incêndio","J":"Depósito","J-1":"Depósito incombustível","J-2":"Depósito de baixa carga","J-3":"Depósito de média carga","J-4":"Depósito de alta carga","K":"Grupo K (conforme norma do estado)","L-1":"Comércio de explosivos","L-2":"Indústria de explosivos","L-3":"Depósito de explosivos","M":"Ocupação especial","M-1":"Túnel","M-2":"Líquidos e gases inflamáveis","M-3":"Central de energia ou telecomunicação","M-4":"Propriedade de interesse histórico","M-5":"Ocupação especial (M-5)","M-6":"Ocupação especial (M-6)","M-11":"Ocupação especial (M-11)"};
+const TIPO={NE:"Escada não enclausurada (comum)",EP:"Escada enclausurada protegida",PF:"Escada enclausurada à prova de fumaça",PFP:"Escada à prova de fumaça pressurizada",AE:"Escada aberta externa"};
+
+/* casamento de códigos de ocupação: "X", "X-n", "X-n..X-m" */
+function tokMatch(tok,div,exactOnly){
+  const g=div[0], n=div.includes("-")?+div.split("-")[1]:null; let m;
+  if(m=tok.match(/^([A-Z])-(\d+)\.\.([A-Z])-(\d+)$/)) return n!==null&&m[1]===g&&n>=+m[2]&&n<=+m[4];
+  if(/^[A-Z]-\d+$/.test(tok)) return tok===div;
+  if(/^[A-Z]$/.test(tok)) return exactOnly?tok===div:tok===g;
+  return false;
+}
+function splitKey(k,sep){return k.split(sep||/\s*,\s*|\s*\/\s*/).filter(Boolean)}
+function findKey(obj,div){
+  const keys=Object.keys(obj).filter(k=>!k.startsWith("_"));
+  for(const k of keys) if(splitKey(k).some(t=>tokMatch(t,div,true))) return k;
+  for(const k of keys) if(splitKey(k).some(t=>tokMatch(t,div,false))) return k;
+  return null;
+}
+function divisoes(uf){
+  const tab=DATA.estados[uf].tabela_escadas, out=new Set();
+  for(const k of Object.keys(tab)) for(const t of splitKey(k)){
+    let m;
+    if(m=t.match(/^([A-Z])-(\d+)\.\.([A-Z])-(\d+)$/)){for(let i=+m[2];i<=+m[4];i++) out.add(m[1]+"-"+i)}
+    else out.add(t);
+  }
+  return [...out];
+}
+function faixas(uf){
+  const M=DATA._meta;
+  if(uf==="GO") return {lim:[6,12,30,90],rot:M.colunas_altura_GO};
+  if(uf==="MG") return {lim:[12,30,54],rot:DATA.estados.MG.colunas_altura};
+  return {lim:[6,12,30],rot:uf==="RS"?DATA.estados.RS.colunas:M.colunas_altura_SP_PR};
+}
+function faixaIdx(uf,h){const {lim}=faixas(uf);for(let i=0;i<lim.length;i++) if(h<=lim[i]) return i;return lim.length}
+
+/* população: coeficientes (SP/PR/GO base, com ajustes por estado) */
+const POPB={A:["dorm",2],B:["m2",15],C:["m2",5],D:["m2",7],E:["m2",1.5],F:["m2",1],G:["vagas",40],H:["m2",7],I:["m2",10],J:["m2",30],L:["m2",10],M:["m2",10],K:["m2",5],
+ "F-1":["m2",3],"F-4":["m2",3],"F-10":["m2",3],"F-2":["m2",1],"F-5":["m2",1],"F-8":["m2",1],"F-3":["m2",.5],"F-6":["m2",.5],"F-7":["m2",.5],"F-9":["m2",.5],"F-11":["m2",.5],"F-12":["m2",.5],
+ "G-4":["m2",20],"G-5":["m2",20],"G-6":["m2",20],"H-2":["dorm",2],"H-3":["leito",1.5],"L-1":["m2",3],"M-4":["m2",4]};
+const POPO={MG:{C:["m2",3],"F-9":["m2",1],"F-11":["m2",1],"G-2":["m2",20],"G-3":["m2",20]},RS:{"F-10":["m2",.5]},SP:{"F-11":["m2",1/3]}};
+const POPL={m2:"Área ocupada do pavimento (m²)",dorm:"Número de dormitórios do pavimento",vagas:"Número de vagas de veículo",leito:"Número de leitos do pavimento"};
+function popRegra(uf,div){const o=(POPO[uf]||{});return o[div]||POPB[div]||POPB[div[0]]||null}
+function popCalc(uf,div,q){const r=popRegra(uf,div);if(!r||!(q>0))return null;const [t,v]=r;
+  if(t==="m2"||t==="vagas") return Math.ceil(q/v);
+  return Math.ceil(q*v)}
+function popTxt(uf,div){const r=popRegra(uf,div);if(!r)return "";const [t,v]=r;
+  if(t==="m2") return v>=1?`1 pessoa por ${String(v).replace(".",",")} m²`:`${String(+(1/v).toFixed(2)).replace(".",",")} pessoas por m²`;
+  if(t==="vagas") return `1 pessoa por ${v} vagas`;
+  if(t==="dorm") return `${v} pessoas por dormitório`;
+  return `${String(v).replace(".",",")} pessoa por leito`}
+
+/* capacidade da unidade de passagem [acesso/descarga, escada/rampa, porta] */
+function capUP(uf,div){
+  if(uf==="MG"){const k=findKey(DATA.estados.MG.populacao_UP,div);return k?DATA.estados.MG.populacao_UP[k].UP:[100,60,100]}
+  const cap=DATA.dimensionamento_comum_SP_PR_GO.capacidade_UP, k=findKey(cap,div);
+  if(!k) return [100,60,100]; const c=cap[k]; return [c.acessos_descargas,c.escadas_rampas,c.portas];
+}
+
+/* distâncias máximas */
+const DALIAS={GO:{"G-6":"G-3"},RS:{"G-6":"G-3"},SP:{K:"C"}};
+function dTok(tok,div){
+  const g=div[0], n=div.includes("-")?+div.split("-")[1]:null; let m;
+  if(/^[A-Z]$/.test(tok)) return tok===g;
+  if(m=tok.match(/^([A-Z])(\d+)$/)) return n!==null&&m[1]===g&&+m[2]===n;
+  if(m=tok.match(/^([A-Z])(\d+)-([A-Z]?)(\d+)$/)) return n!==null&&m[1]===g&&n>=+m[2]&&n<=+m[4];
+  return false;
+}
+function pickSide(o,base,uf){
+  const ks=Object.keys(o).filter(k=>k===base||k.startsWith(base+"_"));
+  const ex=ks.find(k=>k===base+"_"+uf); if(ex) return o[ex];
+  const part=ks.find(k=>k!==base&&k.split("_").slice(1).includes(uf)); if(part) return o[part];
+  return o[base]||(ks[0]&&o[ks[0]]);
+}
+function distTabela(uf,div,terreo,spk,det,multi,classe){
+  const aviso=[]; let fator=1, row, idxMode="std";
+  const d0=(uf==="MG"?DATA.estados.MG:uf==="RS"?DATA.estados.RS:DATA.dimensionamento_comum_SP_PR_GO).distancias_maximas_m;
+  const dv=(DALIAS[uf]||{})[div]||div;
+  let grupos=Object.keys(d0).filter(k=>d0[k]&&typeof d0[k]==="object"&&!Array.isArray(d0[k])&&k!=="regras"&&k!=="notas");
+  let chosen=null;
+  if(uf==="MG"){
+    let c=classe||"Y"; if(c==="X"&&terreo) c="Y";
+    const side=terreo?"descarga":"demais";
+    if(c==="X"||c==="Y") row=d0[c].qualquer[side];
+    else{chosen=grupos.find(k=>k.startsWith("Z_")&&k.split("_").slice(1).some(t=>dTok(t,dv)));row=chosen&&d0[chosen][side]}
+  } else {
+    const toks=k=>k.split(" ")[0].split("_");
+    chosen=grupos.find(k=>toks(k).some(t=>!/^[A-Z]$/.test(t)&&dTok(t,dv)))||grupos.find(k=>toks(k).some(t=>dTok(t,dv)));
+    if(!chosen||(!dv.includes("-")&&grupos.filter(k=>toks(k).some(t=>dTok(t,dv))).length>1)){
+      const cand=grupos.filter(k=>toks(k).some(t=>dTok(t,dv)));
+      if(cand.length>1){
+        const sum=k=>{const r=d0[k];const a=(r.descarga||r.qualquer_andar||[]).filter(x=>typeof x==="number");return a.reduce((p,c)=>p+c,0)/(a.length||1)};
+        chosen=cand.sort((a,b)=>sum(a)-sum(b))[0]; aviso.push("O risco da divisão não foi informado (carga de incêndio): usei o grupo mais restritivo da tabela de distâncias.");
+      }
+    }
+    if(chosen){const o=d0[chosen];
+      if(o.qualquer_andar){row=o.qualquer_andar;idxMode="rs4";aviso.push("RS, F-5/F-6/F-11/F-12: a correspondência das 4 colunas da tabela ainda precisa de conferência no PDF.")}
+      else row=terreo?pickSide(o,"descarga",uf):pickSide(o,"demais",uf);}
+    if(uf==="RS"){ if(classe==="X") fator=.7; else if(classe==="Z") fator=1.3 }
+  }
+  if(!row) return {lim:null,aviso:aviso.concat(["Não encontrei a linha de distância desta ocupação na base."])};
+  let idx= idxMode==="rs4"? (multi?2:0)+(det?1:0) : (spk?4:0)+(multi?2:0)+(det?1:0);
+  let v=row[idx];
+  if(typeof v!=="number") return {lim:Infinity,aviso:aviso.concat(["A tabela não impõe limite para esta combinação (célula \"-\")."]),fator};
+  return {lim:v*fator,base:v,aviso,fator};
+}
+function distLimite(a,div,terreo,multi){
+  const r=distTabela(a.uf,div,terreo,a.spk==="s",a.det==="s",multi,a.cons);
+  if(r.lim===null||r.lim===Infinity) return r;
+  let f=1; if(a.leiaute==="n") f*=.7; if(a.fumaca==="s") f*=1.5;
+  r.lim=Math.round(r.lim*f*10)/10; return r;
+}
+
+/* ===== cálculo principal ===== */
+function compute(a){
+  const uf=a.uf;
+  if(!COMPLETE.includes(uf)) return {incompleto:true,uf};
+  const S=DATA.estados[uf], div=a.div, h=+a.h, area=+a.area, pop=+a.pop, dist=+a.dist;
+  const R={uf,div,h,notas:[],avisos:[],motivos:[],norma:S.norma,terrea:h<=0};
+  const idx=faixaIdx(uf,h), fx=faixas(uf);
+  R.faixas=fx.rot; R.faixaAtual=idx;
+  /* tipo de escada por altura */
+  const tab=S.tabela_escadas, key=findKey(tab,div);
+  let cel=key?tab[key]:null, nTab=null, bands=[];
+  if(typeof cel==="string"||!cel){R.tipo=null;R.avisos.push(`${div}: a norma de ${uf} remete a regulamento específico para esta ocupação. Consulte a norma estadual.`)}
+  else{
+    bands=cel.map(c=>{
+      if(uf==="MG"){ if(c==="+"||c==="-") return {code:null,flag:c}; return {code:c.tipo,n:c.n}; }
+      if(c==="-") return {code:null,flag:"-"};
+      let code=c.replace(/[*+]/g,""), flag=null;
+      if(/\*/.test(c)&&area>750){code="EP";flag="*"} else if(/\*/.test(c)) flag="*?";
+      if(/\+/.test(c)) flag="+";
+      return {code,flag};
+    });
+    const b=bands[idx]||{code:null};
+    R.bands=bands;
+    R.tipo=b.code; nTab=b.n??null;
+    if(b.flag==="+") R.avisos.push("A tabela marca esta célula com \"+\": consultar norma específica da ocupação.");
+    if(b.flag==="-"||(b.flag==="+"&&!b.code)) R.avisos.push("Não há tipo de escada previsto na tabela para esta ocupação nesta altura.");
+    if(b.flag==="*") R.motivos.push(`RS: pavimento acima de 750 m² exige escada enclausurada protegida (EP) em vez de NE.`);
+  }
+  if(R.terrea){R.tipo=null}
+  /* observações de tipo */
+  if(!R.terrea&&R.tipo){
+    if(["SP","PR","RS"].includes(uf)&&div==="A-2"&&h>30&&h<=50&&area<=750) R.notas.push("A-2 com pavimento de até 750 m² e altura entre 30 e 50 m: pode ser EP em vez de PF.");
+    if(uf==="PR"&&h>23) R.notas.push("PR: em edifício com pavimentos recuados ou sem acesso de viatura do bombeiro acima de 23 m, a escada deve ser PF.");
+    if(uf==="GO"&&h>90) R.notas.push("GO: acima de 90 m todas as edificações exigem escada pressurizada (PFP).");
+    if(R.tipo==="PF"||R.tipo==="EP") R.notas.push("A escada pressurizada (PFP) pode substituir EP e PF.");
+  }
+  /* quantidade de escadas */
+  let n=1;
+  if(!R.terrea){
+    const dois=(t)=>{n=2;R.motivos.push(t)};
+    if(uf==="SP"){ if(div==="A-2"){if(h>80)dois("A-2 acima de 80 m: mínimo de 2 escadas.")} else if(h>36) dois("Altura acima de 36 m: mínimo de 2 escadas."); }
+    if(uf==="PR"){ if(div==="A-2"){if(h>60){dois("A-2 acima de 60 m: 2 escadas (a 2ª pode ser substituída por elevador de emergência com gerador).")}} else if(h>36) dois("Altura acima de 36 m: mínimo de 2 escadas."); }
+    if(uf==="GO"){ if(div==="A-2"){if(h>120)dois("A-2 acima de 120 m: mínimo de 2 escadas.")} else if(h>60) dois("Altura acima de 60 m: mínimo de 2 escadas (a 2ª pode ser substituída por RRF e/ou elevador adicional)."); }
+    if(uf==="RS"){
+      if(div==="A-2"){if(h>72)dois("A-2 acima de 72 m: mínimo de 2 escadas.")}
+      else if(h>30&&area>=750) dois("Altura acima de 30 m com pavimento de 750 m² ou mais: mínimo de 2 escadas.");
+      if(/^(F-5|F-6|F-11|F-12|L-\d|M-1)$/.test(div)) dois(`${div}: sempre no mínimo 2 saídas/escadas.`);
+    }
+    if(uf==="MG"&&nTab!==null){ if(nTab>1) dois(`IT 08, Tabela 6: ${nTab} saídas para ${div} nesta altura.`); if(nTab===1)n=1;
+      if(nTab>2){n=nTab}
+      if(nTab>=2&&h<=36&&!["F-6","H-2","H-3"].includes(div)) R.notas.push("MG, nota F da Tabela 6: até 36 m, a quantidade mínima pode ser dispensada se a distância máxima (Tab. 5) e as unidades de passagem (Tab. 4) forem atendidas.");
+    }
+    /* lotação alta em reunião de público */
+    const limPop={SP:300,PR:200,GO:500}[uf];
+    if(limPop&&pop>limPop&&((uf==="SP"&&div[0]==="F")||(uf==="PR"&&/^(E-6|F-3|F-5|F-6|F-7|F-11|H-3)$/.test(div))||(uf==="GO"&&/^(F-2|F-3|F-5|F-6|F-7|F-11)$/.test(div))))
+      dois(`Lotação acima de ${limPop} pessoas em ${div}: mínimo de 2 saídas afastadas 10 m entre si.`);
+  }
+  /* distância */
+  const terreo=R.terrea;
+  const s1=distLimite(a,div,terreo,false), s2=distLimite(a,div,terreo,true);
+  R.dist={informada:dist,unica:s1.lim,multi:s2.lim,aviso:[...new Set([...(s1.aviso||[]),...(s2.aviso||[])])]};
+  if(s1.lim==null){R.dist.status="sem-dado"}
+  else if(dist<=s1.lim) R.dist.status="ok";
+  else if(s2.lim!=null&&dist<=s2.lim){R.dist.status="multi"; if(!R.terrea&&n<2) {n=2;R.motivos.push(`Distância de ${dist} m excede o limite de ${fmt(s1.lim)} m para saída única: exige mais de uma saída.`)} else if(R.terrea) R.motivos.push(`Distância de ${dist} m exige mais de uma saída.`)}
+  else R.dist.status="excede";
+  R.n=R.terrea?Math.max(1,R.dist.status==="multi"?2:1):n;
+  if(!R.motivos.length&&!R.terrea) R.motivos.push("Nenhum critério de altura, área, lotação ou distância exigiu escada adicional. A população e a largura podem exigir mais saídas.");
+  if(R.n>=2&&!R.terrea){
+    R.notas.push("Duas ou mais escadas: distância mínima de 10 m entre as portas de acesso e escadas adicionais do mesmo tipo.");
+    if(uf==="MG"||h<=45) R.notas.push("Uma das escadas pode ser aberta externa (AE).");
+    if(uf==="GO") R.notas.push("GO: a perda de qualquer saída deve deixar pelo menos 50% da capacidade exigida.");
+  }
+  /* largura */
+  const cap=capUP(uf,div), c=R.terrea?cap[2]:cap[1];
+  const up=Math.max(1,Math.ceil(pop/(c*R.n)));
+  let min=uf==="RS"?1.10:uf==="MG"?1.10:1.20;
+  if(div==="H-2"||div==="H-3"){ if(uf==="MG"||uf==="SP"||uf==="PR"||uf==="GO") min=1.65; if(uf==="RS"&&div==="H-3") min=2.2 }
+  R.larg={up,cap:c,calc:+(up*.55).toFixed(2),min,final:Math.max(min,+(up*.55).toFixed(2)),porEscada:Math.ceil(pop/R.n)};
+  if(R.terrea) R.larg.porta=true;
+  /* elevador de emergência */
+  let el={req:false,txt:""};
+  if(uf==="SP"||uf==="PR"){
+    if((div==="H-2"||div==="H-3")&&h>12) el={req:true,txt:`${div} acima de 12 m: elevador de emergência obrigatório.`};
+    else if((div==="A-2"||div==="A-3")&&h>80) el={req:true,txt:"A-2/A-3 acima de 80 m: elevador de emergência obrigatório."};
+    else if(!["A-2","A-3","G-1"].includes(div)&&h>60) el={req:true,txt:"Acima de 60 m: elevador de emergência obrigatório."};
+  }
+  if(uf==="GO"){
+    if((div==="A-2"||div==="A-3")&&h>90) el={req:true,txt:"A-2/A-3 acima de 90 m: elevador de emergência obrigatório."};
+    else if(!["A-2","A-3","G-1"].includes(div)&&h>60) el={req:true,txt:"Acima de 60 m: elevador de emergência obrigatório."};
+  }
+  if(uf==="MG"&&(div==="H-2"||div==="H-3")&&h>12) el={req:true,txt:`${div} acima de 12 m: elevador de emergência obrigatório (IT 08, nota D.2).`};
+  if(!el.req){
+    el.txt = uf==="RS"?"A RT 11 não define a altura: conferir LC 14.376/2013 e Decreto 51.803/2014."
+      : uf==="MG"?"A IT 08 só traz as características do elevador; a altura de exigência não consta nela."
+      : "Não exigido pelos critérios de altura e ocupação informados.";
+    el.indef=(uf==="RS"||uf==="MG");
+  }
+  R.elev=el;
+  /* área de refúgio */
+  let rf=false,rt="";
+  if(uf==="SP"){ if((div==="E-6"||div==="H-2")&&h>12||div==="H-3"&&h>6){rf=true;rt="30% da área do pavimento."} }
+  if(uf==="PR"){ if((["E-5","E-6","H-2"].includes(div)&&h>12)||(div==="H-3"&&h>6)){rf=true;rt="30% da área do pavimento."} }
+  if(uf==="GO"){ if((["E-6","H-2"].includes(div)&&h>12)||(div==="H-3"&&h>6)){ if(area<=750&&a.spk==="s"){rt="Dispensada: pavimento de até 750 m² com chuveiros automáticos."}else{rf=true;rt="30% da área do pavimento."} } }
+  if(uf==="RS"){ if((["E-5","E-6"].includes(div)&&h>6)||((div==="H-2"||div==="H-3")&&h>0)){rf=true;rt="30% do pavimento (máx. 2000 m² por área), em todos os pavimentos exceto o térreo."} }
+  if(uf==="MG"){ if((["E-5","E-6","H-2","H-3"].includes(div))&&h>12){rf=true;rt="30% dos leitos de cada pavimento."} }
+  R.refugio={req:rf,txt:rf?rt:(rt||"Não exigida pelos critérios informados.")};
+  /* comissão técnica */
+  const ct=S.comissao_tecnica_acima_de_m; R.comissao=ct&&h>ct?`Altura acima de ${ct} m: análise por comissão técnica do Corpo de Bombeiros.`:null;
+  /* subsolo */
+  if(a.sub==="s"){
+    const d=+a.subd, thr={SP:12,PR:12,RS:12,MG:12,GO:6}[uf];
+    const garagem=["G-1","G-2"].includes(div);
+    let t=S.subsolo;
+    const press=(d>thr)&&!((uf==="SP"||uf==="RS")&&garagem);
+    R.subsolo={txt:t,press,thr,d};
+    if(uf==="MG"&&(+a.suba>500||pop>100)&&div[0]!=="G") R.notas.push("MG, subsolo acima de 500 m² ou 100 pessoas: no mínimo 2 saídas em lados opostos, com 10 m entre elas (exceto garagem).");
+    if(uf==="MG"&&+a.suba>500&&!garagem) R.notas.push("MG: subsolo acima de 500 m² que não seja garagem exige área de refúgio (30% da área).");
+  }
+  /* classes construtivas */
+  if(uf==="RS"&&a.cons) R.notas.push(a.cons==="X"?"RS, classe X: distâncias reduzidas em 30%.":a.cons==="Z"?"RS, classe Z: distâncias aumentadas em 30%.":"RS, classe Y: distâncias da tabela.");
+  R.notas.push("Ocupação mista: vale a exigência da ocupação de maior risco. Largura da escada calculada pelo pavimento de maior população; acessos e descargas somam as populações que convergem a eles.");
+  /* avisos gerais */
+  if(uf==="PR") R.avisos.push("PR: os dados vêm da NPT 011 v6. Existe versão de jan/2024 ainda não comparada.");
+  if(uf==="RS") R.avisos.push("RS: RT 11 de 2016; não verifiquei se há revisão posterior.");
+  if(uf==="SP") R.avisos.push("SP: IT 11/2019; confirmar se há versão mais recente.");
+  R.avisos.push(...(R.dist.aviso||[]));
+  return R;
+}
+function fmt(x){return String(Math.round(x*10)/10).replace(".",",")}
+
+/* ===== Interface ===== */
+const A={uf:"",grp:"",div:"",h:"",area:"",sub:"n",subd:"",suba:"",cons:"Y",spk:"n",det:"n",fumaca:"n",leiaute:"s",dist:"",popq:"",pop:""};
+let cur=0;
+const $=s=>document.querySelector(s), app=$("#app");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const full=()=>COMPLETE.includes(A.uf);
+const STEPS=[
+ {id:"uf",n:"Estado",show:()=>true,ok:()=>!!A.uf},
+ {id:"occ",n:"Ocupação",show:()=>full(),ok:()=>!!A.div},
+ {id:"alt",n:"Altura e área",show:()=>full(),ok:()=>A.h!==""&&+A.h>=0&&+A.area>0},
+ {id:"sub",n:"Subsolo",show:()=>full(),ok:()=>A.sub==="n"||(A.subd!==""&&+A.subd>=0)},
+ {id:"cons",n:"Construção",show:()=>A.uf==="MG"||A.uf==="RS",ok:()=>!!A.cons},
+ {id:"prot",n:"Proteções",show:()=>full(),ok:()=>true},
+ {id:"dist",n:"Distância",show:()=>full(),ok:()=>A.dist!==""&&+A.dist>0},
+ {id:"pop",n:"População",show:()=>full(),ok:()=>+A.pop>0}
+];
+const vis=()=>STEPS.map((s,i)=>({...s,i})).filter(s=>s.show());
+function seg(name,val,opts){return `<div class="seg" role="radiogroup">${opts.map(([v,t])=>`<label><input type="radio" name="${name}" value="${v}" ${val===v?"checked":""}><span>${t}</span></label>`).join("")}</div>`}
+function stepHtml(id){
+ if(id==="uf"){
+  const grp=(t,l)=>`<optgroup label="${t}">${l.map(u=>`<option value="${u}" ${A.uf===u?"selected":""}>${UFN[u]}</option>`).join("")}</optgroup>`;
+  const rest=Object.keys(UFN).filter(u=>!COMPLETE.includes(u)&&u!=="SC").sort((a,b)=>UFN[a].localeCompare(UFN[b],"pt"));
+  return `<h2>Em que estado fica a edificação?</h2><p class="hint">Cada Corpo de Bombeiros tem a sua instrução técnica. A base completa cobre SP, PR, GO, RS e MG.</p>
+  <div class="fields"><div><label class="l" for="uf">Estado</label><select id="uf"><option value="">Selecione…</option>${grp("Base completa",["SP","PR","GO","RS","MG"].sort((a,b)=>UFN[a].localeCompare(UFN[b],"pt")))}${grp("Base parcial",["SC"])}${grp("Ainda sem dados",rest)}</select></div></div>`;
+ }
+ if(id==="occ"){
+  const ds=divisoes(A.uf), gs=[...new Set(ds.map(d=>d[0]))].sort();
+  const dv=ds.filter(d=>d[0]===A.grp).sort((a,b)=>a.localeCompare(b,"pt",{numeric:true}));
+  return `<h2>Qual é a ocupação?</h2><p class="hint">Classificação da instrução técnica de ${esc(UFN[A.uf])} (${esc(DATA.estados[A.uf].norma.split(" - ")[0].split(",")[0])}). Em ocupação mista, escolha a de maior risco.</p>
+  <div class="fields"><div><label class="l" for="grp">Grupo</label><select id="grp"><option value="">Selecione…</option>${gs.map(g=>`<option value="${g}" ${A.grp===g?"selected":""}>${g} · ${GRP[g]||""}</option>`).join("")}</select></div>
+  <div><label class="l" for="div">Divisão</label><select id="div" ${A.grp?"":"disabled"}><option value="">${A.grp?"Selecione…":"Escolha o grupo antes"}</option>${dv.map(d=>`<option value="${d}" ${A.div===d?"selected":""}>${d} · ${DIVL[d]||""}</option>`).join("")}</select></div></div>`;
+ }
+ if(id==="alt") return `<h2>Qual o porte da edificação?</h2><p class="hint">A altura é medida do piso de descarga ao piso do último pavimento ocupado (altura ascendente), sem contar casa de máquinas, barrilete e reservatório. Em edificação térrea, informe 0.</p>
+  <div class="fields row2"><div><label class="l" for="h">Altura (m)</label><input id="h" type="number" min="0" step="any" inputmode="decimal" value="${A.h}"></div>
+  <div><label class="l" for="area">Área do maior pavimento (m²)</label><input id="area" type="number" min="0" step="any" inputmode="decimal" value="${A.area}"></div></div>`;
+ if(id==="sub") return `<h2>Existe subsolo?</h2><p class="hint">Pavimento abaixo do piso de descarga. Ele muda o tipo de escada que serve esses andares e pode exigir pressurização.</p>
+  <div class="fields"><div>${seg("sub",A.sub,[["n","Não"],["s","Sim"]])}</div>
+  ${A.sub==="s"?`<div class="row2"><div><label class="l" for="subd">Profundidade (m)</label><input id="subd" type="number" min="0" step="any" inputmode="decimal" value="${A.subd}"></div><div><label class="l" for="suba">Área do subsolo (m²)</label><input id="suba" type="number" min="0" step="any" inputmode="decimal" value="${A.suba}"></div></div>`:""}</div>`;
+ if(id==="cons"){
+  const rs=A.uf==="RS";
+  const t=rs?[["X","Classe X","Crescimento e propagação do incêndio fáceis. Distâncias reduzidas em 30%."],["Y","Classe Y","Situação intermediária. Vale a tabela."],["Z","Classe Z","Propagação difícil. Distâncias aumentadas em 30%."]]
+   :[["X","Classe X","Sem TRRF e sem compartimentação vertical completa."],["Y","Classe Y","Tem TRRF ou compartimentação vertical completa, só uma das duas. Térreas valem no mínimo Y."],["Z","Classe Z","Tem TRRF e compartimentação vertical completa. É a recomendada."]];
+  return `<h2>Como é construída a edificação?</h2><p class="hint">${rs?"A RT 11 do RS corrige as distâncias máximas pela classe construtiva.":"A IT 08 de MG usa a classe construtiva para escolher a tabela de distâncias."} TRRF é o tempo requerido de resistência ao fogo da estrutura.</p>
+  <div class="cons">${t.map(([v,n,d])=>`<label><input type="radio" name="cons" value="${v}" ${A.cons===v?"checked":""}><b>${n}</b><small>${d}</small></label>`).join("")}</div>`;
+ }
+ if(id==="prot") return `<h2>Quais proteções a edificação terá?</h2><p class="hint">Elas aumentam a distância que se pode percorrer até a escada.</p>
+  <div class="fields">
+  <div class="tog"><div><b>Chuveiros automáticos</b><small>Sprinklers em toda a edificação</small></div>${seg("spk",A.spk,[["n","Não"],["s","Sim"]])}</div>
+  <div class="tog"><div><b>Detecção automática de incêndio</b><small>Em todos os ambientes</small></div>${seg("det",A.det,[["n","Não"],["s","Sim"]])}</div>
+  <div class="tog"><div><b>Controle de fumaça</b><small>Acrescenta 50% à distância</small></div>${seg("fumaca",A.fumaca,[["n","Não"],["s","Sim"]])}</div>
+  <div class="tog"><div><b>Leiaute definido em planta</b><small>Sem leiaute, a distância cai 30%</small></div>${seg("leiaute",A.leiaute,[["s","Sim"],["n","Não"]])}</div></div>`;
+ if(id==="dist"){
+  const t=+A.h<=0;
+  return `<h2>Qual a maior distância até a saída?</h2><p class="hint">Do ponto mais afastado do pavimento até a porta da escada ou saída, medida pelo caminho real, sem contar trechos dentro de escada enclausurada. ${t?"Edificação térrea: vale o limite do piso de descarga.":"Considerei um pavimento superior, que tem limite menor que o térreo."}</p>
+  <div class="fields"><div><label class="l" for="dist">Distância (m)</label><input id="dist" type="number" min="0" step="any" inputmode="decimal" value="${A.dist}"></div></div>`;
+ }
+ if(id==="pop"){
+  const r=popRegra(A.uf,A.div);
+  return `<h2>Quantas pessoas no pavimento mais cheio?</h2><p class="hint">A largura das escadas sai da população do pavimento de maior lotação. Informe direto ou use o cálculo pela norma.</p>
+  <div class="fields">${r?`<div class="calc"><div class="m">${esc(A.div)} · ${esc(popTxt(A.uf,A.div))}</div><div><label class="l" for="popq">${POPL[r[0]]}</label><input id="popq" type="number" min="0" step="any" inputmode="decimal" value="${A.popq}"></div></div>`:""}
+  <div><label class="l" for="pop">População do pavimento (pessoas)</label><input id="pop" type="number" min="1" step="1" inputmode="numeric" value="${A.pop}"></div></div>`;
+ }
+}
+function render(){
+ const v=vis(), pos=v.findIndex(s=>s.i===cur), s=STEPS[cur];
+ if(!s.show()){cur=v[Math.min(pos<0?0:pos,v.length-1)].i;return render()}
+ const last=pos===v.length-1;
+ app.innerHTML=`<section class="panel" aria-live="polite"><div class="prog">${v.map((x,k)=>`<i class="${k<=pos?"on":""}"></i>`).join("")}</div>
+  <div class="step-n">Etapa ${pos+1} de ${v.length} · ${s.n}</div>${stepHtml(s.id)}
+  ${s.id==="uf"&&A.uf==="SC"?`<div class="alert" style="margin-top:14px">Santa Catarina tem só as regras gerais na base. A tabela de tipos de escada por altura da IN 9 ainda não foi carregada.</div>`:""}
+  ${s.id==="uf"&&A.uf&&!COMPLETE.includes(A.uf)&&A.uf!=="SC"?`<div class="alert" style="margin-top:14px">Ainda não tenho a norma deste estado.</div>`:""}
+  <div class="nav"><button id="back" ${pos?"":"disabled"}>Voltar</button><button class="p" id="next" ${s.ok()?"":"disabled"}>${last||(s.id==="uf"&&!full()&&A.uf)?"Ver resultado":"Avançar"}</button></div></section>`;
+ bind(s);
+}
+function bind(s){
+ const upd=()=>{const b=$("#next");if(b)b.disabled=!s.ok()};
+ app.querySelectorAll("input[type=radio]").forEach(e=>e.addEventListener("change",()=>{A[e.name]=e.value;if(e.name==="sub"){render()}else upd()}));
+ app.querySelectorAll("input[type=number]").forEach(e=>e.addEventListener("input",()=>{
+   A[e.id]=e.value;
+   if(e.id==="popq"){const p=popCalc(A.uf,A.div,+e.value);A.pop=p?String(p):"";$("#pop").value=A.pop}
+   upd()}));
+ app.querySelectorAll("select").forEach(e=>e.addEventListener("change",()=>{
+   if(e.id==="uf"){A.uf=e.value;A.grp="";A.div="";render()}
+   else if(e.id==="grp"){A.grp=e.value;A.div="";render()}
+   else{A[e.id]=e.value;upd()}}));
+ $("#back").onclick=()=>{const v=vis(),p=v.findIndex(x=>x.i===cur);if(p>0){cur=v[p-1].i;render()}};
+ $("#next").onclick=()=>{const v=vis(),p=v.findIndex(x=>x.i===cur);if(p<v.length-1){cur=v[p+1].i;render()}else result()};
+ const f=app.querySelector("input[type=number]:not([disabled]),select:not([disabled])");
+}
+function band(R){
+  if(!R.bands) return "";
+  return `<div class="band" style="grid-template-columns:repeat(${R.faixas.length},minmax(0,1fr))" role="table" aria-label="Tipo de escada por altura">${R.faixas.map((r,i)=>{const b=R.bands[i]||{};const c=b.code||(b.flag?b.flag:"–");return `<div class="c ${i===R.faixaAtual?"cur":""}"><small>${esc(r.replace("<=","≤"))} m</small><b>${esc(c)}</b></div>`}).join("")}</div>`;
+}
+function result(){
+ const R=compute(A);
+ if(R.incompleto){
+  const sc=A.uf==="SC"?DATA.estados.SC:null;
+  app.innerHTML=`<section class="panel"><div class="step-n">${esc(UFN[A.uf])}</div><h2>${sc?"Base parcial":"Estado ainda não coberto"}</h2>
+  <p class="hint">${sc?"Para Santa Catarina tenho as regras gerais da IN 9 (larguras, rotas, acréscimo de distância por pé-direito), mas não a tabela de tipos de escada por altura e ocupação. Sem ela, não dou um resultado confiável.":"Ainda não tenho a instrução técnica de saídas de emergência deste estado. Consulte o site do Corpo de Bombeiros local."}</p>
+  ${sc?`<div class="card"><h3>Regras gerais da IN 9 (SC)</h3><ul><li>Largura mínima de escadas e rampas: ${fmt(sc.largura_minima_m.escadas_rampas.geral)} m (H-2 e H-3: ${fmt(sc.largura_minima_m.escadas_rampas["H-2_H-3"])} m).</li>${sc.minimo_2_rotas.slice(0,2).map(x=>`<li>Mínimo de 2 rotas: ${esc(x)}.</li>`).join("")}<li>${esc(sc.aplicacao)}</li></ul></div>`:""}
+  <div class="nav"><button class="p" id="again">Nova consulta</button></div></section>`;
+  $("#again").onclick=()=>{cur=0;render()};return;
+ }
+ const pl=R.n>1?"escadas":"escada";
+ let big, sub;
+ if(R.terrea){big=`Sem escada`;sub=`Edificação térrea: as saídas são portas e rotas horizontais. ${R.n>1?"A distância exige mais de uma saída.":"Uma saída atende, se a distância e a largura forem cumpridas."}`}
+ else if(R.tipo){big=`${R.n} ${pl} · ${R.tipo}`;sub=`${TIPO[R.tipo]}${R.n>1?", todas do mesmo tipo":""}`}
+ else {big=`${R.n} ${pl}`;sub="Tipo de escada a definir: veja os avisos abaixo."}
+ const ok=R.dist.status;
+ const dpill=ok==="ok"?`<span class="pill ok">dentro do limite</span>`:ok==="multi"?`<span class="pill mid">exige mais de uma saída</span>`:ok==="excede"?`<span class="pill no">acima do limite</span>`:"";
+ const L=(x)=>x==null?"sem dado":x===Infinity?"sem limite":`${fmt(x)} m`;
+ const cards=[];
+ cards.push(`<div class="card"><h3>${R.terrea?"Largura das saídas":"Largura de cada escada"}</h3><div class="v">${R.larg.final.toFixed(2).replace(".",",")} m</div><p>${R.larg.up} unidades de passagem de 0,55 m, para ${R.larg.porEscada} pessoas por ${R.terrea?"saída":"escada"} (capacidade ${R.larg.cap} pessoas por unidade). Mínimo da norma: ${R.larg.min.toFixed(2).replace(".",",")} m${R.larg.final===R.larg.min&&R.larg.calc<R.larg.min?", que prevaleceu sobre o cálculo":""}.</p></div>`);
+ cards.push(`<div class="card"><h3>Distância máxima a percorrer ${dpill}</h3><div class="v">${fmt(R.dist.informada)} m <span style="font-weight:600;font-size:.95rem;color:var(--ink2)">informados</span></div><p>Limite com saída única: <b>${L(R.dist.unica)}</b>. Com mais de uma saída: <b>${L(R.dist.multi)}</b>.${ok==="excede"?" Reduza o percurso, acrescente proteções (chuveiros, detecção, controle de fumaça) ou crie outra rota.":""}</p></div>`);
+ cards.push(`<div class="card"><h3>Elevador de emergência ${R.elev.req?`<span class="pill no">exigido</span>`:R.elev.indef?`<span class="pill mid">conferir</span>`:`<span class="pill ok">não exigido</span>`}</h3><p>${esc(R.elev.txt)}</p></div>`);
+ cards.push(`<div class="card"><h3>Área de refúgio ${R.refugio.req?`<span class="pill no">exigida</span>`:`<span class="pill ok">não exigida</span>`}</h3><p>${esc(R.refugio.txt)}</p></div>`);
+ if(R.subsolo) cards.push(`<div class="card"><h3>Escada do subsolo ${R.subsolo.press?`<span class="pill no">pressurizada</span>`:""}</h3><p>${R.subsolo.press?`Profundidade de ${fmt(R.subsolo.d)} m, acima de ${R.subsolo.thr} m: escada pressurizada. `:""}${esc(R.subsolo.txt)}</p></div>`);
+ if(R.comissao) cards.push(`<div class="card"><h3>Análise especial</h3><p>${esc(R.comissao)}</p></div>`);
+ app.innerHTML=`<section class="plate" role="status"><div class="k">${esc(UFN[A.uf])} · ${esc(A.div)} · ${fmt(R.h)} m</div><div class="big">${esc(big)}</div><div class="sub">${esc(sub)}</div>
+  <div class="ctx">${esc(R.norma)}</div></section>
+  ${band(R)}
+  <section class="card"><h3>Por que ${R.n} ${pl}?</h3><ul>${R.motivos.map(m=>`<li>${esc(m)}</li>`).join("")||"<li>Uma saída atende aos critérios informados.</li>"}</ul></section>
+  <div class="cards">${cards.join("")}</div>
+  ${R.avisos.length?`<div class="alert"><b>Confira antes de usar</b><ul>${R.avisos.map(m=>`<li>${esc(m)}</li>`).join("")}</ul></div>`:""}
+  ${R.notas.length?`<div class="card"><h3>Observações da norma</h3><ul>${R.notas.map(m=>`<li>${esc(m)}</li>`).join("")}</ul></div>`:""}
+  <div class="actions"><button id="back2">Alterar respostas</button><button id="copy">Copiar resumo</button><button class="p" id="again">Nova consulta</button></div>`;
+ $("#back2").onclick=()=>{cur=vis().slice(-1)[0].i;render()};
+ $("#again").onclick=()=>{Object.assign(A,{div:"",grp:"",h:"",area:"",sub:"n",subd:"",suba:"",dist:"",popq:"",pop:""});cur=0;render()};
+ $("#copy").onclick=()=>{const t=`${UFN[A.uf]} · ${A.div} · ${fmt(R.h)} m\n${big}\nLargura por escada: ${R.larg.final.toFixed(2)} m\nDistância: ${fmt(R.dist.informada)} m (limites ${L(R.dist.unica)} / ${L(R.dist.multi)})\nElevador de emergência: ${R.elev.req?"exigido":"não exigido"}\nNorma: ${R.norma}\nTriagem preliminar, confirmar na norma vigente.`;
+   const b=$("#copy");const done=()=>{b.textContent="Copiado";setTimeout(()=>b.textContent="Copiar resumo",1500)};
+   try{navigator.clipboard.writeText(t).then(done,()=>{b.textContent="Selecione e copie manualmente"})}catch(e){b.textContent="Cópia indisponível"}};
+ window.scrollTo(0,0);
+}
+$("#ver").textContent=DATA._meta.versao_base;
+render();
+
+</script>
+
+</body></html>

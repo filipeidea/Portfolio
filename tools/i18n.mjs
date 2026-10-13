@@ -48,7 +48,7 @@ function translateTag(tag, depthUp) {
   });
   // relative asset paths one folder deeper
   out = out.replace(/\s(href|src|srcset|data-src|data-srcset|data-draw|imagesrcset)="([^"]*)"/g, (m, a, v) => {
-    const fix = (u) => (/^(\.\.\/)*assets\//.test(u) ? "../" + u : u);
+    const fix = (u) => (/^(\.\.\/)*(assets|apps)\//.test(u) ? "../" + u : u);
     if (a.endsWith("srcset")) return ` ${a}="${v.split(", ").map((p) => { const [u, w] = p.split(" "); return fix(u) + (w ? " " + w : ""); }).join(", ")}"`;
     return ` ${a}="${fix(v)}"`;
   });
@@ -76,7 +76,7 @@ function translatePage(html, rel) {
 function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
     const f = path.join(dir, d.name);
-    if (d.isDirectory()) return d.name === "pt" || d.name === "assets" ? [] : walk(f);
+    if (d.isDirectory()) return d.name === "pt" || d.name === "assets" || d.name === "apps" ? [] : walk(f);
     return d.name.endsWith(".html") ? [f] : [];
   });
 }
@@ -114,7 +114,7 @@ for (const r of results) {
 const sm = path.join(SITE, "sitemap.xml");
 if (fs.existsSync(sm)) {
   const x = fs.readFileSync(sm, "utf8");
-  const pt = [...x.matchAll(/<loc>([^<]*)<\/loc>/g)].map((m) => `<url><loc>${m[1].replace(SITE_URL, SITE_URL + "pt/")}</loc></url>`).join("\n");
+  const pt = [...x.matchAll(/<loc>([^<]*)<\/loc>/g)].filter((m) => !m[1].includes("/apps/")).map((m) => `<url><loc>${m[1].replace(SITE_URL, SITE_URL + "pt/")}</loc></url>`).join("\n");
   fs.writeFileSync(sm, x.replace("</urlset>", pt + "\n</urlset>"));
 }
 console.log(`Portuguese: ${results.length} pages into _site/pt/` + (todo.size ? ` — ${todo.size} texts still in English (node tools/i18n.mjs --todo)` : ""));

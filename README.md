@@ -125,3 +125,14 @@ contains them; after that, the next PDF can be copied here directly.
 
 Images of Architects Office projects belong to the office and its clients. Only images already
 officially published, or approved by the office, should be shown here.
+
+## Lab (tools anyone can use)
+
+`lab.html` lists small tools, built with AI, that run entirely in the browser. Each tool is a
+self-contained page in `apps/<name>/index.html` (in Portuguese, since they follow Brazilian
+standards), copied as is to `_site/apps/`; `apps/lab.css` is the bar that links back to the site.
+The tools are not translated by `tools/i18n.mjs`. To add one, put its page in `apps/` and an entry
+in `TOOLS` in `tools/build.mjs` (with its Portuguese texts in `tools/pt.json`).
+
+- `apps/escadas/`: emergency stairs by state fire code (SP, PR, GO, RS, MG).
+- `apps/elevadores/`: elevator traffic by NBR 5665; saves and opens `.json`, exports `.csv`.

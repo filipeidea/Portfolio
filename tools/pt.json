@@ -728,5 +728,18 @@
  "publications and features": "publicações e matérias",
  "résumé": "currículo",
  "© 2026 Filipe Meltzer · CAU/BR 145917-1": "© 2026 Filipe Meltzer · CAU/BR 145917-1",
- "↑ Marateca, Portugal": "↑ Marateca, Portugal"
+ "↑ Marateca, Portugal": "↑ Marateca, Portugal",
+ "Lab": "Lab",
+ "Emergency stairs": "Escadas de emergência",
+ "Elevator traffic": "Tráfego de elevadores",
+ "Fire department codes of SP, PR, GO, RS and MG": "Normas do Corpo de Bombeiros de SP, PR, GO, RS e MG",
+ "How many emergency stairs a building needs, and of which type, from its state, use and height. It also gives the population, the exit width and the maximum travel distance, with the rule behind each answer.": "Quantas escadas de emergência um edifício precisa, e de que tipo, a partir do estado, do uso e da altura. Também calcula a população, a largura das saídas e a distância máxima a percorrer, com a regra por trás de cada resposta.",
+ "Traffic calculation for a group of elevators: population, round-trip time, interval and five-minute capacity, with a check against the limits and the number of cars that would meet them. The calculation can be saved and exported.": "Cálculo de tráfego de um grupo de elevadores: população, tempo total de viagem, intervalo e capacidade em cinco minutos, com a verificação dos limites e o número de carros que os atenderia. O cálculo pode ser salvo e exportado.",
+ "Open the tool": "Abrir a ferramenta",
+ "Tools for everyday design work": "Ferramentas para o dia a dia de projeto",
+ "Small apps I design and build with AI to take the repetitive part out of reading codes and sizing. Anyone can use them: they run entirely in the browser and nothing is sent to a server.": "Pequenos aplicativos que eu desenho e construo com IA para tirar a parte repetitiva da leitura de normas e do dimensionamento. Qualquer pessoa pode usar: funcionam inteiramente no navegador e nada é enviado a um servidor.",
+ "The tools are in Portuguese because they follow Brazilian standards. They are preliminary checks for early design stages: they do not replace the standards themselves, the design by a licensed professional, or the review by the authorities.": "As ferramentas estão em português porque seguem normas brasileiras. São verificações preliminares para as primeiras etapas do projeto: não substituem as próprias normas, o projeto de um profissional habilitado nem a análise dos órgãos competentes.",
+ "Lab — Filipe Meltzer, Architect & Urbanist": "Lab — Filipe Meltzer, Arquiteto e Urbanista",
+ "Free tools by Filipe Meltzer for early design stages: emergency stairs by state fire code and elevator traffic by NBR 5665.": "Ferramentas gratuitas de Filipe Meltzer para as primeiras etapas do projeto: escadas de emergência pelas normas estaduais dos bombeiros e tráfego de elevadores pela NBR 5665.",
+ "NBR 5665": "NBR 5665"
 }

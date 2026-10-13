@@ -531,3 +531,13 @@ figcaption { margin-top: 10px; }
 .nb-tile a.zoom { display: block; aspect-ratio: 4 / 5; background: #fff; padding: 6%; }
 .nb-tile img { width: 100%; height: 100%; object-fit: contain; }
 .nb-cap { margin: 10px 0 0; font-family: var(--mono); font-size: 15px; color: var(--muted); }
+
+/* ---------- lab ---------- */
+.lab-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: var(--gap); }
+.lab-item a { display: flex; flex-direction: column; height: 100%; padding: 28px 0 0; border-top: 1px solid var(--ink); text-decoration: none; }
+.lab-item .h3 { font-size: clamp(21px, 1.8vw, 26px); }
+.lab-std { margin: 8px 0 0; }
+.lab-text { margin: 18px 0 26px; max-width: 52ch; color: var(--ink-2); }
+.lab-item .link-arrow { margin-top: auto; align-self: flex-start; }
+.lab-item a:hover .h3, .lab-item a:hover .link-arrow { color: var(--accent); }
+.lab-note { margin: clamp(40px, 5vw, 64px) 0 0; max-width: 66ch; font-size: 14.5px; color: var(--muted); }

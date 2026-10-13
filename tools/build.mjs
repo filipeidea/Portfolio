@@ -85,7 +85,7 @@ function fig(r, it, sizes, cls = "", light = false) {
 
 // ---------- layout ----------
 const NAV = [["index.html#projects", "Projects", "projects"], ["sketchbook.html", "Sketchbook", "sketchbook"],
-  ["profile.html", "Profile", "profile"], ["recognition.html", "Recognition", "recognition"], ["resume.html", "Résumé", "resume"], ["#contact", "Contact", "contact"]];
+  ["profile.html", "Profile", "profile"], ["recognition.html", "Recognition", "recognition"], ["lab.html", "Lab", "lab"], ["resume.html", "Résumé", "resume"], ["#contact", "Contact", "contact"]];
 
 function layout({ r = "", file, title, description, page, body, og = "home", jsonld, extraHead = "" }) {
   const url = SITE_URL + (file === "index.html" ? "" : file);
@@ -139,7 +139,7 @@ ${body}
 <div class="foot-grid">
 <p class="foot-note">Open to conversations with architecture practices in Brazil and abroad.</p>
 <div><p class="mono">Reach</p><ul class="foot-links">${reach}</ul></div>
-<div><p class="mono">Pages</p><ul class="foot-links"><li><a href="${r}index.html#projects">Projects</a></li><li><a href="${r}sketchbook.html">Sketchbook</a></li><li><a href="${r}profile.html">Profile</a></li><li><a href="${r}recognition.html">Recognition</a></li><li><a href="${r}resume.html">Résumé</a></li></ul></div>
+<div><p class="mono">Pages</p><ul class="foot-links"><li><a href="${r}index.html#projects">Projects</a></li><li><a href="${r}sketchbook.html">Sketchbook</a></li><li><a href="${r}profile.html">Profile</a></li><li><a href="${r}recognition.html">Recognition</a></li><li><a href="${r}lab.html">Lab</a></li><li><a href="${r}resume.html">Résumé</a></li></ul></div>
 </div>
 <div class="foot-base"><span>© ${new Date().getFullYear()} Filipe Meltzer · ${esc(FACTS.registration)}</span><span>${esc(FACTS.base)}</span></div>
 </div>
@@ -635,6 +635,30 @@ function notebook() {
     description: "Travel drawings and watercolours by Filipe Meltzer.", body, extraHead: '<meta name="robots" content="noindex, nofollow">\n' });
 }
 
+// ---------- lab: small tools made with AI, usable by anyone (the apps live in apps/, in Portuguese) ----------
+const TOOLS = [
+  { href: "apps/escadas/", title: "Emergency stairs", std: "Fire department codes of SP, PR, GO, RS and MG",
+    text: "How many emergency stairs a building needs, and of which type, from its state, use and height. It also gives the population, the exit width and the maximum travel distance, with the rule behind each answer." },
+  { href: "apps/elevadores/", title: "Elevator traffic", std: "NBR 5665",
+    text: "Traffic calculation for a group of elevators: population, round-trip time, interval and five-minute capacity, with a check against the limits and the number of cars that would meet them. The calculation can be saved and exported." }
+];
+function lab() {
+  const items = TOOLS.map((t) => `<li class="lab-item"><a href="${t.href}"><h2 class="h3">${esc(t.title)}</h2><p class="lab-std mono">${esc(t.std)}</p><p class="lab-text">${esc(t.text)}</p><span class="link-arrow">Open the tool ${ARROW}</span></a></li>`).join("");
+  const body = `<main id="main">
+<header class="wrap p-head">
+<p class="mono kicker">Lab</p>
+<h1 class="h1">Tools for everyday design work</h1>
+<p class="lede">Small apps I design and build with AI to take the repetitive part out of reading codes and sizing. Anyone can use them: they run entirely in the browser and nothing is sent to a server.</p>
+</header>
+<div class="wrap section lab-page">
+<ul class="lab-list" role="list">${items}</ul>
+<p class="lab-note">The tools are in Portuguese because they follow Brazilian standards. They are preliminary checks for early design stages: they do not replace the standards themselves, the design by a licensed professional, or the review by the authorities.</p>
+</div>
+</main>`;
+  return layout({ file: "lab.html", page: "lab", title: "Lab — Filipe Meltzer, Architect & Urbanist",
+    description: "Free tools by Filipe Meltzer for early design stages: emergency stairs by state fire code and elevator traffic by NBR 5665.", body });
+}
+
 // ---------- legacy address, 404, sitemap ----------
 function legacy() {
   const list = PROJECTS.map((p) => `<li><a href="projects/${p.slug}.html">${esc(p.title)}</a></li>`).join("");
@@ -655,7 +679,7 @@ function copy(dir) { fs.cpSync(path.join(ROOT, dir), path.join(OUT, dir), { recu
 
 fs.mkdirSync(OUT, { recursive: true });
 for (const f of fs.readdirSync(OUT)) fs.rmSync(path.join(OUT, f), { recursive: true, force: true }); // empty, keep the folder
-for (const d of ["assets/css", "assets/js", "assets/img", "assets/draw", "assets/docs", "assets/og"]) copy(d);
+for (const d of ["apps", "assets/css", "assets/js", "assets/img", "assets/draw", "assets/docs", "assets/og"]) copy(d);
 fs.copyFileSync(path.join(ROOT, "assets/favicon.svg"), path.join(OUT, "assets/favicon.svg"));
 fs.writeFileSync(path.join(OUT, ".nojekyll"), "");
 write("index.html", home());
@@ -664,6 +688,7 @@ write("sketchbook.html", sketchbook());
 write("profile.html", profile());
 write("resume.html", resume());
 write("recognition.html", recognition());
+write("lab.html", lab());
 write("notebook.html", notebook()); // unlisted: not in the menu or the sitemap
 write("project.html", legacy());
 for (const [from, to] of Object.entries(ALIASES)) {
@@ -673,7 +698,7 @@ for (const [from, to] of Object.entries(ALIASES)) {
     `<body><p>This project is now at <a href="${to}.html">${esc(p.title)}</a>.</p></body></html>\n`);
 }
 write("404.html", notFound());
-const urls = ["", "profile.html", "sketchbook.html", "recognition.html", "resume.html", ...PROJECTS.map((p) => `projects/${p.slug}.html`)];
+const urls = ["", "profile.html", "sketchbook.html", "recognition.html", "lab.html", "apps/escadas/", "apps/elevadores/", "resume.html", ...PROJECTS.map((p) => `projects/${p.slug}.html`)];
 write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${SITE_URL}${u}</loc></url>`).join("\n")}\n</urlset>\n`);
 console.log(`Built ${urls.length} pages + project.html + 404.html into _site/`);
 

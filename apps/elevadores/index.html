@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tráfego de elevadores — Filipe Meltzer</title>
+<meta name="description" content="Cálculo de tráfego de elevadores pela NBR 5665: intervalo e capacidade de tráfego do grupo. Dimensionamento preliminar.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&amp;family=Newsreader:opsz,wght@6..72,400&amp;display=swap">
+<link rel="stylesheet" href="../lab.css">
+<style>
+/* Layout: ficha técnica em duas colunas — entradas à esquerda, painel de resultado fixo à direita com mostradores tipo indicador de andar */
+:root{
+  --bg:#eef0f2; --paper:#ffffff; --ink:#1b2027; --muted:#5d6672; --line:#d5dae0; --line-strong:#b9c0c9;
+  --accent:#2d5b88; --accent-soft:#e3ecf5; --input:#f7f9fb; --calc:#f1f3f6;
+  --ok:#1f7a4a; --ok-soft:#e1f2e8; --bad:#b3261e; --bad-soft:#fbe5e3; --warn:#8a5a00; --warn-soft:#fdf1d8;
+  --panel:#16191d; --panel-line:#2c3138; --led:#ffb020; --led-dim:#5a4520; --panel-text:#c9ced6;
+  --display:"Archivo",system-ui,sans-serif; --body:"Archivo",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.45;margin:0}
+.wrap{max-width:1320px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+header.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between;padding-block:24px 18px;border-bottom:2px solid var(--ink);margin-bottom:20px}
+.brand h1{font-family:var(--display);font-stretch:72%;font-weight:800;font-size:clamp(28px,4vw,40px);line-height:1;letter-spacing:-.01em;margin:0;text-wrap:balance;text-transform:none}
+.brand p{margin:6px 0 0;color:var(--muted);font-size:13px}
+.brand .norm{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.04em}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+button,.btn{font:inherit;font-weight:600;font-size:13px;border:1px solid var(--line-strong);background:var(--paper);color:var(--ink);padding:7px 12px;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+button:hover,.btn:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+button.primary:hover{filter:brightness(1.1);color:var(--paper)}
+button.ghost{border-color:transparent;background:transparent;color:var(--muted);padding:4px 8px}
+button.ghost:hover{color:var(--bad)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.notice{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px}
+.notice b{font-weight:700}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px;align-items:start}
+@media (max-width:1000px){.grid{grid-template-columns:minmax(0,1fr)}}
+section.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px 18px 20px;min-width:0}
+.stack{display:flex;flex-direction:column;gap:20px;min-width:0}
+.sec-head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+.sec-head h2{font-family:var(--display);font-stretch:80%;font-weight:750;font-size:19px;margin:0;text-transform:none;letter-spacing:.02em;display:flex;gap:10px;align-items:baseline}
+.sec-head h2 .n{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600;letter-spacing:0}
+.hint{color:var(--muted);font-size:12.5px;margin:0}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:11.5px;font-weight:600;text-transform:none;letter-spacing:.06em;color:var(--muted);min-width:0}
+input,select,textarea{font:inherit;font-size:14px;color:var(--ink);background:var(--input);border:1px solid var(--line-strong);border-radius:6px;padding:7px 9px;width:100%;min-width:0;text-transform:none;letter-spacing:0;font-weight:400}
+input[type=number]{font-family:var(--mono);font-size:13.5px}
+input[type=checkbox]{width:auto;accent-color:var(--accent);transform:scale(1.15)}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{font-size:12.5px;background:var(--calc);border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--muted)}
+.chip b{color:var(--ink);font-family:var(--mono);font-weight:600}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:18px 0 12px;flex-wrap:wrap}
+.tab{border:none;border-bottom:2px solid transparent;border-radius:0;background:none;padding:8px 12px;color:var(--muted)}
+.tab[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab .badge{font-family:var(--mono);font-size:11.5px;background:var(--calc);border-radius:4px;padding:1px 6px;color:var(--ink)}
+.tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+thead th{font-size:11px;text-transform:none;letter-spacing:.06em;color:var(--muted);background:var(--calc);font-weight:700;white-space:nowrap}
+tbody tr:last-child td,tbody tr:last-child th{border-bottom:none}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td input,td select{padding:5px 7px}
+tfoot td{background:var(--calc);font-weight:700;border-top:1px solid var(--line-strong);border-bottom:none}
+.addrow{margin-top:10px}
+.popsum{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:end;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line-strong)}
+.popsum .big{font-family:var(--mono);font-size:26px;font-weight:600;line-height:1}
+.popsum .big small{font-size:12px;color:var(--muted);font-family:var(--body);font-weight:500;margin-left:4px}
+/* elevator input matrix */
+table.matrix{min-width:640px}
+table.matrix th[scope=row]{font-weight:500;white-space:nowrap;background:var(--paper);position:sticky;left:0;z-index:1;min-width:220px}
+table.matrix th[scope=row] .it{font-family:var(--mono);color:var(--accent);font-size:11.5px;display:inline-block;width:22px}
+table.matrix thead th{text-align:center}
+table.matrix td{min-width:118px}
+table.matrix tr.calc td{background:var(--calc)}
+table.matrix tr.grp th[scope=row]{background:var(--calc);font-size:11px;text-transform:none;letter-spacing:.08em;color:var(--muted);font-weight:700}
+table.matrix tr.grp td{background:var(--calc)}
+table.matrix tr.key td,table.matrix tr.key th[scope=row]{font-weight:700}
+td.err{box-shadow:inset 0 0 0 2px var(--bad)}
+.errlist{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.errlist li{color:var(--bad);font-size:13px}
+.errlist li::before{content:"✕ ";font-weight:700}
+/* result panel */
+aside.panel{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:var(--panel);color:var(--panel-text);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--panel-line)}
+@media (max-width:1000px){aside.panel{position:static}}
+aside.panel h2{font-family:var(--display);font-stretch:75%;font-weight:750;text-transform:none;font-size:15px;letter-spacing:.08em;margin:0;color:var(--panel-text);display:flex;justify-content:space-between;align-items:center}
+.verdict{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:4px;letter-spacing:.06em}
+.verdict.ok{background:var(--ok);color:var(--panel)}
+.verdict.bad{background:var(--bad);color:var(--panel)}
+.verdict.na{background:var(--panel-line);color:var(--panel-text)}
+.ind{border:1px solid var(--panel-line);border-radius:8px;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:end}
+.ind .lbl{font-size:11px;text-transform:none;letter-spacing:.08em;color:var(--panel-text);opacity:.8;grid-column:1/-1}
+.ind .val{font-family:var(--mono);font-size:40px;line-height:1.05;color:var(--led);text-shadow:0 0 12px color-mix(in srgb,var(--led) 40%,transparent);font-variant-numeric:tabular-nums}
+.ind .val .u{font-size:15px;margin-left:4px;opacity:.75}
+.ind .ref{font-family:var(--mono);font-size:12px;text-align:right;opacity:.85;padding-bottom:6px}
+.ind .bar{grid-column:1/-1;height:5px;background:var(--led-dim);border-radius:3px;overflow:hidden;margin-top:8px}
+.ind .bar i{display:block;height:100%;background:var(--led)}
+.ind.bad .bar i{background:var(--bad)}
+.ind.ok .bar i{background:var(--ok)}
+.ind .st{grid-column:1/-1;font-size:12.5px;margin-top:6px}
+.ind.bad .st{color:var(--bad)} .ind.ok .st{color:var(--ok)}
+.kv{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:13px;border-top:1px solid var(--panel-line);padding-top:12px}
+.kv dt{opacity:.8} .kv dd{margin:0;font-family:var(--mono);text-align:right;color:var(--panel-text)}
+.sugg{font-size:13px;background:color-mix(in srgb,var(--led) 12%,transparent);border:1px solid var(--led-dim);color:var(--panel-text);border-radius:8px;padding:10px 12px}
+.sugg b{color:var(--led)}
+.foot{color:var(--muted);font-size:12px;margin-top:28px;display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px}
+.foot a{color:var(--accent)}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:13px;z-index:10;max-width:calc(100% - 32px)}
+.mute{color:var(--muted)}
+.ref-table{font-size:12.5px}
+details summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:13px}
+@media (prefers-reduced-motion:no-preference){.ind .bar i{transition:width .3s ease}}
+:root{--bg:#fff;--paper:#fff;--ink:#111;--muted:#5a5a5a;--line:#e1e1e1;--line-strong:#c9c9c9;--accent:#23308a;--accent-soft:#e8eaf6;--input:#fff;--calc:#f6f6f6;
+ --panel:#fff;--panel-line:#e1e1e1;--panel-text:#111;--led:#23308a;--led-dim:#e4e7f3;
+ --display:"Archivo",Arial,sans-serif;--body:"Archivo",Arial,sans-serif;--mono:"Archivo",Arial,sans-serif}
+body{font-size:14.5px}
+.brand h1,.sec-head h2,aside.panel h2{font-stretch:normal;font-weight:600;letter-spacing:-.02em}
+.brand h1{font-size:clamp(24px,3vw,32px)}
+.sec-head h2{font-size:18px}aside.panel h2{font-size:16px;letter-spacing:-.01em}
+label.f,thead th,table.matrix tr.grp th[scope=row],.ind .lbl{letter-spacing:0;font-size:12.5px;font-weight:500}
+header.top{border-bottom:1px solid var(--ink)}
+section.card,aside.panel,.ind{border-radius:2px}
+.ind .val{text-shadow:none;font-weight:600;font-size:36px}
+.verdict{letter-spacing:0;font-family:var(--body);font-size:12px}
+.verdict.ok,.verdict.bad{color:#fff}
+input[type=number],td.num,th.num{font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<nav class="lab-bar" aria-label="Portfólio"><a class="lab-home" href="../../pt/index.html">Filipe Meltzer <small>Arquiteto e Urbanista</small></a><a class="lab-back" href="../../pt/lab.html">Lab</a></nav>
+<script>(function(){var r=document.referrer;if(r&&/\/Portfolio\/(?!pt\/)/.test(r)){var b=document.querySelectorAll(".lab-bar a");b[0].href="../../index.html";b[0].lastChild.textContent="Architect & Urbanist";b[1].href="../../lab.html"}})()</script>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="norm">NBR 5665 · Cálculo de tráfego</span>
+      <h1>Tráfego de elevadores</h1>
+      <p>Dimensionamento preliminar para Estudo Preliminar. Validação final com consultor de elevadores.</p>
+    </div>
+    <div class="actions">
+      <button id="btnNew" type="button">Novo cálculo</button>
+      <button id="btnOpen" type="button">Abrir cálculo</button>
+      <input id="fileOpen" type="file" accept=".json,application/json" hidden>
+      <button id="btnCsv" type="button" hidden>Exportar memória (.csv)</button>
+      <button id="btnSave" type="button" class="primary" hidden>Salvar cálculo (.json)</button>
+      <button id="btnCopy" type="button" hidden>Copiar dados</button>
+    </div>
+  </header>
+
+  <div class="notice" id="exampleNotice" hidden>
+    <span><b>Exemplo carregado.</b> Os valores abaixo são fictícios, só para mostrar o cálculo funcionando.</span>
+    <button type="button" id="btnClearExample">Começar em branco</button>
+  </div>
+
+  <div class="grid">
+    <div class="stack">
+
+      <section class="card" aria-labelledby="h-id">
+        <div class="sec-head"><h2 id="h-id"><span class="n">A</span>Identificação</h2></div>
+        <div class="fields">
+          <label class="f">Projeto<input id="m_projeto" data-meta="projeto" placeholder="Nome do projeto"></label>
+          <label class="f">Torre / hall<input id="m_torre" data-meta="torre" placeholder="Torre A"></label>
+          <label class="f">Cálculo realizado por<input id="m_resp" data-meta="responsavel" placeholder="Nome do responsável"></label>
+          <label class="f">Etapa de referência<input id="m_etapa" data-meta="etapa" placeholder="EP1_R00"></label>
+          <label class="f">Data do cálculo<input id="m_data" data-meta="data" type="date"></label>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="h-pop">
+        <div class="sec-head">
+          <h2 id="h-pop"><span class="n">1–5</span>Destinação e população</h2>
+          <p class="hint">Um cálculo por uso. Torre com mais de um uso: salve um cálculo para cada.</p>
+        </div>
+        <div class="fields">
+          <label class="f">Destinação de uso<select id="uso"></select></label>
+          <label class="f">População considerada<select id="popSource">
+            <option value="auto">Automática pelo uso</option>
+            <option value="resid">Total residencial / hotel</option>
+            <option value="outros">Total outros usos</option>
+            <option value="manual">Informar manualmente</option>
+          </select></label>
+          <label class="f" id="popManualWrap" hidden>População manual (pessoas)<input id="popManual" type="number" min="0" step="1" inputmode="numeric"></label>
+        </div>
+        <div class="chips" id="usoChips"></div>
+
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" id="tab-resid" aria-controls="pane-resid" aria-selected="true" type="button">Residencial ou hotel <span class="badge" id="bResid">0</span></button>
+          <button class="tab" role="tab" id="tab-outros" aria-controls="pane-outros" aria-selected="false" type="button">Outros usos <span class="badge" id="bOutros">0</span></button>
+        </div>
+
+        <div id="pane-resid" role="tabpanel" aria-labelledby="tab-resid">
+          <div class="tscroll">
+            <table>
+              <thead><tr><th>Tipo</th><th>Tipologia</th><th>Quarto de serviço</th><th class="num">Qtd. na torre</th><th class="num">Pop./unid.</th><th class="num">Pop. torre</th><th>Obs.</th><th></th></tr></thead>
+              <tbody id="residBody"></tbody>
+              <tfoot><tr><td colspan="3">Total</td><td class="num" id="residUn">0</td><td></td><td class="num" id="residPop">0</td><td colspan="2"></td></tr></tfoot>
+            </table>
+          </div>
+          <button type="button" class="addrow" id="addResid">+ Adicionar tipologia</button>
+        </div>
+
+        <div id="pane-outros" role="tabpanel" aria-labelledby="tab-outros" hidden>
+          <div class="tscroll">
+            <table>
+              <thead><tr><th>Uso</th><th>Pavto. tipo</th><th class="num">Nº pavtos.</th><th class="num">Área / tipo (m²)</th><th class="num">m² / pessoa</th><th class="num">Pop. do tipo</th><th class="num">Pop. total</th><th>Obs.</th><th></th></tr></thead>
+              <tbody id="outrosBody"></tbody>
+              <tfoot><tr><td colspan="5">Total</td><td class="num" id="outrosTipo">0</td><td class="num" id="outrosPop">0</td><td colspan="2"></td></tr></tfoot>
+            </table>
+          </div>
+          <button type="button" class="addrow" id="addOutros">+ Adicionar uso</button>
+          <p class="hint" style="margin-top:10px">Hospital e edifício-garagem não têm cálculo automático de população. Calcule pelo manual de transporte vertical e use “Informar manualmente”.</p>
+        </div>
+
+        <div class="popsum">
+          <div><div class="hint">População do prédio (item 3)</div><div class="big" id="popBig">0<small>pessoas</small></div></div>
+          <div><div class="hint">A transportar em 5 min (item 4)</div><div class="big" id="pop5Big">0<small>pessoas</small></div></div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="h-el">
+        <div class="sec-head">
+          <h2 id="h-el"><span class="n">6–26</span>Elevadores do grupo</h2>
+          <p class="hint">Só elevadores do mesmo hall que atendem os mesmos pavimentos. Até 6 tipos.</p>
+        </div>
+        <div class="tscroll">
+          <table class="matrix" id="matrix"></table>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button type="button" id="addEl">+ Adicionar tipo de elevador</button>
+        </div>
+        <ul class="errlist" id="errList"></ul>
+      </section>
+
+      <section class="card" aria-labelledby="h-obs">
+        <div class="sec-head"><h2 id="h-obs">Observações</h2></div>
+        <textarea id="obs" placeholder="Ex.: poço 1,80 m · última altura 4,90 m · casa de máquinas 2,60 m"></textarea>
+        <details style="margin-top:14px">
+          <summary>Tabelas de referência usadas no cálculo</summary>
+          <div class="fields" style="margin-top:12px;align-items:start">
+            <div class="tscroll"><table class="ref-table"><thead><tr><th>Velocidade (m/s)</th><th class="num">Acel. + ret. por parada (s)</th></tr></thead><tbody id="refVel"></tbody></table></div>
+            <div class="tscroll"><table class="ref-table"><thead><tr><th>Porta</th><th class="num">Abertura + fech. (s)</th></tr></thead><tbody>
+              <tr><td>AC · abertura central</td><td class="num">3,9</td></tr>
+              <tr><td>AL · abertura lateral</td><td class="num">5,5</td></tr>
+              <tr><td>EV · eixo vertical, manual</td><td class="num">6,0</td></tr>
+            </tbody></table>
+            <p class="hint" style="padding:8px">Entrada e saída por passageiro: 2,4 s com vão até 1,00 m; 2,0 s com vão de 1,10 m ou mais.</p></div>
+            <div class="tscroll"><table class="ref-table"><thead><tr><th>Uso</th><th class="num">% em 5 min</th></tr></thead><tbody id="refUso"></tbody></table></div>
+          </div>
+        </details>
+      </section>
+    </div>
+
+    <aside class="panel" aria-labelledby="h-res">
+      <h2 id="h-res">Resultado do grupo <span class="verdict na" id="vAll">—</span></h2>
+      <div class="ind" id="indInt">
+        <span class="lbl">Intervalo de tráfego (item 24)</span>
+        <span class="val" id="vInt">—</span><span class="ref" id="rInt"></span>
+        <span class="bar"><i id="barInt" style="width:0"></i></span>
+        <span class="st" id="sInt"></span>
+      </div>
+      <div class="ind" id="indCap">
+        <span class="lbl">Capacidade de tráfego em 5 min (item 26)</span>
+        <span class="val" id="vCap">—</span><span class="ref" id="rCap"></span>
+        <span class="bar"><i id="barCap" style="width:0"></i></span>
+        <span class="st" id="sCap"></span>
+      </div>
+      <div class="sugg" id="sugg" hidden></div>
+      <dl class="kv" id="kv"></dl>
+    </aside>
+  </div>
+
+  <div class="foot">
+    <span>Modelo de cálculo: Atlas Schindler, com base na NBR 5665. Ferramenta de apoio ao estudo preliminar: os dados ficam só no seu navegador.</span>
+    <span><a href="https://www.schindler.com.br/content/dam/website/br/docs/manual-transporte-vertical.pdf/_jcr_content/renditions/original./manual-transporte-vertical.pdf" target="_blank" rel="noopener">Manual de transporte vertical</a> · <a href="https://digitalplan.schindler.com/" target="_blank" rel="noopener">Simulador Atlas Schindler</a></span>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ---------- tabelas de base (aba BASE / ELEV. USO) ---------- */
+const TIPOLOGIAS=[["Quarto Hotel",2],["Studio",2],["1Q",2],["1S",2],["2Q",4],["2Q-1S",4],["2S",4],["3Q",5],["3Q-1S",5],["3Q-2S",5],["3S",5],["4Q-1S",6],["4Q-2S",6],["4Q-3S",6],["4S",6],["5Q-2S",6],["5Q-3S",6],["5Q-4S",6],["5S",6]];
+const OUTROS_USOS=[["Escritórios",7],["Restaurante (salão)",1.5],["Salas de aula (escola)",2],["Salas administrativas (escola)",7],["Lojas",4]];
+// [nome, % a transportar em 5 min, grupo: E=escritório, A=apartamento, O=outros, fonte de população automática]
+const USOS=[["Escritórios Única Entidade",15,"E","outros"],["Escritórios Geral, Consultórios",12,"E","outros"],["Hospitais com Duto de Lixo e Monta Cargas",8,"O","manual"],["Hospitais SEM Duto de Lixo e Monta Cargas",12,"O","manual"],["Escolas",20,"O","outros"],["Hoteis",10,"O","resid"],["Apartamentos",10,"A","resid"],["Lojas e Centros Comerciais",10,"O","outros"],["Garagem com rampa sem manobrista",10,"O","manual"]];
+const CAPS=[8,10,12,14,16];
+const VELS=[1.5,1.75,2,2.25,2.5,2.75,3];
+const ABERTURAS=[0.8,0.9,1,1.1,1.2,1.3,1.4,1.5];
+const PORTAS={AC:3.9,AL:5.5,EV:6};
+const PORTA_NOMES={AC:"AC · central",AL:"AL · lateral",EV:"EV · manual"};
+
+/* ---------- motor de cálculo (fórmulas da aba ELEV. USO) ---------- */
+function accel(v){ // item 14
+  if(v<=0.75) return 2.5;
+  if(v<=1) return 3+(v-1)*2;
+  if(v<=1.25) return 3;
+  if(v<=2.75) return 4.5+(v-2)*2;
+  return 6;
+}
+function calcElevator(e){
+  const n=+e.n||0; if(n<1) return null;
+  const P=+e.paradas, c=+e.capCalc, L=+e.percurso, v=+e.v;
+  const np=P-(P-1)*Math.pow((P-2)/(P-1),c);           // 9
+  const a=accel(v);                                     // 14
+  const tp=PORTAS[e.porta]??6;                          // 15
+  const ts=(+e.abertura>=1.1)?2:2.4;                    // 16
+  const T1=L*2/v, T2=a*np/2, T3=tp*np, T4=ts*c;         // 17-20
+  const soma=T1+T2+T3+T4, adic=(T3+T4)*0.1, ttv=soma+adic; // 21-23
+  const intervalo=ttv/n;                                // 24
+  const capT=c*300/ttv;                                 // 25
+  const capTraf=n*capT;                                 // 26
+  const grau=ttv/4+intervalo/2;
+  const dmin=v*(v/0.9+0.9/1.5);
+  return {n,np,a,tp,ts,T1,T2,T3,T4,soma,adic,ttv,intervalo,capT,capTraf,grau,dmin};
+}
+function popResid(s){let un=0,pop=0;for(const r of s.resid){const q=+r.qtd||0;const pu=(TIPOLOGIAS.find(t=>t[0]===r.tipologia)?.[1]||0)+(r.servico?1:0);r._pu=pu;r._pop=q*pu;un+=q;pop+=q*pu}return {un,pop}}
+function popOutros(s){let tipo=0,pop=0;for(const r of s.outros){const m2=OUTROS_USOS.find(t=>t[0]===r.uso)?.[1]||0;r._m2=m2;r._pt=m2?Math.ceil((+r.area||0)/m2-1e-9):0;r._pop=(+r.npav||0)*r._pt;tipo+=r._pt;pop+=r._pop}return {tipo,pop}}
+function compute(s){
+  const R=popResid(s), O=popOutros(s);
+  const uso=USOS.find(u=>u[0]===s.uso)||USOS[6];
+  const src=s.popSource==="auto"?uso[3]:s.popSource;
+  const pop=src==="resid"?R.pop:src==="outros"?O.pop:(+s.popManual||0);
+  const pct=uso[1], pop5=pop*pct/100;
+  const els=s.elev.map(calcElevator);
+  const errors=validate(s);
+  let N=0,sumT=0,cap=0;
+  els.forEach(r=>{if(r){N+=r.n;sumT+=r.ttv*r.n;cap+=r.capTraf}});
+  const grupo=uso[2];
+  const intMax=grupo==="A"?null:N===1?80:N===2?60:N===3?50:grupo==="E"?40:45;
+  const intervalo=N?sumT/N/N:NaN;
+  const okInt=intMax==null?null:(N?Math.floor(intervalo+0.5)<=intMax:false);
+  const okCap=N?cap>=pop5:false;
+  return {R,O,uso,src,pop,pct,pop5,els,N,intervalo,intMax,okInt,okCap,cap,errors,valid:!errors.length&&N>0};
+}
+function validate(s){
+  const err=[];
+  s.elev.forEach((e,i)=>{
+    const nm=e.id||("Elevador "+(i+1));
+    if(!(+e.n>=1)) return;
+    if(+e.capCalc>+e.cap) err.push({i,f:"capCalc",m:`${nm}: capacidade para cálculo deve ser menor ou igual à nominal.`});
+    if(!(+e.capCalc>0)) err.push({i,f:"capCalc",m:`${nm}: informe a capacidade para cálculo.`});
+    if(!(+e.paradas>=2)) err.push({i,f:"paradas",m:`${nm}: informe o número de paradas (mínimo 2).`});
+    if(!(+e.percurso>0)) err.push({i,f:"percurso",m:`${nm}: informe o percurso em metros.`});
+  });
+  return err;
+}
+/* menor quantidade do 1º tipo que atende os dois critérios */
+function suggest(s,res){
+  if(!s.elev.length||res.errors.length) return null;
+  for(let k=1;k<=24;k++){
+    const t=structuredClone(s); t.elev[0].n=k;
+    const r=compute(t);
+    if(r.okCap&&(r.okInt!==false)) return k;
+  }
+  return null;
+}
+
+/* ---------- estado ---------- */
+const STORE="elev-nbr5665-v1";
+const blankEl=(id="Social")=>({id,n:1,cap:8,capCalc:8,paradas:"",percurso:"",v:1.5,porta:"AC",abertura:0.8});
+function blank(){return {meta:{projeto:"",torre:"",responsavel:"",etapa:"",data:new Date().toISOString().slice(0,10)},uso:"Apartamentos",popSource:"auto",popManual:"",resid:[{tipo:"",tipologia:"2Q",servico:false,qtd:"",obs:""}],outros:[{uso:"Escritórios",pav:"",npav:"",area:"",obs:""}],elev:[blankEl()],obs:"",example:false}}
+function example(){return {meta:{projeto:"Edifício exemplo",torre:"Torre A",responsavel:"Exemplo",etapa:"EP1_R00",data:new Date().toISOString().slice(0,10)},uso:"Apartamentos",popSource:"auto",popManual:"",
+  resid:[{tipo:"Tipo A",tipologia:"2Q",servico:false,qtd:40,obs:""},{tipo:"Tipo B",tipologia:"3Q",servico:true,qtd:20,obs:""}],
+  outros:[{uso:"Escritórios",pav:"",npav:"",area:"",obs:""}],
+  elev:[{id:"Social",n:2,cap:8,capCalc:8,paradas:12,percurso:33,v:1.5,porta:"AC",abertura:0.8},{id:"Serviço",n:1,cap:10,capCalc:10,paradas:13,percurso:36,v:1.75,porta:"AL",abertura:1.1}],
+  obs:"Poço 1,80 m · última altura 4,90 m · casa de máquinas 2,60 m",example:true}}
+let S;
+try{const raw=localStorage.getItem(STORE);S=raw?JSON.parse(raw):example()}catch(_){S=example()}
+function persist(){try{localStorage.setItem(STORE,JSON.stringify(S))}catch(_){}}
+
+/* ---------- utilidades ---------- */
+const $=id=>document.getElementById(id);
+const fmt=(x,d=1)=>Number.isFinite(x)?x.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
+const fmtV=v=>(+v).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function opts(list,sel,label=x=>x){return list.map(o=>{const v=Array.isArray(o)?o[0]:o;return `<option value="${esc(v)}"${String(v)===String(sel)?" selected":""}>${esc(label(v))}</option>`}).join("")}
+function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600)}
+function touch(){if(S.example){S.example=false;$("exampleNotice").hidden=true}}
+
+/* ---------- renderização das entradas ---------- */
+function renderStatic(){
+  $("uso").innerHTML=opts(USOS,S.uso);
+  $("refVel").innerHTML=VELS.map(v=>`<tr><td>${fmtV(v)}</td><td class="num">${fmt(accel(v),2)}</td></tr>`).join("");
+  $("refUso").innerHTML=USOS.map(u=>`<tr><td>${esc(u[0])}</td><td class="num">${u[1]}%</td></tr>`).join("");
+}
+function renderInputs(){
+  document.querySelectorAll("[data-meta]").forEach(el=>el.value=S.meta[el.dataset.meta]??"");
+  $("uso").value=S.uso; $("popSource").value=S.popSource; $("popManual").value=S.popManual; $("obs").value=S.obs||"";
+  $("exampleNotice").hidden=!S.example;
+  renderResid(); renderOutros(); renderMatrix();
+}
+function renderResid(){
+  $("residBody").innerHTML=S.resid.map((r,i)=>`<tr data-i="${i}">
+    <td><input id="r_tipo_${i}" data-k="tipo" value="${esc(r.tipo)}" placeholder="Tipo A" style="min-width:80px"></td>
+    <td><select id="r_tip_${i}" data-k="tipologia" style="min-width:110px">${opts(TIPOLOGIAS,r.tipologia,v=>v)}</select></td>
+    <td style="text-align:center"><input id="r_srv_${i}" type="checkbox" data-k="servico"${r.servico?" checked":""} aria-label="Quarto de serviço"></td>
+    <td><input id="r_qtd_${i}" data-k="qtd" type="number" min="0" step="1" inputmode="numeric" value="${esc(r.qtd)}" style="min-width:80px"></td>
+    <td class="num" data-o="pu"></td><td class="num" data-o="pop"></td>
+    <td><input id="r_obs_${i}" data-k="obs" value="${esc(r.obs)}" style="min-width:110px"></td>
+    <td><button type="button" class="ghost" data-del="resid" aria-label="Remover linha">✕</button></td></tr>`).join("");
+}
+function renderOutros(){
+  $("outrosBody").innerHTML=S.outros.map((r,i)=>`<tr data-i="${i}">
+    <td><select id="o_uso_${i}" data-k="uso" style="min-width:170px">${opts(OUTROS_USOS,r.uso)}</select></td>
+    <td><input id="o_pav_${i}" data-k="pav" value="${esc(r.pav)}" placeholder="Tipo 1" style="min-width:80px"></td>
+    <td><input id="o_npav_${i}" data-k="npav" type="number" min="0" step="1" inputmode="numeric" value="${esc(r.npav)}" style="min-width:70px"></td>
+    <td><input id="o_area_${i}" data-k="area" type="number" min="0" step="any" inputmode="decimal" value="${esc(r.area)}" style="min-width:90px"></td>
+    <td class="num" data-o="m2"></td><td class="num" data-o="pt"></td><td class="num" data-o="pop"></td>
+    <td><input id="o_obs_${i}" data-k="obs" value="${esc(r.obs)}" style="min-width:110px"></td>
+    <td><button type="button" class="ghost" data-del="outros" aria-label="Remover linha">✕</button></td></tr>`).join("");
+}
+const ROWS_IN=[
+  ["6","Identificação","id","text"],
+  ["","Unidades no grupo","n","int"],
+  ["7","Capac. nominal (passageiros)","cap","cap"],
+  ["","Capac. para cálculo (passageiros)","capCalc","int"],
+  ["8","Número de paradas","paradas","int"],
+  ["10","Percurso (m)","percurso","dec"],
+  ["11","Velocidade (m/s)","v","vel"],
+  ["12","Tipo de porta","porta","porta"],
+  ["13","Abertura da porta (m)","abertura","ab"],
+];
+const ROWS_OUT=[
+  ["grp","Tempos adotados"],
+  ["9","Nº de paradas prováveis","np",2],
+  ["14","Aceleração e retardamento (s)","a",2],
+  ["15","Abertura e fechamento (s)","tp",1],
+  ["16","Entrada e saída por passageiro (s)","ts",1],
+  ["grp","Tempos totais calculados"],
+  ["17","T1 · percurso total (s)","T1",1],
+  ["18","T2 · aceleração e retardamento (s)","T2",1],
+  ["19","T3 · abertura e fechamento (s)","T3",1],
+  ["20","T4 · entrada e saída (s)","T4",1],
+  ["21","Soma parcial T1+T2+T3+T4 (s)","soma",1],
+  ["22","Adicional 10% de T3+T4 (s)","adic",1],
+  ["23","Tempo total de viagem (s)","ttv",1,"key"],
+  ["24","Intervalo de tráfego (s)","intervalo",1,"key"],
+  ["25","Capac. de transporte por carro (pass.)","capT",1],
+  ["26","Capac. de tráfego em 5 min (pass.)","capTraf",1,"key"],
+  ["","Grau de serviço (s)","grau",1],
+  ["","Distância mín. p/ atingir velocidade (m)","dmin",2],
+];
+function cellInput(e,i,k,t){
+  const id=`e_${k}_${i}`;
+  if(t==="text") return `<input id="${id}" data-e="${i}" data-k="${k}" value="${esc(e[k])}">`;
+  if(t==="cap") return `<select id="${id}" data-e="${i}" data-k="${k}">${opts(CAPS,e[k])}</select>`;
+  if(t==="vel") return `<select id="${id}" data-e="${i}" data-k="${k}">${opts(VELS,e[k],fmtV)}</select>`;
+  if(t==="porta") return `<select id="${id}" data-e="${i}" data-k="${k}">${opts(Object.keys(PORTAS),e[k],v=>PORTA_NOMES[v])}</select>`;
+  if(t==="ab") return `<select id="${id}" data-e="${i}" data-k="${k}">${opts(ABERTURAS,e[k],fmtV)}</select>`;
+  const step=t==="dec"?"any":"1";
+  return `<input id="${id}" data-e="${i}" data-k="${k}" type="number" min="0" step="${step}" inputmode="${t==="dec"?"decimal":"numeric"}" value="${esc(e[k])}">`;
+}
+function renderMatrix(){
+  const E=S.elev;
+  let h=`<thead><tr><th scope="col" style="text-align:left">Item</th>${E.map((e,i)=>`<th scope="col">Tipo ${i+1}${E.length>1?` <button type="button" class="ghost" data-delel="${i}" aria-label="Remover tipo ${i+1}">✕</button>`:""}</th>`).join("")}</tr></thead><tbody>`;
+  for(const [it,lab,k,t] of ROWS_IN) h+=`<tr><th scope="row"><span class="it">${it}</span>${lab}</th>${E.map((e,i)=>`<td data-cell="${k}_${i}">${cellInput(e,i,k,t)}</td>`).join("")}</tr>`;
+  for(const r of ROWS_OUT){
+    if(r[0]==="grp"){h+=`<tr class="grp"><th scope="row">${r[1]}</th>${E.map(()=>"<td></td>").join("")}</tr>`;continue}
+    h+=`<tr class="calc ${r[4]||""}"><th scope="row"><span class="it">${r[0]}</span>${r[1]}</th>${E.map((e,i)=>`<td class="num" data-out="${r[2]}_${i}"></td>`).join("")}</tr>`;
+  }
+  $("matrix").innerHTML=h+"</tbody>";
+  $("addEl").disabled=E.length>=6;
+}
+
+/* ---------- renderização dos resultados ---------- */
+let RES;
+function update(){
+  RES=compute(S);
+  const R=RES.R,O=RES.O;
+  $("residBody").querySelectorAll("tr").forEach(tr=>{const r=S.resid[tr.dataset.i];tr.querySelector('[data-o="pu"]').textContent=r._pu;tr.querySelector('[data-o="pop"]').textContent=r._pop});
+  $("outrosBody").querySelectorAll("tr").forEach(tr=>{const r=S.outros[tr.dataset.i];tr.querySelector('[data-o="m2"]').textContent=fmt(r._m2,1);tr.querySelector('[data-o="pt"]').textContent=r._pt;tr.querySelector('[data-o="pop"]').textContent=r._pop});
+  $("residUn").textContent=R.un; $("residPop").textContent=R.pop; $("bResid").textContent=R.pop;
+  $("outrosTipo").textContent=O.tipo; $("outrosPop").textContent=O.pop; $("bOutros").textContent=O.pop;
+  $("popManualWrap").hidden=RES.src!=="manual";
+  $("popBig").innerHTML=`${RES.pop.toLocaleString("pt-BR")}<small>pessoas</small>`;
+  $("pop5Big").innerHTML=`${fmt(RES.pop5,1)}<small>pessoas · ${RES.pct}%</small>`;
+  const srcName={resid:"total residencial / hotel",outros:"total outros usos",manual:"valor manual"}[RES.src];
+  const im=RES.uso[2]==="A"?"sem limite para apartamentos":"80 s (1 elev.) · 60 s (2) · 50 s (3) · "+(RES.uso[2]==="E"?"40 s (4+)":"45 s (4+)");
+  $("usoChips").innerHTML=`<span class="chip">População de: <b>${srcName}</b></span><span class="chip">A transportar em 5 min: <b>${RES.pct}%</b></span><span class="chip">Intervalo máximo: <b>${im}</b></span>`+(RES.src==="manual"&&RES.uso[3]==="manual"&&!S.popManual?`<span class="chip" style="color:var(--warn);border-color:var(--warn)">Este uso exige população calculada manualmente</span>`:"");
+  // matriz
+  RES.els.forEach((r,i)=>{for(const row of ROWS_OUT){if(row[0]==="grp")continue;const td=document.querySelector(`[data-out="${row[2]}_${i}"]`);if(td)td.textContent=r?fmt(r[row[2]],row[3]):"—"}});
+  document.querySelectorAll("#matrix td.err").forEach(td=>td.classList.remove("err"));
+  RES.errors.forEach(e=>{const td=document.querySelector(`[data-cell="${e.f}_${e.i}"]`);if(td)td.classList.add("err")});
+  $("errList").innerHTML=RES.errors.map(e=>`<li>${esc(e.m)}</li>`).join("");
+  renderPanel();
+}
+function setInd(key,ok,valTxt,refTxt,frac,stTxt){
+  const ind=$("ind"+key); ind.classList.toggle("ok",ok===true); ind.classList.toggle("bad",ok===false);
+  $("v"+key).innerHTML=valTxt; $("r"+key).textContent=refTxt; $("bar"+key).style.width=Math.max(0,Math.min(100,frac*100))+"%"; $("s"+key).textContent=stTxt;
+}
+function renderPanel(){
+  const r=RES, ready=r.valid;
+  if(!ready){
+    setInd("Int",null,"—","",0,r.N?"Corrija os dados dos elevadores.":"Informe ao menos um elevador.");
+    setInd("Cap",null,"—","",0,"");
+    $("vAll").className="verdict na";$("vAll").textContent="Incompleto";$("sugg").hidden=true;
+  }else{
+    if(r.intMax==null) setInd("Int",null,`${fmt(r.intervalo,1)}<span class="u">s</span>`,"sem limite",Math.min(1,r.intervalo/120),"Apartamentos: a NBR não fixa intervalo máximo nesta planilha.");
+    else setInd("Int",r.okInt,`${fmt(r.intervalo,1)}<span class="u">s</span>`,`máx. ${r.intMax} s`,r.intervalo/r.intMax,r.okInt?"Atende o intervalo de tráfego máximo.":"Não atende o intervalo de tráfego máximo.");
+    setInd("Cap",r.okCap,`${fmt(r.cap,1)}<span class="u">pass.</span>`,`mín. ${fmt(r.pop5,1)}`,r.pop5?r.pop5/r.cap:0,r.okCap?"Atende a capacidade de tráfego mínima.":"Não atende a capacidade de tráfego mínima.");
+    const all=r.okCap&&r.okInt!==false;
+    $("vAll").className="verdict "+(all?"ok":"bad");$("vAll").textContent=all?"Atende":"Não atende";
+    const k=suggest(S,r), e0=S.elev[0], nm=esc(e0.id||"Tipo 1");
+    const sg=$("sugg");
+    if(k==null){sg.hidden=false;sg.innerHTML=`Mesmo com 24 unidades do tipo <b>${nm}</b> o grupo não atende. Revise capacidade, velocidade ou divida o atendimento.`}
+    else if(k!==+e0.n){sg.hidden=false;sg.innerHTML=all?`Com os outros tipos mantidos, <b>${k}</b> ${k>1?"unidades":"unidade"} do tipo <b>${nm}</b> já ${k>1?"atendem":"atende"} (hoje: ${e0.n}).`:`Para atender, use <b>${k}</b> unidades do tipo <b>${nm}</b>, mantendo os outros tipos (hoje: ${e0.n}).`}
+    else sg.hidden=true;
+  }
+  const dm=S.elev.map((e,i)=>r.els[i]?`${esc(e.id||"Tipo "+(i+1))}: ${fmt(r.els[i].dmin,2)} m`:null).filter(Boolean).join("<br>");
+  $("kv").innerHTML=`<dt>Destinação</dt><dd>${esc(r.uso[0].length>22?r.uso[0].slice(0,21)+"…":r.uso[0])}</dd>
+  <dt>População do prédio</dt><dd>${r.pop.toLocaleString("pt-BR")}</dd>
+  <dt>A transportar em 5 min</dt><dd>${fmt(r.pop5,1)}</dd>
+  <dt>Elevadores no grupo</dt><dd>${r.N}</dd>
+  ${r.valid?`<dt>Tempo total de viagem médio</dt><dd>${fmt(r.N?r.els.reduce((a,x)=>a+(x?x.ttv*x.n:0),0)/r.N:NaN,1)} s</dd>`:""}
+  ${dm?`<dt>Distância mín. p/ velocidade</dt><dd>${dm}</dd>`:""}`;
+}
+
+/* ---------- eventos ---------- */
+document.addEventListener("input",ev=>{
+  const t=ev.target;
+  if(t.dataset.meta){S.meta[t.dataset.meta]=t.value;touch();persist();return}
+  if(t.id==="obs"){S.obs=t.value;touch();persist();return}
+  if(t.id==="popManual"){S.popManual=t.value;touch();update();persist();return}
+  if(t.id==="uso"){S.uso=t.value;touch();update();persist();return}
+  if(t.id==="popSource"){S.popSource=t.value;touch();update();persist();return}
+  const tr=t.closest("tr[data-i]");
+  if(tr&&t.dataset.k){const list=tr.parentElement.id==="residBody"?S.resid:S.outros;list[tr.dataset.i][t.dataset.k]=t.type==="checkbox"?t.checked:t.value;touch();update();persist();return}
+  if(t.dataset.e!=null){
+    const e=S.elev[t.dataset.e],k=t.dataset.k,num=["cap","v","abertura"].includes(k);
+    const prevCap=e.cap;
+    e[k]=num?+t.value:t.value;
+    if(k==="cap"&&(+e.capCalc===+prevCap||!e.capCalc)){e.capCalc=e.cap;const c=$(`e_capCalc_${t.dataset.e}`);if(c)c.value=e.cap}
+    touch();update();persist();
+  }
+});
+document.addEventListener("click",ev=>{
+  const b=ev.target.closest("button");if(!b)return;
+  if(b.dataset.del){const tr=b.closest("tr");const list=S[b.dataset.del];list.splice(+tr.dataset.i,1);if(!list.length)list.push(b.dataset.del==="resid"?{tipo:"",tipologia:"2Q",servico:false,qtd:"",obs:""}:{uso:"Escritórios",pav:"",npav:"",area:"",obs:""});touch();b.dataset.del==="resid"?renderResid():renderOutros();update();persist();return}
+  if(b.dataset.delel!=null){S.elev.splice(+b.dataset.delel,1);touch();renderMatrix();update();persist();return}
+});
+$("addResid").onclick=()=>{S.resid.push({tipo:"",tipologia:"2Q",servico:false,qtd:"",obs:""});touch();renderResid();update();persist()};
+$("addOutros").onclick=()=>{S.outros.push({uso:"Escritórios",pav:"",npav:"",area:"",obs:""});touch();renderOutros();update();persist()};
+$("addEl").onclick=()=>{if(S.elev.length>=6)return;const last=S.elev[S.elev.length-1];const ne=last?{...last,id:S.elev.length===1?"Serviço":""}:blankEl();S.elev.push(ne);touch();renderMatrix();update();persist()};
+function selectTab(which){for(const w of ["resid","outros"]){$("tab-"+w).setAttribute("aria-selected",w===which);$("pane-"+w).hidden=w!==which}}
+$("tab-resid").onclick=()=>selectTab("resid");$("tab-outros").onclick=()=>selectTab("outros");
+let confirmNew=false;
+$("btnNew").onclick=()=>{
+  if(!confirmNew&&!S.example){confirmNew=true;$("btnNew").textContent="Confirmar: apagar dados";setTimeout(()=>{confirmNew=false;$("btnNew").textContent="Novo cálculo"},4000);return}
+  confirmNew=false;$("btnNew").textContent="Novo cálculo";S=blank();renderInputs();update();persist();toast("Novo cálculo em branco");
+};
+$("btnClearExample").onclick=()=>{S=blank();renderInputs();update();persist()};
+$("btnOpen").onclick=()=>$("fileOpen").click();
+$("fileOpen").onchange=async ev=>{
+  const f=ev.target.files[0];if(!f)return;
+  try{const d=JSON.parse(await f.text());if(!d||!Array.isArray(d.elev))throw 0;S=Object.assign(blank(),d,{example:false});renderInputs();update();persist();toast("Cálculo aberto: "+f.name)}
+  catch(_){toast("Este arquivo não é um cálculo salvo por este app (.json).")}
+  ev.target.value="";
+};
+function baseName(){const m=S.meta;return [m.projeto||"PROJETO",m.torre,"ELEVADORES",m.etapa||"EPx_R00"].filter(Boolean).join("_").replace(/[^\w\-À-ú]+/g,"_")}
+function csv(){
+  const r=compute(S),L=[],q=v=>`"${String(v??"").replace(/"/g,'""')}"`,n=(x,d=2)=>Number.isFinite(x)?x.toFixed(d).replace(".",","):"";
+  const m=S.meta;
+  L.push(["Cálculo de tráfego - NBR 5665"].map(q).join(";"));
+  [["Projeto",m.projeto],["Torre / hall",m.torre],["Cálculo realizado por",m.responsavel],["Etapa de referência",m.etapa],["Data do cálculo",m.data],["Destinação de uso",S.uso],["População do prédio",r.pop],["% a transportar em 5 min",r.pct],["População a transportar em 5 min",n(r.pop5,1)],["Intervalo de tráfego máximo (s)",r.intMax??"sem limite"]].forEach(a=>L.push(a.map(q).join(";")));
+  L.push("");
+  L.push(["Item","Descrição",...S.elev.map((e,i)=>e.id||"Tipo "+(i+1))].map(q).join(";"));
+  for(const [it,lab,k] of ROWS_IN) L.push([it,lab,...S.elev.map(e=>typeof e[k]==="number"?String(e[k]).replace(".",","):e[k])].map(q).join(";"));
+  for(const row of ROWS_OUT){if(row[0]==="grp"){L.push(q(row[1]));continue}L.push([row[0],row[1],...r.els.map(x=>x?n(x[row[2]],row[3]):"")].map(q).join(";"))}
+  L.push("");
+  L.push(["Grupo","Elevadores",r.N].map(q).join(";"));
+  L.push(["Grupo","Intervalo de tráfego do grupo (s)",n(r.intervalo,1),r.okInt===false?"Não atende o intervalo de tráfego máximo":r.okInt?"Atende":"—"].map(q).join(";"));
+  L.push(["Grupo","Capacidade de tráfego do grupo (pass.)",n(r.cap,1),r.okCap?"Atende":"Não atende a capacidade de tráfego mínima"].map(q).join(";"));
+  L.push("");L.push(["Obs",S.obs].map(q).join(";"));
+  L.push(["Modelo de cálculo","Atlas Schindler / NBR 5665"].map(q).join(";"));
+  return "﻿"+L.join("\r\n");
+}
+let DL=null;
+async function save(filename,data,okMsg){
+  try{await DL.save({filename,data});toast(okMsg)}
+  catch(e){if(e?.code==="declined")return;if(e?.code==="rate_limited"){toast("Já há um download aguardando confirmação.");return}toast("Não foi possível salvar o arquivo aqui.")}
+}
+$("btnSave").onclick=()=>save(baseName()+".json",JSON.stringify({...S,example:false},null,2),"Cálculo salvo");
+$("btnCsv").onclick=()=>save(baseName()+"_memoria.csv",csv(),"Memória exportada");
+$("btnCopy").onclick=async()=>{const txt=JSON.stringify({...S,example:false});try{await navigator.clipboard.writeText(txt);toast("Dados copiados. Cole num arquivo .json para guardar.")}catch(_){toast("Não foi possível copiar.")}};
+
+renderStatic();renderInputs();update();
+/* downloads in the browser: a file made on the page, saved by the browser */
+DL={save:async({filename,data})=>{const type=filename.endsWith(".csv")?"text/csv;charset=utf-8":"application/json";
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type}));a.download=filename.normalize("NFD").replace(/[\u0300-\u036f]/g,"");document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}};
+$("btnSave").hidden=false;$("btnCsv").hidden=false;$("btnCopy").hidden=true;
+</script>
+
+</body></html>
