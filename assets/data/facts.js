@@ -13,7 +13,7 @@ window.FACTS = {
   title: "Architect & Urbanist",
   base: "São Paulo, Brazil",
   registration: "CAU/BR 145917-1", // PF, cover page
-  email: null, // not in any source document — add it here to show it on the site
+  email: "filipemeltzer@outlook.com", // confirmed by Filipe, 12 Oct 2026
   linkedin: "https://www.linkedin.com/in/filipemeltzer", // CV
   cv: "assets/docs/Filipe-Meltzer-CV.pdf",
 
@@ -24,9 +24,8 @@ window.FACTS = {
    *   masterplan site area (27,771 m², which the CV notes is site area, not floor area)
    *   = 458,348 m². The CV's other phrase, "more than 450,000 m² approved by clients",
    *   is consistent with this but less precise; the site uses 458,000+ everywhere.
-   * locations: CV says 17. The CV map names 16 places; the 17th used here is
-   *   Balneário Camboriú (SC), the location of Monolyt (PF project sheet, confirmed by press).
-   *   NEEDS CONFIRMATION by Filipe.
+   * locations: CV says 17. The CV map named 16 places; the 17th is Balneário Camboriú (SC),
+   *   the location of Monolyt — confirmed by Filipe (12 Oct 2026) and added to the CV map.
    * awards: three awards for two team projects (CV, PF).
    */
   figures: [
@@ -36,7 +35,7 @@ window.FACTS = {
     { value: "3", label: "international awards for team projects" }
   ],
 
-  places: [ // CV map (16) + Balneário Camboriú (see above)
+  places: [ // as on the CV map
     "São Paulo, SP", "Araçariguama, SP", "Monte Mor, SP", "Baronesa, SP",
     "Londrina, PR", "Curitiba, PR", "Balneário Camboriú, SC", "Itapema, SC", "Itajaí, SC",
     "Gramado, RS", "Uberlândia, MG", "Goiânia, GO", "Uruçuca, BA",
@@ -52,10 +51,11 @@ window.FACTS = {
         "Project Leader for Murata 157, a 21,400 m² residential building in Londrina.",
         "Delivered 10 feasibility studies, 10 schematic designs, 2 design developments and 1 construction documents package.",
         "Zoning, site and area studies for São Paulo and other states; floor plans for the São Paulo housing market; concept presentations and storytelling.",
-        "Key projects: Pamplona 1704 (125,500 m² mixed-use, São Paulo), Moraes SN (51,600 m², Natal) and Iguatemi 306 (41,400 m² corporate, São Paulo)."
+        "Key projects: Pamplona 1704 (125,500 m² mixed-use, São Paulo), Moraes SN (51,600 m², Natal) and Iguatemi 306 (49,811 m² corporate, São Paulo)."
       ]
     },
-    { org: "Triptyque Architecture", when: "2021", where: "São Paulo, Brazil", role: "Architect", points: [] },
+    { org: "Triptyque Architecture", when: "2021", where: "São Paulo, Brazil", role: "Architect",
+      points: ["Casa Sapucaia (985 m², Boa Vista Village, Porto Feliz): coordinated the architecture with the engineering consultants’ projects from schematic design to issue for construction."] },
     {
       org: "Independent practice", when: "2018 — 2021", where: null, role: "Architect",
       points: [

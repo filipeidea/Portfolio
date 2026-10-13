@@ -22,6 +22,8 @@
  *   gallery      images in order. layout: "full" | "wide" | "small" (one image)
  *                or "pair" | "trio" (several, in "images"). Add "caption" for drawings.
  *   team         credits exactly as listed in the source portfolio
+ *   aka          another name the project is known by (optional)
+ *   credit       image credit; if left out, team projects show "Images © <practice>"
  *
  * Image keys ("<folder>/<name>") must exist in assets/img — see tools/build_images.py.
  * The order of this list is the order on the home page.
@@ -98,14 +100,14 @@ window.PROJECTS = [
     featured: true
   },
   {
-    slug: "iguatemi-306", // CONFIRM: CV gives 41,400 m² corporate; the 2025 portfolio sheet gives 49,811.18 m² and also ticks "residential building". CV used.
+    slug: "iguatemi-306", // area 49,811 m² confirmed by Filipe (12 Oct 2026); the CV previously gave 41,400 m²
     title: "Iguatemi 306",
     location: "São Paulo, SP, Brazil",
     typology: "Corporate tower",
     category: "Corporate",
     year: "2024",
     yearNote: "design",
-    area: "41,400 m²",
+    area: "49,811 m²",
     practice: "Architects Office",
     stages: ["Feasibility study"],
     role: "Member of the concept team during the feasibility study.",
@@ -167,20 +169,21 @@ window.PROJECTS = [
     featured: true
   },
   {
-    slug: "casa-bvv", // CONFIRM: 2021 project — Triptyque or Architects Office? The portfolio sheet says Architects Office.
-    title: "Casa BVV",
+    slug: "casa-sapucaia", // also known as Casa BVV; a Triptyque Architecture project (confirmed by Filipe, 12 Oct 2026). Old address projects/casa-bvv.html forwards here.
+    title: "Casa Sapucaia",
+    aka: "Casa BVV",
     location: "Boa Vista Village, Porto Feliz, SP, Brazil",
     typology: "Single-family residential",
     category: "Residential",
     year: "2021",
     yearNote: "design",
     area: "985 m²",
-    practice: "Architects Office",
+    practice: "Triptyque Architecture",
     stages: ["Schematic design", "Design development", "Pre-construction documents", "Construction documents", "Issued for construction"],
     role: "Coordinated the architecture with the engineering consultants’ projects in every stage up to issue for construction, except the initial concept.",
     awards: [],
     summary:
-      "A low, horizontal country house of rammed-earth-toned walls and timber pavilions arranged around gardens and a long pool.",
+      "A low, horizontal country house in Boa Vista Village, Porto Feliz, with earth-toned walls and timber pavilions arranged around gardens and a long pool.",
     description: [
       "Long earth-toned walls face the street, while the living spaces open onto gardens and the pool through large glazed timber frames."
     ],
@@ -222,7 +225,6 @@ window.PROJECTS = [
     description: [
       "Exposed timber trusses define the large living spaces under the pitched roofs, with full-height glazing towards the landscape."
     ],
-    credit: "Photography: Felco (as credited on ArchDaily)",
     cover: "casa-par/pool",
     gallery: [
       { layout: "wide", img: "casa-par/living", alt: "Living room under exposed timber roof trusses with a glazed gable wall" },

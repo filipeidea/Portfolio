@@ -29,6 +29,8 @@ for (const f of ["projects.js", "images.js", "facts.js"]) {
 const { PROJECTS, IMAGES, FACTS } = globalThis.window;
 
 // ---------- helpers ----------
+const isTeam = (p) => !!p.practice && !/UNISINOS/.test(p.practice); // office projects are team work
+const ALIASES = { "casa-bvv": "casa-sapucaia" };                     // old project addresses → new
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const pad = (n) => String(n).padStart(2, "0");
 const hash = (f) => crypto.createHash("md5").update(fs.readFileSync(path.join(ROOT, f))).digest("hex").slice(0, 8);
@@ -138,7 +140,7 @@ const person = {
 const HERO_SIZES = "(max-aspect-ratio: 3/2) 125vh, 100vw";
 function home() {
   const r = "";
-  const heroes = [["masterplan-urucuca", "urucuca/canopy"], ["monolyt", "monolyt/corner"], ["quinta", "quinta/pool"], ["casa-bvv", "bvv/pavilion"]];
+  const heroes = [["masterplan-urucuca", "urucuca/canopy"], ["monolyt", "monolyt/corner"], ["quinta", "quinta/pool"], ["casa-sapucaia", "bvv/pavilion"]];
   const altFor = (p, key) => { for (const g of p.gallery) for (const x of g.images || [g]) if (x.img === key) return x.alt; return p.title; };
   const slides = heroes.map(([slug, key], i) => {
     const p = PROJECTS.find((x) => x.slug === slug);
@@ -159,7 +161,7 @@ function home() {
   };
   const cards = PROJECTS.map((p, i) => {
     const size = SIZES[i % SIZES.length];
-    const authorship = p.practice === "Architects Office" ? "Team project · Architects Office" : "Individual work · " + p.practice.split(" — ")[0];
+    const authorship = isTeam(p) ? "Team project · " + p.practice : "Individual work · " + p.practice.split(" — ")[0];
     return `<li class="card ${size}" data-cat="${esc(p.category)}"><a href="projects/${p.slug}.html">` +
       `<span class="ph">${img(r, p.cover, "", { sizes: cardSizes(size, need(p.cover).r) })}</span>` +
       `<span class="meta"><span class="num" aria-hidden="true">${pad(i + 1)}</span><h3>${esc(p.title)}</h3>` +
@@ -243,12 +245,12 @@ function project(p, i) {
   const r = "../";
   const prev = PROJECTS[(i - 1 + PROJECTS.length) % PROJECTS.length], next = PROJECTS[(i + 1) % PROJECTS.length];
   const altFor = (key) => { for (const g of p.gallery) for (const x of g.images || [g]) if (x.img === key) return x.alt; return p.title; };
-  const team = p.practice === "Architects Office";
+  const team = isTeam(p);
   const facts = [
-    ["Location", esc(p.location)], ["Typology", esc(p.typology)],
+    ["Location", esc(p.location)], ["Also known as", p.aka ? esc(p.aka) : ""], ["Typology", esc(p.typology)],
     ["Year", p.year ? esc(p.year) + (p.yearNote ? ` <span class="muted">(${esc(p.yearNote)})</span>` : "") : ""],
     ["Area", p.area ? esc(p.area) : ""],
-    [team ? "Office" : "Context", esc(team ? "Architects Office — team project" : p.practice)],
+    [team ? "Office" : "Context", esc(team ? p.practice + " — team project" : p.practice)],
     ["Awards", p.awards?.length ? "<ul>" + p.awards.map((a) => `<li>${esc(a)}</li>`).join("") + "</ul>" : ""],
     ["Published", p.publications?.length ? "<ul>" + p.publications.map((x) => `<li>${x.url ? `<a href="${esc(x.url)}" rel="noopener">${esc(x.label)}</a>` : esc(x.label)}</li>`).join("") + "</ul>" : ""]
   ].filter((f) => f[1]).map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
@@ -277,7 +279,7 @@ function project(p, i) {
 <p>${esc(p.role)}</p>
 ${p.stages?.length ? `<ul class="stages" aria-label="Design stages">${p.stages.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>` : ""}
 </section>
-${teamHtml || p.credit ? `<div class="credits">${teamHtml ? `<h2 class="mono">Team</h2><p>${teamHtml}</p>` : ""}${p.credit ? `<p>${esc(p.credit)}</p>` : ""}</div>` : ""}
+<div class="credits">${teamHtml ? `<h2 class="mono">Team</h2><p>${teamHtml}</p>` : ""}<p class="credit">${esc(p.credit || (team ? `Images © ${p.practice}. Shown with credit to the office.` : "Images and drawings © Filipe Meltzer."))}</p></div>
 </div>
 </div>
 <section class="gallery" aria-label="Project images">
@@ -472,7 +474,7 @@ ${entries(FACTS.experience.slice(1), true)}
 function legacy() {
   const list = PROJECTS.map((p) => `<li><a href="projects/${p.slug}.html">${esc(p.title)}</a></li>`).join("");
   const body = `<main id="main" class="wrap notice"><p class="mono">Projects</p><h1 class="h2">Project pages have moved.</h1><ul class="list-plain moved">${list}</ul></main>
-<script>(function(){var s=new URLSearchParams(location.search).get("p");var ok=${JSON.stringify(PROJECTS.map((p) => p.slug))};if(s&&ok.indexOf(s)>=0)location.replace("projects/"+s+".html");})();</script>`;
+<script>(function(){var s=new URLSearchParams(location.search).get("p");var al=${JSON.stringify(ALIASES)};s=al[s]||s;var ok=${JSON.stringify(PROJECTS.map((p) => p.slug))};if(s&&ok.indexOf(s)>=0)location.replace("projects/"+s+".html");})();</script>`;
   return layout({ file: "project.html", page: "projects", title: "Projects — Filipe Meltzer", description: "Projects by Filipe Meltzer.", body,
     extraHead: '<meta name="robots" content="noindex">\n' });
 }
@@ -497,6 +499,12 @@ write("sketchbook.html", sketchbook());
 write("profile.html", profile());
 write("resume.html", resume());
 write("project.html", legacy());
+for (const [from, to] of Object.entries(ALIASES)) {
+  const p = PROJECTS.find((x) => x.slug === to);
+  write(`projects/${from}.html`, `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${esc(p.title)} — Filipe Meltzer</title>` +
+    `<link rel="canonical" href="${SITE_URL}projects/${to}.html"><meta http-equiv="refresh" content="0; url=${to}.html"><meta name="robots" content="noindex"></head>` +
+    `<body><p>This project is now at <a href="${to}.html">${esc(p.title)}</a>.</p></body></html>\n`);
+}
 write("404.html", notFound());
 const urls = ["", "profile.html", "sketchbook.html", "resume.html", ...PROJECTS.map((p) => `projects/${p.slug}.html`)];
 write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${SITE_URL}${u}</loc></url>`).join("\n")}\n</urlset>\n`);

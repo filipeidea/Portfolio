@@ -30,7 +30,8 @@ tools/
   build.mjs          builds the site into _site/ (also holds the Sketchbook content)
   build_images.py    turns original images into optimised WebP files
   build_og.py        makes the link-preview images
-  fix_cv_pdf.py      adds metadata and a clickable LinkedIn link to the exported CV
+  edit_cv_pdf.py     corrections made inside the exported CV PDF (see below)
+  fonts/             TeX Gyre Heros Bold (Helvetica-compatible, open licence) used by edit_cv_pdf.py
 ```
 
 Generated pages: `index.html`, `projects/<slug>.html` (one per project), `sketchbook.html`,
@@ -76,6 +77,14 @@ In the repository, **Settings → Pages → Source** must be **GitHub Actions** 
 Paths inside the site are relative; the public address `https://filipeidea.github.io/Portfolio/`
 is set once in `SITE_URL` at the top of `tools/build.mjs` (used for canonical and share links).
 If a custom domain is added later, change `SITE_URL` and the `<base href>` used for `404.html`.
+
+## CV (PDF)
+
+`assets/docs/Filipe-Meltzer-CV.pdf` is the CV exported from InDesign on 10 Oct 2026, corrected by
+`tools/edit_cv_pdf.py` (eight years, no "Passionate…" sentence, email, Iguatemi 306 at 49,811 m²,
+458,000+ m², Balneário Camboriú on the map, clickable links, metadata). The original fonts and
+layout are kept. **Make the same changes in the InDesign source** so the next export already
+contains them; after that, the next PDF can be copied here directly.
 
 ## Image rights
 
