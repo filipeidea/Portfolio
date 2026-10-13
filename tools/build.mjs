@@ -106,6 +106,7 @@ function layout({ r = "", file, title, description, page, body, og = "home", jso
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${url}">
 <meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="Filipe Meltzer — Architect &amp; Urbanist">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
@@ -127,7 +128,7 @@ ${extraHead}${jsonld ? `<script type="application/ld+json">${JSON.stringify(json
 <div class="wrap bar">
 <a class="brand" href="${r}index.html">Filipe Meltzer <small>Architect &amp; Urbanist</small></a>
 <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Open menu" hidden><span></span><span></span><span></span></button>
-<nav class="nav" id="nav" aria-label="Main">${nav}</nav>
+<nav class="nav" id="nav" aria-label="Main">${nav}<span class="lang-switch"></span></nav>
 </div>
 </header>
 ${body}
@@ -168,7 +169,7 @@ function home() {
   const opening = OPENING.map(([slug, key], i) => {
     const p = PROJECTS.find((x) => x.slug === slug);
     return `<figure class="op op-${i}"><a href="projects/${slug}.html"><span class="op-ph">${img(r, key, altFor(p, key), { eager: i === 0, sizes: OPEN_SIZES[i] })}</span>` +
-      `<figcaption><span class="op-title">${esc(p.title)}</span> <span class="op-loc">${esc(p.location)}</span></figcaption></a></figure>`;
+      `<figcaption><span class="op-title">${esc(p.title)}</span> <span class="op-loc">${esc(p.location.split(",").map((x) => x.trim()).filter((x) => !/^[A-Z]{2}$/.test(x)).join(", "))}</span></figcaption></a></figure>`;
   }).join("");
   const cats = ["All", ...new Set(PROJECTS.map((p) => p.category))];
   /* Every card has the same 3:2 frame so the grid lines up exactly. A wide image cropped
@@ -638,3 +639,6 @@ write("404.html", notFound());
 const urls = ["", "profile.html", "sketchbook.html", "recognition.html", "resume.html", ...PROJECTS.map((p) => `projects/${p.slug}.html`)];
 write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${SITE_URL}${u}</loc></url>`).join("\n")}\n</urlset>\n`);
 console.log(`Built ${urls.length} pages + project.html + 404.html into _site/`);
+
+// Portuguese version (_site/pt/), made from the pages above with tools/pt.json
+await import("./i18n.mjs");

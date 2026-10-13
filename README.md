@@ -59,12 +59,21 @@ old `project.html?p=<slug>` links to the new addresses.
 You can edit these files directly on github.com (pencil icon → *Commit changes*); the site
 rebuilds and updates in about a minute.
 
+## Portuguese version
+
+`tools/i18n.mjs` (run automatically at the end of `tools/build.mjs`) writes a Portuguese copy of
+every page into `_site/pt/`, with a language switch in the header and `hreflang` links. Each
+English text on the site is looked up in `tools/pt.json` (`"English": "Português"`). After you
+change or add a text, run `node tools/build.mjs`: the build reports how many texts have no
+translation yet, and `node tools/i18n.mjs --todo` lists them in `tools/pt-todo.json`.
+Add their translations to `tools/pt.json` and build again.
+
 ## Visual rules
 
 Pure white background on every page; near-black text; the CV blue as the only supporting
 colour, used sparingly (big numbers, links on hover, active states); navy only in the footer.
 Two typefaces: Archivo (sans, main) and Newsreader (serif, upright, labels and data), no italics.
-Moderate type sizes. The home page opens with a static composition of three project images
+Moderate type sizes; no all-caps text (capitals only where the language requires them, as in acronyms). The home page opens with a static composition of three project images
 (`OPENING` in `tools/build.mjs`), never a slideshow. Colours and fonts are CSS variables at the
 top of `assets/css/style.css`.
 

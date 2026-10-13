@@ -8,6 +8,12 @@
   function $(s, r) { return (r || document).querySelector(s); }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
   function pad(n) { return (n < 10 ? "0" : "") + n; }
+  // the few texts written by this script, in the page's language
+  var PT = /^pt/.test(document.documentElement.lang);
+  var L = PT ? { open: "Abrir menu", close: "Fechar menu", viewer: "Visualizador de imagens", closeViewer: "Fechar visualizador",
+    prev: "Imagem anterior", next: "Próxima imagem", all: "Mostrando os {n} projetos", some: "Mostrando {n} projeto(s): {c}" }
+    : { open: "Open menu", close: "Close menu", viewer: "Image viewer", closeViewer: "Close image viewer",
+    prev: "Previous image", next: "Next image", all: "Showing all {n} projects", some: "Showing {n} {c} project{s}" };
 
   /* ---------- header: sticky border + mobile menu ---------- */
   var header = $(".site-header"), btn = $(".menu-btn");
@@ -20,7 +26,7 @@
     var setMenu = function (open) {
       document.body.classList.toggle("menu-open", open);
       btn.setAttribute("aria-expanded", open ? "true" : "false");
-      btn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      btn.setAttribute("aria-label", open ? L.close : L.open);
     };
     btn.addEventListener("click", function () { setMenu(!document.body.classList.contains("menu-open")); });
     $$(".nav a").forEach(function (a) { a.addEventListener("click", function () { setMenu(false); }); });
@@ -45,7 +51,8 @@
         var show = c === "All" || card.getAttribute("data-cat") === c;
         card.hidden = !show; if (show) { n++; card.classList.add("in"); }
       });
-      status.textContent = c === "All" ? "Showing all " + n + " projects" : "Showing " + n + " " + c + " project" + (n > 1 ? "s" : "");
+      var label = b.firstChild ? b.firstChild.textContent.trim() : c;
+      status.textContent = (c === "All" ? L.all : L.some).replace("{n}", n).replace("{c}", label).replace("{s}", n > 1 ? "s" : "");
     });
   }
 
@@ -54,14 +61,14 @@
   if (links.length && window.HTMLDialogElement) {
     var lb = document.createElement("dialog"), items, idx = 0, opener = null;
     lb.className = "lb";
-    lb.setAttribute("aria-label", "Image viewer");
+    lb.setAttribute("aria-label", L.viewer);
     lb.innerHTML =
       '<div class="lb-top"><span class="mono lb-count"></span>' +
-      '<button type="button" class="lb-close" aria-label="Close image viewer"><svg width="18" height="18" viewBox="0 0 18 18" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 2l14 14M16 2L2 16"/></svg></button></div>' +
+      '<button type="button" class="lb-close" aria-label="' + L.closeViewer + '"><svg width="18" height="18" viewBox="0 0 18 18" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 2l14 14M16 2L2 16"/></svg></button></div>' +
       '<div class="lb-stage"><img alt=""></div>' +
       '<div class="lb-bottom"><p class="lb-cap"></p><div class="lb-nav">' +
-      '<button type="button" class="lb-prev" aria-label="Previous image"><svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M16 5H2M6 1L2 5l4 4"/></svg></button>' +
-      '<button type="button" class="lb-next" aria-label="Next image"><svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M0 5h14M10 1l4 4-4 4"/></svg></button>' +
+      '<button type="button" class="lb-prev" aria-label="' + L.prev + '"><svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M16 5H2M6 1L2 5l4 4"/></svg></button>' +
+      '<button type="button" class="lb-next" aria-label="' + L.next + '"><svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M0 5h14M10 1l4 4-4 4"/></svg></button>' +
       "</div></div>";
     document.body.appendChild(lb);
     var stage = $(".lb-stage", lb), big = $(".lb-stage img", lb);
