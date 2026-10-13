@@ -521,8 +521,9 @@ figcaption { margin-top: 10px; }
 @media (max-width: 899px) { .op-1 .op-loc, .op-2 .op-loc { display: none; } }
 
 /* the small figure on the home page: the way into the unlisted travel notebook */
-.secret { position: absolute; right: var(--gutter); bottom: clamp(20px, 2.5vw, 32px); display: block; padding: 6px; opacity: .85; transition: transform .35s var(--ease), opacity .2s; transform-origin: 50% 100%; }
-.secret img { width: auto; height: 56px; }
+.foot-base { align-items: flex-end; }
+.secret { position: relative; display: block; padding: 4px 6px; opacity: .9; transition: transform .35s var(--ease), opacity .2s; transform-origin: 50% 100%; }
+.secret img { width: auto; height: 44px; display: block; }
 .secret:hover, .secret:focus-visible { opacity: 1; transform: rotate(-6deg) translateY(-2px); }
 
 /* travel notebook */
@@ -541,3 +542,15 @@ figcaption { margin-top: 10px; }
 .lab-item .link-arrow { margin-top: auto; align-self: flex-start; }
 .lab-item a:hover .h3, .lab-item a:hover .link-arrow { color: var(--accent); }
 .lab-note { margin: clamp(40px, 5vw, 64px) 0 0; max-width: 66ch; font-size: 14.5px; color: var(--muted); }
+
+/* the little burst over the footer figure before it opens the travel notebook */
+.burst { position: absolute; left: 50%; top: 2px; width: 0; height: 0; pointer-events: none; }
+.burst i { position: absolute; left: -2.5px; top: -2.5px; width: 5px; height: 5px; border-radius: 50%; background: var(--c); opacity: 0;
+  animation: burst .55s cubic-bezier(.15, .7, .3, 1) forwards; animation-delay: var(--d, 0s); }
+@keyframes burst {
+  0% { opacity: 1; transform: translate(0, 0) scale(.6); }
+  60% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.2); }
+}
+.secret.pop { animation: pop .35s var(--ease); }
+@keyframes pop { 40% { transform: scale(1.15) rotate(-6deg); } }

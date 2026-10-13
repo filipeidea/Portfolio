@@ -141,7 +141,7 @@ ${body}
 <div><p class="mono">Reach</p><ul class="foot-links">${reach}</ul></div>
 <div><p class="mono">Pages</p><ul class="foot-links"><li><a href="${r}index.html#projects">Projects</a></li><li><a href="${r}sketchbook.html">Sketchbook</a></li><li><a href="${r}profile.html">Profile</a></li><li><a href="${r}recognition.html">Recognition</a></li><li><a href="${r}lab.html">Lab</a></li><li><a href="${r}resume.html">Résumé</a></li></ul></div>
 </div>
-<div class="foot-base"><span>© ${new Date().getFullYear()} Filipe Meltzer · ${esc(FACTS.registration)}</span><span>${esc(FACTS.base)}</span></div>
+<div class="foot-base"><span>© ${new Date().getFullYear()} Filipe Meltzer · ${esc(FACTS.registration)}</span><a class="secret" href="${r}notebook.html" title="Off the record"><img src="${r}assets/img/notebook-icon-64.webp" srcset="${r}assets/img/notebook-icon-64.webp 1x, ${r}assets/img/notebook-icon-128.webp 2x" width="19" height="64" alt="Travel notebook" loading="lazy"></a><span>${esc(FACTS.base)}</span></div>
 </div>
 </footer>
 <script src="${r}assets/js/app.js?v=${V.js}" defer></script>
@@ -188,7 +188,6 @@ function home() {
   const figures = FIGURES.map((f) => `<div class="figure"><dt>${f.href ? `<a href="${f.href}">${esc(f.label)}</a>` : esc(f.label)}</dt><dd>${esc(f.value)}${f.unit ? ` <small>${esc(f.unit)}</small>` : ""}</dd></div>`).join("");
   const body = `<main id="main">
 <section class="wrap intro" aria-labelledby="intro-h">
-<a class="secret" href="notebook.html" title="Off the record"><img src="assets/img/notebook-icon-64.webp" srcset="assets/img/notebook-icon-64.webp 1x, assets/img/notebook-icon-128.webp 2x" width="19" height="64" alt="Travel notebook"></a>
 <h1 id="intro-h" class="sr-only">Filipe Meltzer — Architect &amp; Urbanist</h1>
 <p class="lede">Architect and urbanist in São Paulo, turning briefs, zoning rules and site conditions into feasibility studies and schematic designs.</p>
 <p class="intro-links"><a class="link-arrow" href="#projects">Selected projects ${ARROW}</a> <a class="link-arrow" href="profile.html">Profile ${ARROW}</a> <a class="link-arrow" href="#contact">Contact ${ARROW}</a></p>

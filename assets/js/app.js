@@ -340,4 +340,25 @@
     window.addEventListener("resize", onReveal);
     window.addEventListener("hashchange", onReveal);
   }
+
+  /* footer figure: a small burst just above it, then the travel notebook opens */
+  var secret = document.querySelector(".secret");
+  if (secret) secret.addEventListener("click", function (e) {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; // new tab: no show
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    e.preventDefault();
+    var href = secret.href, b = document.createElement("span"), cols = ["#ffffff", "#c9cfee", "#f2c14e", "#e2603f", "#7fb3d5"];
+    b.className = "burst";
+    for (var k = 0; k < 12; k++) {
+      var a = -Math.PI / 2 + (k / 11 - .5) * Math.PI * 1.1 + (Math.random() - .5) * .25, d = 11 + Math.random() * 9, p = document.createElement("i");
+      p.style.setProperty("--x", (Math.cos(a) * d).toFixed(1) + "px");
+      p.style.setProperty("--y", (Math.sin(a) * d - 4).toFixed(1) + "px");
+      p.style.setProperty("--c", cols[k % cols.length]);
+      p.style.setProperty("--d", (Math.random() * .06).toFixed(2) + "s");
+      b.appendChild(p);
+    }
+    secret.classList.remove("pop"); void secret.offsetWidth; secret.classList.add("pop");
+    secret.appendChild(b);
+    setTimeout(function () { location.href = href; }, 520);
+  });
 })();
