@@ -11,7 +11,7 @@ small Node script and published with GitHub Pages.
 All pages are generated as complete HTML by `tools/build.mjs`, so every text, image and
 link is readable without JavaScript (search engines, LinkedIn link previews, screen readers,
 slow connections). `assets/js/app.js` only adds interaction: the mobile menu, the home
-slideshow, the project filter and the image viewer. If it fails, the site still works.
+slideshow, the project filter, the image viewer and tap support for the map and typology lists. If it fails, the site still works.
 
 Every push to `main` runs `.github/workflows/pages.yml`, which builds the site and
 publishes it. Nothing has to be built by hand to publish.
@@ -35,7 +35,7 @@ tools/
 ```
 
 Generated pages: `index.html`, `projects/<slug>.html` (one per project), `sketchbook.html`,
-`profile.html`, `resume.html`, `404.html`, `sitemap.xml`, and `project.html`, which forwards
+`profile.html`, `recognition.html` (awards and press), `resume.html`, `404.html`, `sitemap.xml`, and `project.html`, which forwards
 old `project.html?p=<slug>` links to the new addresses.
 
 ## Edit content
@@ -46,7 +46,10 @@ old `project.html?p=<slug>` links to the new addresses.
 - **Profile, résumé, figures, contact** — `assets/data/facts.js`. The `ledger` lists every project
   since 2021 (from the project spreadsheet); the home page figures, the typology table and the
   map on the Profile page are all computed from it. Add a project there and they update.
-  New cities also need a point in `mapPoints` (position in % on the map image).
+  New cities also need a point in `mapPoints` (position in % on the map image `América.png`;
+  the comment there gives the formula from latitude/longitude). Cities too close to tell apart
+  share a `group` (one dot, one card).
+- **Recognition page** — `awards`, `publications` and `features` in `facts.js`.
 - **Sketchbook** — the `SKETCHBOOK` list in `tools/build.mjs`.
 
 You can edit these files directly on github.com (pencil icon → *Commit changes*); the site

@@ -150,11 +150,16 @@
   /* ---------- map: the city list and the map pins highlight each other ---------- */
   var pins = $$(".pin"), rows = $$(".city-list li");
   if (pins.length && rows.length) {
-    var mark = function (city, on) {
-      pins.concat(rows).forEach(function (el) { if (el.getAttribute("data-city") === city) el.classList.toggle("hl", on); });
+    // a pin may stand for several cities ("A|B|C"); a row for one
+    var cities = function (el) { return el.getAttribute("data-city").split("|"); };
+    var has = function (el, c) { return cities(el).indexOf(c) > -1; };
+    var mark = function (list, on) {
+      pins.concat(rows).forEach(function (el) {
+        if (list.some(function (c) { return has(el, c); })) el.classList.toggle("hl", on);
+      });
     };
     pins.concat(rows).forEach(function (el) {
-      var c = el.getAttribute("data-city");
+      var c = cities(el);
       el.addEventListener("mouseenter", function () { mark(c, true); });
       el.addEventListener("mouseleave", function () { mark(c, false); });
       el.addEventListener("focusin", function () { mark(c, true); });
@@ -176,7 +181,7 @@
       var open = function (e) {
         e.stopPropagation();
         var c = row.getAttribute("data-city");
-        pins.forEach(function (x) { x.classList.toggle("open", x.getAttribute("data-city") === c); });
+        pins.forEach(function (x) { x.classList.toggle("open", has(x, c)); });
         var map = $(".map-frame"), r = map.getBoundingClientRect();
         if (r.top < 0 || r.bottom > window.innerHeight) map.scrollIntoView({ behavior: "smooth", block: "center" });
       };
@@ -189,6 +194,37 @@
       if (e.key !== "Escape") return;
       pins.forEach(function (x) { x.classList.remove("open"); });
       if (document.activeElement && document.activeElement.classList.contains("pin-dot")) document.activeElement.blur();
+    });
+  }
+
+  /* ---------- typology numbers: the projects of each typology open below it ----------
+     Hover and keyboard focus are handled in CSS; a click or tap toggles the panel. */
+  var typs = $$(".typ-item");
+  if (typs.length) {
+    var closeTyp = function (except) {
+      typs.forEach(function (t) {
+        if (t === except) return;
+        t.classList.remove("open"); $(".typ-row", t).setAttribute("aria-expanded", "false");
+      });
+    };
+    typs.forEach(function (item) {
+      var btn = $(".typ-row", item);
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var open = !item.classList.contains("open");
+        closeTyp(item);
+        item.classList.toggle("open", open);
+        btn.setAttribute("aria-expanded", String(open));
+        if (!open) btn.blur(); // otherwise keyboard focus would keep it open
+      });
+      item.addEventListener("mouseenter", function () { btn.setAttribute("aria-expanded", "true"); });
+      item.addEventListener("mouseleave", function () { if (!item.classList.contains("open")) btn.setAttribute("aria-expanded", "false"); });
+    });
+    document.addEventListener("click", function (e) { if (!e.target.closest(".typ-item")) closeTyp(null); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      closeTyp(null);
+      if (document.activeElement && document.activeElement.classList.contains("typ-row")) document.activeElement.blur();
     });
   }
 

@@ -69,27 +69,34 @@ window.FACTS = {
 
   awardsCount: 3, // three awards for two team projects (Monolyt ×2, Masterplan Uruçuca)
 
-  /* Map of locations (profile page). x, y = position on assets/img/profile/places-base, in %
-   * of its width/height, taken from the dots on the CV map (page 3). Marateca, Portugal is
-   * off the map: shown at the "+ marateca, portugal" note in the top-right corner. */
+  /* Map of locations (profile page). x, y = position on assets/img/profile/places-america
+   * (América.png), in % of its width/height, computed from each city's latitude/longitude
+   * (the map is a Mercator projection: x = 62.71 + (lon + 34.79) * 0.9086,
+   * y = 13.63 - 1.7694 * mercator(lat), in %). Cities closer together than the dots can show
+   * share a "group": one dot, one label, one card listing each city. "side" = label side.
+   * Marateca, Portugal is off the map: shown as a note at the top, towards Europe. */
+  mapGroups: {
+    sp: { label: "São Paulo +3", side: "r" },
+    sc: { label: "Itajaí · Itapema · B. Camboriú", side: "r" }
+  },
   mapPoints: [
-    { city: "Gramado, RS", x: 29.65, y: 91.29, side: "l" },
-    { city: "Itajaí, SC", x: 39.06, y: 84.12, side: "l" },
-    { city: "Itapema, SC", x: 39.06, y: 82.78, side: "l" },
-    { city: "Balneário Camboriú, SC", x: 41.09, y: 83.92, side: "r" },
-    { city: "Curitiba, PR", x: 36.91, y: 74.24, side: "l" },
-    { city: "Londrina, PR", x: 35.77, y: 71.78, side: "l" },
-    { city: "São Paulo, SP", x: 46.55, y: 70.98, side: "r" },
-    { city: "Araçariguama, SP", x: 43.56, y: 69.10, side: "r" },
-    { city: "Monte Mor, SP", x: 38.02, y: 66.88, side: "r" },
-    { city: "Quinta da Baronesa, SP", x: 50.22, y: 64.16, side: "r" },
-    { city: "Uberlândia, MG", x: 41.26, y: 59.94, side: "r" },
-    { city: "Goiânia, GO", x: 36.91, y: 51.80, side: "r" },
-    { city: "Uruçuca, BA", x: 74.40, y: 49.49, side: "l" },
-    { city: "Fortaleza, CE", x: 80.07, y: 17.14, side: "l" },
-    { city: "Natal, RN", x: 88.07, y: 20.43, side: "l" },
-    { city: "Preá, CE", x: 71.32, y: 12.41, side: "l" },
-    { city: "Marateca, Portugal", x: 86.02, y: 7.22, side: "l", abroad: true },
+    { city: "Gramado, RS", x: 48.10, y: 68.06, side: "l" },
+    { city: "Itajaí, SC", x: 50.11, y: 63.10, group: "sc" },
+    { city: "Itapema, SC", x: 50.16, y: 63.46, group: "sc" },
+    { city: "Balneário Camboriú, SC", x: 50.14, y: 63.26, group: "sc" },
+    { city: "Curitiba, PR", x: 49.56, y: 60.18, side: "l" },
+    { city: "Londrina, PR", x: 47.84, y: 56.06, side: "l" },
+    { city: "São Paulo, SP", x: 51.96, y: 56.52, group: "sp" },
+    { city: "Araçariguama, SP", x: 51.57, y: 56.31, group: "sp" },
+    { city: "Monte Mor, SP", x: 51.34, y: 55.37, group: "sp" },
+    { city: "Quinta da Baronesa, SP", x: 52.04, y: 55.37, group: "sp" },
+    { city: "Uberlândia, MG", x: 50.46, y: 47.73, side: "l" },
+    { city: "Goiânia, GO", x: 49.58, y: 43.59, side: "l" },
+    { city: "Uruçuca, BA", x: 58.63, y: 39.73, side: "r" },
+    { city: "Fortaleza, CE", x: 59.32, y: 20.23, side: "r" },
+    { city: "Natal, RN", x: 62.33, y: 23.89, side: "r" },
+    { city: "Preá, CE", x: 57.59, y: 18.62, side: "l" },
+    { city: "Marateca, Portugal", x: 66.5, y: 5, side: "l", abroad: true }
   ],
 
   experience: [
@@ -128,7 +135,8 @@ window.FACTS = {
 
   awards: [
     { title: "Gold Winner", project: "Monolyt", slug: "monolyt", org: "Urban Design & Architecture Design Awards, by Architecture Press Release (APR)", category: "Housing Multi-Family (Concept)", year: "2024" },
-    { title: "Third Award", project: "Masterplan Uruçuca", slug: "masterplan-urucuca", org: "Rethinking The Future Awards", category: "Urban Design (Concept)", year: "2024" },
+    { title: "Third Award", project: "Masterplan Uruçuca", slug: "masterplan-urucuca", org: "Rethinking The Future Awards", category: "Urban Design (Concept)", year: "2024",
+      url: "https://awards.re-thinkingthefuture.com/masterplan-urucuca-architects-office/" },
     { title: "Winner", project: "Monolyt", slug: "monolyt", org: "World Design Awards", category: "Housing Concept", year: "2023" }
   ],
 
@@ -143,6 +151,12 @@ window.FACTS = {
       links: [{ label: "Portuguese", url: "https://espacodearquitetura.com/projetos/casa-par/" }] },
     { title: "Monolyt", outlet: "Exame · NSC Total", year: "2024", slug: "monolyt",
       links: [{ label: "Exame", url: "https://exame.com/casual/predio-de-balneario-camboriu-ganha-premiacao-internacional-da-arquitetura/" }, { label: "NSC Total", url: "https://www.nsctotal.com.br/colunista/dagmara-spautz/projeto-de-predio-para-praia-agreste-em-balneario-camboriu-ganha-premio-internacional" }] }
+  ],
+
+  /* Other features shown on the Recognition page only (not in the CV). */
+  features: [
+    { title: "Monolyt", outlet: "The Architecture Community", slug: "monolyt", note: "World Design Awards 2023 feature",
+      links: [{ label: "Read", url: "https://www.thearchitecturecommunity.com/monolyt-ao-world-design-awards-2023/" }] }
   ],
 
   skills: ["Concept design", "Feasibility studies", "Zoning and area studies", "Urban analysis", "Project coordination",

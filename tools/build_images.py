@@ -87,6 +87,7 @@ MANIFEST = {
     "sketch/arch": ("C", "sk-quinta-arch.png"),
     "profile/portrait": ("C", "portrait.png"),
     "profile/places-map": ("C", "places-map.png"),
+    "profile/places-america": ("C", "america.png"),  # exported by Filipe from the map PSD (América.png)
 }
 
 

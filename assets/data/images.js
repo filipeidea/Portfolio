@@ -241,6 +241,14 @@ window.IMAGES = {
    2000
   ]
  },
+ "profile/places-america": {
+  "r": 1.9105,
+  "w": [
+   640,
+   1280,
+   2000
+  ]
+ },
  "profile/places-base": {
   "r": 0.7751,
   "w": [

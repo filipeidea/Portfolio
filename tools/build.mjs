@@ -38,12 +38,13 @@ const FIGURES = [
   { value: String(LEDGER.length), label: "projects since 2021, at Architects Office and Triptyque" },
   { value: (Math.floor(TOTAL_AREA / 1000) * 1000).toLocaleString("en-US") + "+", unit: "m²", label: "of floor area across those projects" },
   { value: String(CITIES.length), label: "cities in Brazil and Portugal" },
-  { value: String(FACTS.awardsCount), label: "international awards for team projects" }
+  { value: String(FACTS.awardsCount), label: "international awards for team projects", href: "recognition.html" }
 ];
 const TYPOLOGY = FACTS.typologies.map((t) => {
   const list = LEDGER.filter((x) => t.match.includes(x.type));
   const area = LEDGER.filter((x) => (t.areaOnly || t.match).includes(x.type)).reduce((a, x) => a + (x.area || 0), 0);
-  return { label: t.label, count: list.length, area, partial: list.some((x) => x.area == null) };
+  list.sort((a, b) => b.year - a.year || (b.area || 0) - (a.area || 0));
+  return { label: t.label, count: list.length, area, partial: list.some((x) => x.area == null), list };
 }).sort((a, b) => b.count - a.count || b.area - a.area);
 const PLURAL = { EV: ["feasibility study", "feasibility studies"], EP: ["schematic design", "schematic designs"],
   AP: ["design development", "design developments"], PE: ["construction documents package", "construction documents packages"] };
@@ -83,7 +84,7 @@ function fig(r, it, sizes, cls = "", light = false) {
 
 // ---------- layout ----------
 const NAV = [["index.html#projects", "Projects", "projects"], ["sketchbook.html", "Sketchbook", "sketchbook"],
-  ["profile.html", "Profile", "profile"], ["resume.html", "Résumé", "resume"], ["#contact", "Contact", "contact"]];
+  ["profile.html", "Profile", "profile"], ["recognition.html", "Recognition", "recognition"], ["resume.html", "Résumé", "resume"], ["#contact", "Contact", "contact"]];
 
 function layout({ r = "", file, title, description, page, body, og = "home", jsonld, extraHead = "" }) {
   const url = SITE_URL + (file === "index.html" ? "" : file);
@@ -136,7 +137,7 @@ ${body}
 <div class="foot-grid">
 <p class="foot-note">Open to conversations with architecture practices in Brazil and abroad. The quickest way to reach me is through LinkedIn.</p>
 <div><p class="mono">Reach</p><ul class="foot-links">${reach}</ul></div>
-<div><p class="mono">Pages</p><ul class="foot-links"><li><a href="${r}index.html#projects">Projects</a></li><li><a href="${r}sketchbook.html">Sketchbook</a></li><li><a href="${r}profile.html">Profile</a></li><li><a href="${r}resume.html">Résumé</a></li></ul></div>
+<div><p class="mono">Pages</p><ul class="foot-links"><li><a href="${r}index.html#projects">Projects</a></li><li><a href="${r}sketchbook.html">Sketchbook</a></li><li><a href="${r}profile.html">Profile</a></li><li><a href="${r}recognition.html">Recognition</a></li><li><a href="${r}resume.html">Résumé</a></li></ul></div>
 </div>
 <div class="foot-base mono"><span>© ${new Date().getFullYear()} Filipe Meltzer · ${esc(FACTS.registration)}</span><span>${esc(FACTS.base)}</span></div>
 </div>
@@ -182,7 +183,7 @@ function home() {
       `<span class="tags"><span>${esc(authorship)}</span>${p.awards?.length ? `<span class="award">${p.awards.length > 1 ? p.awards.length + " awards" : "Award"}</span>` : ""}</span>` +
       "</span></a></li>";
   }).join("");
-  const figures = FIGURES.map((f) => `<div class="figure"><dt>${esc(f.label)}</dt><dd>${esc(f.value)}${f.unit ? ` <small>${esc(f.unit)}</small>` : ""}</dd></div>`).join("");
+  const figures = FIGURES.map((f) => `<div class="figure"><dt>${f.href ? `<a href="${f.href}">${esc(f.label)}</a>` : esc(f.label)}</dt><dd>${esc(f.value)}${f.unit ? ` <small>${esc(f.unit)}</small>` : ""}</dd></div>`).join("");
   const body = `<main id="main">
 <section class="wrap intro" aria-labelledby="intro-h">
 <h1 id="intro-h" class="sr-only">Filipe Meltzer — Architect &amp; Urbanist</h1>
@@ -208,9 +209,10 @@ function home() {
 <section class="wrap section typology" aria-labelledby="typ-h">
 <div class="typ-head">
 <h2 id="typ-h" class="h2">Projects<br>by typology</h2>
-<p class="typ-note">Number of projects and total floor area per typology, since 2021.</p>
+<p class="typ-note">Number of projects and total floor area per typology, since 2021. Point to a number to see the projects.</p>
 </div>
-<ul class="typ-grid" role="list">${TYPOLOGY.map((t) => `<li><span class="typ-num" aria-hidden="true">${pad(t.count)}</span><span class="typ-txt"><span class="typ-label">${esc(t.label)}</span><span class="typ-area mono-plain">${t.count} project${t.count > 1 ? "s" : ""} · ${fmtArea(t.area)}${t.partial ? "*" : ""} m²</span></span></li>`).join("")}</ul>
+<ul class="typ-grid" role="list">${TYPOLOGY.map((t, i) => `<li class="typ-item"><button type="button" class="typ-row" aria-expanded="false" aria-controls="typ-${i}"><span class="typ-num" aria-hidden="true">${pad(t.count)}</span><span class="typ-txt"><span class="typ-label">${esc(t.label)}</span><span class="typ-area mono-plain">${t.count} project${t.count > 1 ? "s" : ""} · ${fmtArea(t.area)}${t.partial ? "*" : ""} m²</span></span><span class="typ-chev" aria-hidden="true"></span></button>` +
+  `<div class="typ-panel" id="typ-${i}"><ul>${t.list.map((x) => `<li><span class="tp-name">${x.slug ? `<a href="projects/${x.slug}.html">${esc(x.name)}</a>` : esc(x.name)}</span><span class="tp-meta">${esc(x.city)}${x.area ? " · " + fmtArea(x.area) + " m²" : ""} · ${x.year}</span></li>`).join("")}</ul></div></li>`).join("")}</ul>
 <p class="typ-foot">* Some projects have no area on record and are not included in that total. Masterplan Uruçuca counts as both hotel and masterplan; its ${fmtArea(27771)} m² site area is counted once, under masterplan. Total ${fmtArea(TOTAL_AREA)} m² across ${LEDGER.length} projects.</p>
 </section>
 <section id="projects" class="wrap section" aria-labelledby="proj-h">
@@ -396,24 +398,37 @@ function pubsList(r) {
    projects there (pure CSS, works without JavaScript). The same list follows as text. */
 function placesMap(r) {
   const byCity = (c) => LEDGER.filter((x) => x.city === c).sort((a, b) => b.year - a.year);
+  const n = (k) => `${k} project${k === 1 ? "" : "s"}`;
   const item = (x) => `<li><span class="pc-name">${x.slug ? `<a href="${r}projects/${x.slug}.html">${esc(x.name)}</a>` : esc(x.name)}</span>` +
     `<span class="pc-meta">${esc(x.type)}${x.area ? " · " + fmtArea(x.area) + " m²" : ""} · ${x.year}${x.office ? " · " + esc(x.office) : ""}</span></li>`;
-  const pins = FACTS.mapPoints.map((pt, i) => {
-    const list = byCity(pt.city);
-    const short = pt.city.split(",")[0].toLowerCase();
-    const flipX = pt.x > 55 ? " fx" : "", flipY = pt.y > 58 ? " fy" : "";
-    return `<div class="pin side-${pt.side}${flipX}${flipY}${pt.abroad ? " abroad" : ""}" style="left:${pt.x}%;top:${pt.y}%" data-city="${esc(pt.city)}">` +
-      `<button type="button" class="pin-dot" aria-describedby="pc-${i}"><span class="pin-label">${pt.abroad ? "+ " : ""}${esc(short)}</span><span class="sr-only">: ${list.length} project${list.length > 1 ? "s" : ""}</span></button>` +
-      `<div class="pin-card" role="tooltip" id="pc-${i}"><p class="pc-city">${esc(pt.city)}<span>${list.length} project${list.length > 1 ? "s" : ""}</span></p><ul>${list.map(item).join("")}</ul></div></div>`;
+  // one dot per city, or one per group of cities too close together to tell apart
+  const units = [];
+  for (const pt of FACTS.mapPoints) {
+    if (!pt.group) { units.push({ ...pt, cities: [pt.city], label: pt.city.split(",")[0] }); continue; }
+    let u = units.find((x) => x.group === pt.group);
+    if (!u) { const g = FACTS.mapGroups[pt.group]; u = { group: pt.group, side: g.side, label: g.label, cities: [], xs: [], ys: [] }; units.push(u); }
+    u.cities.push(pt.city); u.xs.push(pt.x); u.ys.push(pt.y);
+  }
+  const avg = (a) => +(a.reduce((s, v) => s + v, 0) / a.length).toFixed(2);
+  units.forEach((u) => { if (u.xs) { u.x = avg(u.xs); u.y = avg(u.ys); } });
+  const pins = units.map((u, i) => {
+    const total = u.cities.reduce((s, c) => s + byCity(c).length, 0);
+    const flipX = u.x > 56 ? " fx" : "", flipY = u.y > 50 ? " fy" : "";
+    const body = u.cities.length === 1
+      ? `<p class="pc-city">${esc(u.cities[0])}<span>${n(total)}</span></p><ul>${byCity(u.cities[0]).map(item).join("")}</ul>`
+      : u.cities.map((c) => `<p class="pc-city">${esc(c)}<span>${n(byCity(c).length)}</span></p><ul>${byCity(c).map(item).join("")}</ul>`).join("");
+    return `<div class="pin side-${u.side}${flipX}${flipY}${u.abroad ? " abroad" : ""}" style="left:${u.x}%;top:${u.y}%" data-city="${esc(u.cities.join("|"))}">` +
+      `<button type="button" class="pin-dot" aria-describedby="pc-${i}"><span class="pin-label">${u.abroad ? "↑ " : ""}${esc(u.abroad ? u.cities[0] : u.label)}</span><span class="sr-only">: ${n(total)}</span></button>` +
+      `<div class="pin-card${u.cities.length > 1 ? " multi" : ""}" role="tooltip" id="pc-${i}">${body}</div></div>`;
   }).join("");
   const cityList = [...FACTS.mapPoints].sort((a, b) => byCity(b.city).length - byCity(a.city).length || a.city.localeCompare(b.city))
     .map((pt) => `<li data-city="${esc(pt.city)}"><span class="cl-city">${esc(pt.city)}</span><span class="cl-projects">${byCity(pt.city).map((x) => x.slug ? `<a href="${r}projects/${x.slug}.html">${esc(x.name)}</a>` : esc(x.name)).join(", ")}</span></li>`).join("");
   return `<div class="places">
 <div class="map">
-<div class="map-frame">${img(r, "profile/places-base", "Satellite map of Brazil with the cities where projects were developed", { sizes: "(min-width: 900px) 55vw, 100vw" })}${pins}</div>
+<div class="map-view"><div class="map-frame">${img(r, "profile/places-america", "Satellite map of South America with the cities where projects were developed", { sizes: "(min-width: 1300px) 1240px, 100vw" })}${pins}</div></div>
 <p class="map-hint mono-plain">Hover or tap a city to see its projects.</p>
 </div>
-<div>
+<div class="places-text">
 <p class="lede">From the south of Brazil to Portugal: ${LEDGER.length} projects in ${CITIES.length} cities, across residential, hospitality, corporate, urban and mixed-use work.</p>
 <ul class="city-list" role="list">${cityList}</ul>
 </div>
@@ -444,10 +459,10 @@ function profile() {
 </section>
 
 <section class="cv-block" aria-labelledby="rec">
-<h2 id="rec" class="mono">Awards &amp; publications</h2>
-<div class="cols">
-<div><h3 class="h3">Awards</h3><ul class="list-plain rec">${awardsList(r)}</ul><p class="note">Awarded to team projects at Architects Office, in which I took part.</p></div>
-<div><h3 class="h3">Publications</h3><ul class="list-plain rec">${pubsList(r)}</ul><p class="note">Team project at Architects Office.</p></div>
+<h2 id="rec" class="mono">Recognition</h2>
+<div>
+<p class="lede">${FACTS.awards.length} international awards and ${PRESS_COUNT} publications for team projects at Architects Office in which I took part — Monolyt, Masterplan Uruçuca and Casa PAR.</p>
+<p class="actions"><a class="link-arrow" href="recognition.html">Awards and press ${ARROW}</a></p>
 </div>
 </section>
 
@@ -519,6 +534,49 @@ ${entries(FACTS.experience.slice(1), true)}
     description: "Résumé of Filipe Meltzer, architect and urbanist in São Paulo: experience, awards, publications, education, languages and software.", body });
 }
 
+// ---------- recognition (awards and press) ----------
+const PRESS = [...FACTS.publications.flatMap((p) => p.outlet.includes(" · ")
+    ? p.links.map((l) => ({ outlet: l.label, title: p.title, slug: p.slug, year: p.year, links: [{ label: "Read", url: l.url }] }))
+    : [{ ...p }]), ...FACTS.features];
+const PRESS_COUNT = PRESS.length;
+function recognition() {
+  const r = "";
+  const proj = (slug) => PROJECTS.find((p) => p.slug === slug);
+  const thumb = (slug) => { const p = proj(slug); return `<a class="rc-thumb" href="projects/${slug}.html" tabindex="-1" aria-hidden="true">${img(r, p.cover, "", { sizes: "160px" })}</a>`; };
+  const projLink = (slug) => { const p = proj(slug); return `<a href="projects/${slug}.html">${esc(p.title)}</a><span class="rc-loc">${esc(p.location)}</span>`; };
+  const awards = FACTS.awards.map((a) => `<li class="rc-row">${thumb(a.slug)}<span class="rc-year mono-plain">${a.year}</span>` +
+    `<span class="rc-main"><span class="rc-title">${esc(a.title)}</span><span class="rc-org">${esc(a.org)}</span><span class="rc-cat mono-plain">${esc(a.category)}</span>${a.url ? `<a class="rc-ext" href="${a.url}" rel="noopener">Award page ↗</a>` : ""}</span>` +
+    `<span class="rc-proj">${projLink(a.slug)}</span></li>`).join("");
+  const press = PRESS.map((p) => `<li class="rc-row">${thumb(p.slug)}<span class="rc-year mono-plain">${p.year || ""}</span>` +
+    `<span class="rc-main"><span class="rc-title">${esc(p.outlet)}</span>${p.note ? `<span class="rc-org">${esc(p.note)}</span>` : ""}<span class="rc-links">${p.links.map((l) => `<a class="rc-ext" href="${l.url}" rel="noopener">${esc(l.label)} ↗</a>`).join("")}</span></span>` +
+    `<span class="rc-proj">${projLink(p.slug)}</span></li>`).join("");
+  const body = `<main id="main">
+<div class="wrap section rec-page">
+<header class="page-head">
+<p class="mono kicker">Recognition</p>
+<h1 class="h1">Awards and press</h1>
+<p class="lede">International awards and publications for projects I worked on in the concept team at Architects Office. They are team projects; my role in each is described on its project page.</p>
+</header>
+<dl class="figures rec-figures">
+<div class="figure"><dt>international awards</dt><dd>${FACTS.awards.length}</dd></div>
+<div class="figure"><dt>award-winning projects</dt><dd>${new Set(FACTS.awards.map((a) => a.slug)).size}</dd></div>
+<div class="figure"><dt>publications and features</dt><dd>${PRESS_COUNT}</dd></div>
+<div class="figure"><dt>projects published</dt><dd>${new Set(PRESS.map((p) => p.slug)).size}</dd></div>
+</dl>
+<section class="rc-block" aria-labelledby="aw-h">
+<h2 id="aw-h" class="h2">Awards</h2>
+<ul class="rc-list" role="list">${awards}</ul>
+</section>
+<section class="rc-block" aria-labelledby="pr-h">
+<h2 id="pr-h" class="h2">Press</h2>
+<ul class="rc-list" role="list">${press}</ul>
+</section>
+</div>
+</main>`;
+  return layout({ file: "recognition.html", page: "recognition", title: "Recognition — Filipe Meltzer, Architect & Urbanist",
+    description: "Awards and press for projects Filipe Meltzer worked on at Architects Office: Monolyt, Masterplan Uruçuca and Casa PAR.", body });
+}
+
 // ---------- legacy address, 404, sitemap ----------
 function legacy() {
   const list = PROJECTS.map((p) => `<li><a href="projects/${p.slug}.html">${esc(p.title)}</a></li>`).join("");
@@ -547,6 +605,7 @@ PROJECTS.forEach((p, i) => write(`projects/${p.slug}.html`, project(p, i)));
 write("sketchbook.html", sketchbook());
 write("profile.html", profile());
 write("resume.html", resume());
+write("recognition.html", recognition());
 write("project.html", legacy());
 for (const [from, to] of Object.entries(ALIASES)) {
   const p = PROJECTS.find((x) => x.slug === to);
@@ -555,6 +614,6 @@ for (const [from, to] of Object.entries(ALIASES)) {
     `<body><p>This project is now at <a href="${to}.html">${esc(p.title)}</a>.</p></body></html>\n`);
 }
 write("404.html", notFound());
-const urls = ["", "profile.html", "sketchbook.html", "resume.html", ...PROJECTS.map((p) => `projects/${p.slug}.html`)];
+const urls = ["", "profile.html", "sketchbook.html", "recognition.html", "resume.html", ...PROJECTS.map((p) => `projects/${p.slug}.html`)];
 write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${SITE_URL}${u}</loc></url>`).join("\n")}\n</urlset>\n`);
 console.log(`Built ${urls.length} pages + project.html + 404.html into _site/`);
