@@ -346,6 +346,103 @@ window.IMAGES = {
    2000
   ]
  },
+ "notebook/amsterdam": {
+  "r": 1.4583,
+  "w": [
+   640,
+   1280,
+   1887
+  ]
+ },
+ "notebook/cafe": {
+  "r": 0.4766,
+  "w": [
+   640,
+   763
+  ]
+ },
+ "notebook/castilhos": {
+  "r": 0.8972,
+  "w": [
+   640,
+   1280,
+   1553
+  ]
+ },
+ "notebook/cntower": {
+  "r": 0.7211,
+  "w": [
+   640,
+   1280,
+   1541
+  ]
+ },
+ "notebook/facade": {
+  "r": 0.6746,
+  "w": [
+   640,
+   680
+  ]
+ },
+ "notebook/farol": {
+  "r": 0.7818,
+  "w": [
+   640,
+   1280,
+   1645
+  ]
+ },
+ "notebook/house": {
+  "r": 1.0024,
+  "w": [
+   640,
+   1280,
+   1670
+  ]
+ },
+ "notebook/lion": {
+  "r": 1.035,
+  "w": [
+   640,
+   1066
+  ]
+ },
+ "notebook/lunch": {
+  "r": 0.6372,
+  "w": [
+   640,
+   1017
+  ]
+ },
+ "notebook/ornaments": {
+  "r": 1.7078,
+  "w": [
+   640,
+   1280,
+   1397
+  ]
+ },
+ "notebook/passerby": {
+  "r": 0.3384,
+  "w": [
+   268
+  ]
+ },
+ "notebook/plant": {
+  "r": 0.705,
+  "w": [
+   640,
+   1054
+  ]
+ },
+ "notebook/rooftops": {
+  "r": 1.3333,
+  "w": [
+   640,
+   1280,
+   1488
+  ]
+ },
  "profile/places-america": {
   "r": 1.9105,
   "w": [

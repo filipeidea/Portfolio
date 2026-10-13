@@ -59,6 +59,13 @@ old `project.html?p=<slug>` links to the new addresses.
 You can edit these files directly on github.com (pencil icon → *Commit changes*); the site
 rebuilds and updates in about a minute.
 
+## Travel notebook (unlisted)
+
+`notebook.html` holds travel drawings and watercolours not related to projects (the `NOTEBOOK`
+list in `tools/build.mjs`). It is not in the menu, the footer or the sitemap and asks search
+engines not to index it; the only way in is the small watercolour figure at the top right of
+the home page.
+
 ## Portuguese version
 
 `tools/i18n.mjs` (run automatically at the end of `tools/build.mjs`) writes a Portuguese copy of

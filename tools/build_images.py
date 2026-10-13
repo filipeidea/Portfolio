@@ -93,6 +93,20 @@ MANIFEST = {
     "murata/module": ("C", "mu-module.png"),
     "murata/plan": ("C", "mu-plan.png"),
     "murata/section": ("C", "mu-section.png"),
+    # Travel notebook (unlisted page), from portfólio\aquarela, flattened and trimmed
+    "notebook/amsterdam": ("C", "nb-amsterdam.png"),
+    "notebook/cntower": ("C", "nb-cntower.png"),
+    "notebook/farol": ("C", "nb-farol.png"),
+    "notebook/castilhos": ("C", "nb-castilhos.png"),
+    "notebook/cafe": ("C", "nb-cafe.png"),
+    "notebook/rooftops": ("C", "nb-rooftops.png"),
+    "notebook/lion": ("C", "nb-lion.png"),
+    "notebook/facade": ("C", "nb-facade.png"),
+    "notebook/ornaments": ("C", "nb-ornaments.png"),
+    "notebook/plant": ("C", "nb-plant.png"),
+    "notebook/lunch": ("C", "nb-lunch.png"),
+    "notebook/house": ("C", "nb-house.png"),
+    "notebook/passerby": ("C", "nb-passerby.png"),
     # Sketchbook, from portfólio\croquis (scans at 600 dpi; "-pencil" = the same sheet before colour)
     "sketch/multifamily-house": ("C", "k-perspectiva-bm8.png"),  # Perspectiva BM8.png
     "sketch/multifamily-block": ("C", "k-croqui-geral-bm8.png"),  # Croqui geral BM8 2.png

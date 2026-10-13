@@ -188,6 +188,7 @@ function home() {
   const figures = FIGURES.map((f) => `<div class="figure"><dt>${f.href ? `<a href="${f.href}">${esc(f.label)}</a>` : esc(f.label)}</dt><dd>${esc(f.value)}${f.unit ? ` <small>${esc(f.unit)}</small>` : ""}</dd></div>`).join("");
   const body = `<main id="main">
 <section class="wrap intro" aria-labelledby="intro-h">
+<a class="secret" href="notebook.html" title="Off the record"><img src="assets/img/notebook-icon-64.webp" srcset="assets/img/notebook-icon-64.webp 1x, assets/img/notebook-icon-128.webp 2x" width="19" height="64" alt="Travel notebook"></a>
 <h1 id="intro-h" class="sr-only">Filipe Meltzer — Architect &amp; Urbanist</h1>
 <p class="lede">Architect and urbanist in São Paulo, turning briefs, zoning rules and site conditions into feasibility studies and schematic designs.</p>
 <p class="intro-links"><a class="link-arrow" href="#projects">Selected projects ${ARROW}</a> <a class="link-arrow" href="profile.html">Profile ${ARROW}</a> <a class="link-arrow" href="#contact">Contact ${ARROW}</a></p>
@@ -600,6 +601,40 @@ function recognition() {
     description: "Awards and press for projects Filipe Meltzer worked on at Architects Office: Monolyt, Masterplan Uruçuca and Casa PAR.", body });
 }
 
+// ---------- travel notebook: an unlisted page (no menu, no sitemap, noindex), reached from the small figure on the home page ----------
+const NOTEBOOK = [
+  ["notebook/amsterdam", "Watercolour of an ornate gateway and a red-brick corner building with a turret, in Amsterdam", "Muntplein, Amsterdam"],
+  ["notebook/cntower", "Watercolour of the CN Tower rising beside a glass building", "CN Tower, Toronto"],
+  ["notebook/farol", "Watercolour of a white lighthouse with a red lantern on the rocks by the sea", "Lighthouse of San José Ignacio, Uruguay"],
+  ["notebook/castilhos", "Pen drawing of a mansard-roofed building with a domed tower", "Instituto Júlio de Castilhos, Porto Alegre"],
+  ["notebook/rooftops", "Watercolour of colourful old buildings and awnings seen from above", "Rooftops and awnings"],
+  ["notebook/cafe", "Watercolour of a café corner with carved columns, a counter and bentwood chairs", "Café Imperial"],
+  ["notebook/lion", "Pen drawing of a winged lion with a serpent's tail", "A winged lion"],
+  ["notebook/facade", "Watercolour of a narrow old building with a bay window and a small tree", "A narrow facade"],
+  ["notebook/ornaments", "Pen drawings of carved stone ornaments and brackets", "Ornaments"],
+  ["notebook/plant", "Watercolour of a hanging plant with long leaves", "A hanging plant"],
+  ["notebook/lunch", "Watercolour of two hanging lamps above a plate of pasta and a dessert", "Lunch under the lamps"],
+  ["notebook/house", "Watercolour of a low contemporary house by the water", "A house by the water"],
+  ["notebook/passerby", "Watercolour of a woman with red hair, sunglasses, a yellow top and wide striped trousers", "A passer-by"]
+];
+function notebook() {
+  const r = "";
+  const tiles = NOTEBOOK.map(([key, alt, cap]) => `<li class="nb-tile"><a class="zoom light" href="${largest(r, key)}" data-caption="${esc(cap)}">${img(r, key, alt, { sizes: "(min-width: 900px) 30vw, 50vw" })}<span class="sr-only"> (open full size)</span></a><p class="nb-cap">${esc(cap)}</p></li>`).join("");
+  const body = `<main id="main">
+<header class="wrap p-head">
+<p class="mono kicker">Off the record</p>
+<h1 class="h1">Travel notebook</h1>
+<p class="lede">Drawings and watercolours made while travelling, or just looking around — not for any project.</p>
+</header>
+<div class="wrap section nb-page">
+<ul class="nb-grid" role="list">${tiles}</ul>
+<p class="more"><a class="link-arrow" href="sketchbook.html">The project sketchbook ${ARROW}</a></p>
+</div>
+</main>`;
+  return layout({ file: "notebook.html", page: "notebook", og: "sketchbook", title: "Travel notebook — Filipe Meltzer",
+    description: "Travel drawings and watercolours by Filipe Meltzer.", body, extraHead: '<meta name="robots" content="noindex, nofollow">\n' });
+}
+
 // ---------- legacy address, 404, sitemap ----------
 function legacy() {
   const list = PROJECTS.map((p) => `<li><a href="projects/${p.slug}.html">${esc(p.title)}</a></li>`).join("");
@@ -629,6 +664,7 @@ write("sketchbook.html", sketchbook());
 write("profile.html", profile());
 write("resume.html", resume());
 write("recognition.html", recognition());
+write("notebook.html", notebook()); // unlisted: not in the menu or the sitemap
 write("project.html", legacy());
 for (const [from, to] of Object.entries(ALIASES)) {
   const p = PROJECTS.find((x) => x.slug === to);
