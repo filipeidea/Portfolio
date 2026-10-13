@@ -136,11 +136,11 @@ ${body}
 <p class="mono">Contact</p>
 <h2 class="foot-cta">Let’s talk about architecture.</h2>
 <div class="foot-grid">
-<p class="foot-note">Open to conversations with architecture practices in Brazil and abroad. The quickest way to reach me is through LinkedIn.</p>
+<p class="foot-note">Open to conversations with architecture practices in Brazil and abroad.</p>
 <div><p class="mono">Reach</p><ul class="foot-links">${reach}</ul></div>
 <div><p class="mono">Pages</p><ul class="foot-links"><li><a href="${r}index.html#projects">Projects</a></li><li><a href="${r}sketchbook.html">Sketchbook</a></li><li><a href="${r}profile.html">Profile</a></li><li><a href="${r}recognition.html">Recognition</a></li><li><a href="${r}resume.html">Résumé</a></li></ul></div>
 </div>
-<div class="foot-base mono"><span>© ${new Date().getFullYear()} Filipe Meltzer · ${esc(FACTS.registration)}</span><span>${esc(FACTS.base)}</span></div>
+<div class="foot-base"><span>© ${new Date().getFullYear()} Filipe Meltzer · ${esc(FACTS.registration)}</span><span>${esc(FACTS.base)}</span></div>
 </div>
 </footer>
 <script src="${r}assets/js/app.js?v=${V.js}" defer></script>
@@ -174,13 +174,14 @@ function home() {
   /* Every card has the same 3:2 frame so the grid lines up exactly. A wide image cropped
      into the frame needs width × (image ratio ÷ 1.5) pixels to stay sharp. */
   const cardSizes = (ratio) => { const k = Math.max(1, ratio / 1.5); return `(min-width: 760px) ${Math.round(50 * k)}vw, ${Math.round(100 * k)}vw`; };
-  const cards = PROJECTS.map((p, i) => {
-    const authorship = isTeam(p) ? "Team project · " + p.practice : "Individual work · " + p.practice.split(" — ")[0];
+  // a card: the image, the title and one line — main typology, place, year
+  const place = (loc) => loc.split(",").map((x) => x.trim()).filter((x) => !/^[A-Z]{2}$/.test(x)).join(", "); // "Balneário Camboriú, SC, Brazil" → "Balneário Camboriú, Brazil"
+  const cards = PROJECTS.map((p) => {
+    const kind = p.typology.split(" · ")[0];
     return `<li class="card" data-cat="${esc(p.category)}"><a href="projects/${p.slug}.html">` +
       `<span class="ph">${img(r, p.cover, "", { sizes: cardSizes(need(p.cover).r) })}</span>` +
-      `<span class="meta"><span class="num" aria-hidden="true">${pad(i + 1)}</span><h3>${esc(p.title)}</h3>` +
-      `<span class="sub">${esc(p.typology)} · ${esc(p.location)}${p.year ? " · " + esc(p.year) : ""}</span>` +
-      `<span class="tags"><span>${esc(authorship)}</span>${p.awards?.length ? `<span class="award">${p.awards.length > 1 ? p.awards.length + " awards" : "Award"}</span>` : ""}</span>` +
+      `<span class="meta"><h3>${esc(p.title)}</h3>` +
+      `<span class="sub">${esc(kind.charAt(0).toUpperCase() + kind.slice(1))} · ${esc(place(p.location))}${p.year ? " · " + esc(p.year) : ""}</span>` +
       "</span></a></li>";
   }).join("");
   const figures = FIGURES.map((f) => `<div class="figure"><dt>${f.href ? `<a href="${f.href}">${esc(f.label)}</a>` : esc(f.label)}</dt><dd>${esc(f.value)}${f.unit ? ` <small>${esc(f.unit)}</small>` : ""}</dd></div>`).join("");
@@ -214,17 +215,13 @@ function home() {
 <h2 id="typ-h" class="h2">Projects<br>by typology</h2>
 <p class="typ-note">Number of projects and total floor area per typology, since 2021. Point to a number to see the projects.</p>
 </div>
-<ul class="typ-grid" role="list">${TYPOLOGY.map((t, i) => `<li class="typ-item"><button type="button" class="typ-row" aria-expanded="false" aria-controls="typ-${i}"><span class="typ-num" aria-hidden="true">${pad(t.count)}</span><span class="typ-txt"><span class="typ-label">${esc(t.label)}</span><span class="typ-area mono-plain">${t.count} project${t.count > 1 ? "s" : ""} · ${fmtArea(t.area)}${t.partial ? "*" : ""} m²</span></span><span class="typ-chev" aria-hidden="true"></span></button>` +
+<ul class="typ-grid" role="list">${TYPOLOGY.map((t, i) => `<li class="typ-item"><button type="button" class="typ-row" aria-expanded="false" aria-controls="typ-${i}"><span class="typ-num" aria-hidden="true">${pad(t.count)}</span><span class="typ-txt"><span class="typ-label">${esc(t.label)}</span><span class="typ-area mono-plain">${t.count} project${t.count > 1 ? "s" : ""} · ${fmtArea(t.area)}${t.partial ? "*" : ""} m²</span></span></button>` +
   `<div class="typ-panel" id="typ-${i}"><ul>${t.list.map((x) => `<li><span class="tp-name">${x.slug ? `<a href="projects/${x.slug}.html">${esc(x.name)}</a>` : esc(x.name)}</span><span class="tp-meta">${esc(x.city)}${x.area ? " · " + fmtArea(x.area) + " m²" : ""} · ${x.year}</span></li>`).join("")}</ul></div></li>`).join("")}</ul>
 <p class="typ-foot">* Some projects have no area on record and are not included in that total. Masterplan Uruçuca counts as both hotel and masterplan; its ${fmtArea(27771)} m² site area is counted once, under masterplan. Total ${fmtArea(TOTAL_AREA)} m² across ${LEDGER.length} projects.</p>
 </section>
-<section class="section sketch-teaser" aria-labelledby="sk-h">
-<div class="wrap split rev">
-<div class="sketch-strip">
-<a href="sketchbook.html#quinta">${img(r, "sketch/q-manueline", "Pen drawing of an ornate Manueline church facade", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
-<a href="sketchbook.html#atmosphere">${img(r, "sketch/valley", "Watercolour aerial view of a green valley with a road, gardens and rocky peaks behind", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
-<a href="sketchbook.html#housing">${img(r, "sketch/multifamily-house", "Coloured sketch of a dwelling with terraces and planting", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
-</div>
+<section class="wrap section sketch-teaser" aria-labelledby="sk-h">
+<div class="split rev">
+<a class="sketch-one" href="sketchbook.html#d-q-palmela">${img(r, "sketch/q-palmela", "Watercolour drawing of Palmela Castle: the keep, walls on the rock and cypresses", { sizes: "(min-width: 900px) 56vw, 100vw" })}</a>
 <div>
 <p class="mono">Sketchbook</p>
 <h2 id="sk-h" class="h2">Thinking with the hand.</h2>
@@ -233,14 +230,13 @@ function home() {
 </div>
 </div>
 </section>
-<section class="wrap section" aria-labelledby="pr-h">
-<div class="split">
-<div class="portrait">${img(r, "profile/portrait", "Portrait of Filipe Meltzer", { sizes: "(min-width: 900px) 30vw, 100vw" })}</div>
-<div>
+<section class="wrap section profile-teaser" aria-labelledby="pr-h">
+<div class="section-head">
 <p class="mono">Profile</p>
+<div>
 <h2 id="pr-h" class="h2">From brief and constraints to a clear architectural proposal.</h2>
 <p class="teaser-text">Concept design, feasibility and zoning studies, schematic design and coordination with engineering consultants — and, before Architects Office, three years running my own residential and interior projects through to construction.</p>
-<p class="actions"><a class="btn" href="profile.html">Read profile</a> <a class="btn ghost" href="resume.html">Résumé</a></p>
+<p class="intro-links"><a class="link-arrow" href="profile.html">Read the profile ${ARROW}</a> <a class="link-arrow" href="resume.html">Résumé ${ARROW}</a></p>
 </div>
 </div>
 </section>
@@ -296,7 +292,7 @@ function project(p, i) {
 <section class="p-role" aria-labelledby="role-h">
 <h2 id="role-h" class="mono">My role</h2>
 <p>${esc(p.role)}</p>
-${p.stages?.length ? `<ul class="stages" aria-label="Design stages">${p.stages.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>` : ""}
+${p.stages?.length ? `<p class="stages"><span class="sr-only">Design stages: </span>${p.stages.map((s) => esc(s)).join(" · ")}</p>` : ""}
 </section>
 <div class="credits">${teamHtml ? `<h2 class="mono">Team</h2><p>${teamHtml}</p>` : ""}<p class="credit">${esc(p.credit || (team ? `Images © ${p.practice}. Shown with credit to the office.` : "Images and drawings © Filipe Meltzer."))}</p></div>
 </div>
@@ -458,7 +454,7 @@ function placesMap(r) {
 </div>
 <div class="places-text">
 <p class="lede">From the south of Brazil to Portugal: ${LEDGER.length} projects in ${CITIES.length} cities, across residential, hospitality, corporate, urban and mixed-use work.</p>
-<ul class="city-list" role="list">${cityList}</ul>
+<details class="city-details"><summary>All cities and their projects</summary><ul class="city-list" role="list">${cityList}</ul></details>
 </div>
 </div>`;
 }
@@ -477,7 +473,7 @@ function profile() {
 <p>Before that I ran my own practice (2018–2021), taking residential and interior projects from first design through permit approval, construction drawings and site management, after two years as a designer at Schelle Architecture + Design. Hand sketching remains central to how I think and communicate.</p>
 <p>I graduated in Architecture and Urbanism from UNISINOS in Rio Grande do Sul, with an academic exchange at the Universidad Nacional de Mar del Plata, Argentina.</p>
 </div>
-<p class="actions"><a class="btn" href="resume.html">View résumé</a> <a class="btn ghost" href="${FACTS.cv}" download>Download CV (PDF)</a></p>
+<p class="intro-links"><a class="link-arrow" href="resume.html">View the résumé ${ARROW}</a> <a class="link-arrow" href="${FACTS.cv}" download>Download CV (PDF) ${ARROW}</a></p>
 </div>
 </section>
 
@@ -499,15 +495,13 @@ function profile() {
 ${placesMap(r)}
 </section>
 
-<section class="cv-block" aria-labelledby="sk">
-<h2 id="sk" class="mono">Skills &amp; education</h2>
+<section class="cv-block" aria-labelledby="ed">
+<h2 id="ed" class="mono">Education and languages</h2>
 <div class="cols">
-<div><h3 class="h3">Skills</h3><ul class="list-plain">${FACTS.skills.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>
-<div><h3 class="h3">Software</h3><ul class="list-plain">${FACTS.software.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-<h3 class="h3 spaced">Languages</h3><ul class="list-plain">${FACTS.languages.map(([l, v]) => `<li><span>${l}</span><span class="muted">${v}</span></li>`).join("")}</ul></div>
-<div><h3 class="h3">Education</h3><ul class="list-plain">${FACTS.education.map((e) => `<li><span>${esc(e.what)}<br><span class="muted">${esc(e.where)}</span></span><span class="mono">${e.when}</span></li>`).join("")}</ul>
-<p class="note">Registered architect · ${esc(FACTS.registration)}</p>
-<p class="more"><a class="link-arrow" href="projects/porto-cultural-tramandai.html">Final thesis: Porto Cultural Tramandaí ${ARROW}</a></p></div>
+<div><ul class="list-plain">${FACTS.education.map((e) => `<li><span>${esc(e.what)}<br><span class="muted">${esc(e.where)}</span></span><span class="mono-plain">${e.when}</span></li>`).join("")}</ul>
+<p class="note">Registered architect · ${esc(FACTS.registration)}. Final thesis: <a href="projects/porto-cultural-tramandai.html">Porto Cultural Tramandaí</a>.</p></div>
+<div><ul class="list-plain">${FACTS.languages.map(([l, v]) => `<li><span>${l}</span><span class="muted">${v}</span></li>`).join("")}</ul>
+<p class="note">Skills and software are listed in the <a href="resume.html">résumé</a>.</p></div>
 </div>
 </section>
 </div>
@@ -570,12 +564,11 @@ const PRESS_COUNT = PRESS.length;
 function recognition() {
   const r = "";
   const proj = (slug) => PROJECTS.find((p) => p.slug === slug);
-  const thumb = (slug) => { const p = proj(slug); return `<a class="rc-thumb" href="projects/${slug}.html" tabindex="-1" aria-hidden="true">${img(r, p.cover, "", { sizes: "160px" })}</a>`; };
-  const projLink = (slug) => { const p = proj(slug); return `<a href="projects/${slug}.html">${esc(p.title)}</a><span class="rc-loc">${esc(p.location)}</span>`; };
-  const awards = FACTS.awards.map((a) => `<li class="rc-row">${thumb(a.slug)}<span class="rc-year mono-plain">${a.year}</span>` +
+  const projLink = (slug) => { const p = proj(slug); return `<a href="projects/${slug}.html">${esc(p.title)}</a><span class="rc-loc">${esc(p.location.split(",").map((x) => x.trim()).filter((x) => !/^[A-Z]{2}$/.test(x)).join(", "))}</span>`; };
+  const awards = FACTS.awards.map((a) => `<li class="rc-row"><span class="rc-year mono-plain">${a.year}</span>` +
     `<span class="rc-main"><span class="rc-title">${esc(a.title)}</span><span class="rc-org">${esc(a.org)}</span><span class="rc-cat mono-plain">${esc(a.category)}</span>${a.url ? `<a class="rc-ext" href="${a.url}" rel="noopener">Award page ↗</a>` : ""}</span>` +
     `<span class="rc-proj">${projLink(a.slug)}</span></li>`).join("");
-  const press = PRESS.map((p) => `<li class="rc-row">${thumb(p.slug)}<span class="rc-year mono-plain">${p.year || ""}</span>` +
+  const press = PRESS.map((p) => `<li class="rc-row"><span class="rc-year mono-plain">${p.year || ""}</span>` +
     `<span class="rc-main"><span class="rc-title">${esc(p.outlet)}</span>${p.note ? `<span class="rc-org">${esc(p.note)}</span>` : ""}<span class="rc-links">${p.links.map((l) => `<a class="rc-ext" href="${l.url}" rel="noopener">${esc(l.label)} ↗</a>`).join("")}</span></span>` +
     `<span class="rc-proj">${projLink(p.slug)}</span></li>`).join("");
   const body = `<main id="main">

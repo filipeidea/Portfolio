@@ -249,7 +249,7 @@ def build(d, meta, preview=None):
     else:
         T[paper] = 0
         T[(T == 0) & ~paper] = 1e-4
-    q = np.clip(np.round(T * 65535), 0, 65535).astype(np.uint16)
+    q = np.clip(np.round(T * 65535), 0, 65535).astype(np.uint16) & 0xFFF0  # 12-bit: smaller files, still finer than a pixel of scroll
     rgb[..., 0] = q >> 8
     rgb[..., 1] = q & 255
     os.makedirs(OUT, exist_ok=True)
