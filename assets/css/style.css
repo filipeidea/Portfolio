@@ -255,6 +255,8 @@ h1, h2, h3 { font-family: var(--sans); font-weight: 600; letter-spacing: -.025em
 .gf a.zoom { display: block; overflow: hidden; }
 .gf img { width: 100%; height: 100%; object-fit: cover; }
 .f-125 a.zoom { aspect-ratio: 12 / 5; }
+.f-nat img { height: auto !important; }
+.gf.drawing.f-nat a.zoom { padding: clamp(16px, 3vw, 40px) 0; }
 .f-169 a.zoom { aspect-ratio: 16 / 9; }
 .f-32 a.zoom { aspect-ratio: 3 / 2; }
 .f-43 a.zoom { aspect-ratio: 4 / 3; }

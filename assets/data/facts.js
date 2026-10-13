@@ -40,7 +40,7 @@ window.FACTS = {
     { name: "1144", year: 2024, type: "Residential building", area: 42708.29, city: "Goiânia, GO", role: "Dedicated architect", stage: "AP" },
     { name: "Hortensias SN", year: 2023, type: "Residential building", area: 6238.04, city: "Gramado, RS", role: "Dedicated architect", stage: "EP", slug: "gramado" },
     { name: "Monolyt", year: 2022, type: "Residential building", area: 11473.58, city: "Balneário Camboriú, SC", role: "Architect", stage: "EP", slug: "monolyt" },
-    { name: "Murata 157", year: 2025, type: "Residential building", area: 21394.86, city: "Londrina, PR", role: "Project Leader", stage: "EP" },
+    { name: "Murata 157", year: 2025, type: "Residential building", area: 21394.86, city: "Londrina, PR", role: "Project Leader", stage: "EP", slug: "murata-157" },
     { name: "Penteado 84", year: 2022, type: "Residential building", area: 3367.12, city: "São Paulo, SP", role: "Dedicated architect", stage: "EV" },
     { name: "Gaivota 530", year: 2024, type: "Residential building", area: 21725.63, city: "São Paulo, SP", role: "Dedicated architect", stage: "EV", slug: "gaivota" },
     { name: "Leite 668", year: 2025, type: "Residential building", area: 6564.54, city: "São Paulo, SP", role: "Dedicated architect", stage: "EP" },

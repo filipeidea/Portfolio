@@ -266,7 +266,7 @@ function project(p, i) {
   /* Fixed frames keep every image on the same lines: wide images 16:9 (12:5 for panoramas, 3:2 when the
      image is close to square), pairs 4:3, trios 1:1. Drawings are shown whole (contain) on
      white inside the same frames. The viewer always shows the complete image. */
-  const FR = { "f-125": 12 / 5, "f-169": 16 / 9, "f-32": 3 / 2, "f-43": 4 / 3, "f-11": 1 };
+  const FR = { "f-nat": 1, "f-125": 12 / 5, "f-169": 16 / 9, "f-32": 3 / 2, "f-43": 4 / 3, "f-11": 1 };
   const frameSizes = (key, frame, colVw) => { const k = Math.max(1, need(key).r / FR[frame]); return `(min-width: 760px) ${Math.min(200, Math.round(colVw * k))}vw, ${Math.min(200, Math.round(100 * k))}vw`; };
   const gfig = (o, frame, colVw, extra = "") => `<figure class="gf ${frame}${o.caption ? " drawing" : ""}${extra}">${zoom(r, o, o.caption ? `(min-width: 760px) ${colVw}vw, 100vw` : frameSizes(o.img, frame, colVw), !!o.caption)}` +
     (o.caption ? `<figcaption class="mono">${esc(o.caption)}</figcaption>` : "") + "</figure>";
@@ -274,6 +274,7 @@ function project(p, i) {
     if (g.layout === "pair") return `<div class="g-row g-2">${g.images.map((o) => gfig(o, "f-43", 50)).join("")}</div>`;
     if (g.layout === "trio") return `<div class="g-row g-3">${g.images.map((o) => gfig(o, "f-11", 33)).join("")}</div>`;
     if (g.layout === "small") return gfig(g, "f-169", 100);
+    if (g.natural) return gfig(g, "f-nat", 100); // a drawing much wider than any frame: shown at its own proportions
     const rr = need(g.img).r, frame = rr >= 2.2 ? "f-125" : rr >= 1.5 ? "f-169" : "f-32"; // panoramas keep their 12:5 frame
     return gfig(g, frame, 100, g.layout === "full" ? " g-full" : "");
   }).join("\n");

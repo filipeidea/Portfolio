@@ -79,6 +79,19 @@ MANIFEST = {
     "tramandai/siteplan": ("C", "tcc-siteplan.png"),
     "tramandai/elevations": ("C", "tcc-elevations.png"),
     "tramandai/section": ("C", "tcc-section.png"),
+    # Murata 157, from the schematic design presentation (renders as embedded in the PDF; drawings cropped from it)
+    "murata/tower": ("C", "mu-tower.jpg"),
+    "murata/front": ("C", "mu-front.jpg"),
+    "murata/corner": ("C", "mu-corner.jpg"),
+    "murata/entrance": ("C", "mu-entrance.jpg"),
+    "murata/pool": ("C", "mu-pool.jpg"),
+    "murata/crown": ("C", "mu-crown.jpg"),
+    "murata/detail": ("C", "mu-detail.jpg"),
+    "murata/below": ("C", "mu-below.jpg"),
+    "murata/fractal": ("C", "mu-fractal.png"),
+    "murata/module": ("C", "mu-module.png"),
+    "murata/plan": ("C", "mu-plan.png"),
+    "murata/section": ("C", "mu-section.png"),
     # Sketchbook, from portfólio\croquis (scans at 600 dpi; "-pencil" = the same sheet before colour)
     "sketch/multifamily-house": ("C", "k-perspectiva-bm8.png"),  # Perspectiva BM8.png
     "sketch/multifamily-block": ("C", "k-croqui-geral-bm8.png"),  # Croqui geral BM8 2.png

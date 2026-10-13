@@ -113,6 +113,50 @@ window.PROJECTS = [
     featured: true
   },
   {
+    slug: "murata-157",
+    title: "Murata 157",
+    aka: null,
+    location: "Londrina, PR, Brazil",
+    typology: "Residential tower",
+    category: "Residential",
+    year: "2025",
+    yearNote: "design",
+    area: "21,395 m²",
+    practice: "Architects Office",
+    position: "Project Leader",
+    stages: ["Schematic design"],
+    role: "Project Leader at Architects Office, from the kick-off through the four presentations of the schematic design (2025–2026).",
+    awards: [],
+    credit: "Confidential project, in development. The client and the name of the development are withheld; images © Architects Office, shown for portfolio purposes only.",
+    summary:
+      "A residential tower in Londrina built on one square grid: four apartments per floor around a central core, behind a deep concrete frame.",
+    description: [
+      "The site is a 2,335 m² plot in the Gleba Palhano district. The brief asked for apartments with three suites, four per floor, and a leisure floor with a 25 m pool, a gym and gourmet spaces.",
+      "The concept starts from the square: the Renaissance plans of the Palazzo Farnese and Palladio’s Villa La Rotonda, and the Sierpinski carpet, a square divided into nine with its centre removed, repeated at every scale. The tower follows the same rule — a square plan with the core at its centre and four apartments around it.",
+      "One structural grid of 5.60 m, divided into 1.40 m modules, organises everything: two parking spaces fit between columns in the basements, and the bedrooms, bathrooms and wardrobes take whole modules above. On the facade the grid becomes a deep concrete frame filled with glazing, timber screens and balconies.",
+      "92 apartments of about 120 m² each, with 21,395 m² of built area."
+    ],
+    cover: "murata/front",
+    gallery: [
+      { layout: "full", img: "murata/front", alt: "The lower floors facing the street: a grid of concrete frames above a stone base with planting" },
+      { layout: "pair", images: [
+        { img: "murata/tower", alt: "The tower seen from the avenue among trees: a slender square tower with a deep concrete frame and warm infill panels" },
+        { img: "murata/below", alt: "The tower seen from below through the trees" }
+      ] },
+      { layout: "wide", img: "murata/fractal", alt: "Four squares showing the Sierpinski carpet: a square divided into nine with the centre removed, repeated at smaller scales", caption: "Concept — the Sierpinski carpet", natural: true },
+      { layout: "pair", images: [
+        { img: "murata/plan", alt: "Typical floor plan: four apartments around the central core on the square grid", caption: "Typical floor plan" },
+        { img: "murata/section", alt: "Section of the tower above the basements on the sloping site", caption: "Section" }
+      ] },
+      { layout: "wide", img: "murata/module", alt: "The structural grid of 5.60 m divided into 1.40 m modules: two parking spaces between columns, bedrooms and bathrooms in whole modules", caption: "One grid for structure, parking and rooms", natural: true },
+      { layout: "wide", img: "murata/pool", alt: "The leisure floor: a pool with natural stone edges beside the tower" },
+      { layout: "wide", img: "murata/entrance", alt: "The entrance at dusk: warm light between carved stone walls at the foot of the tower" },
+      { layout: "wide", img: "murata/corner", alt: "Close view of the corner: concrete frames with timber screens and glazing" }
+    ],
+    team: null,
+    featured: true
+  },
+  {
     slug: "iguatemi-306", // area 49,811 m² confirmed by Filipe (12 Oct 2026); the CV previously gave 41,400 m²
     title: "Iguatemi 306",
     location: "São Paulo, SP, Brazil",
