@@ -62,9 +62,9 @@ rebuilds and updates in about a minute.
 ## Travel notebook (unlisted)
 
 `notebook.html` holds travel drawings and watercolours not related to projects (the `NOTEBOOK`
-list in `tools/build.mjs`). It is not in the menu, the footer or the sitemap and asks search
-engines not to index it; the only way in is the small watercolour figure at the top right of
-the home page.
+list in `tools/build.mjs`). It is not in the menu, the footer links or the sitemap and asks
+search engines not to index it; the only way in is the small watercolour figure in the footer of
+every page, which sets off a small burst before opening it (`.secret` in `assets/js/app.js`).
 
 ## Portuguese version
 
