@@ -181,9 +181,11 @@ window.IMAGES = {
   ]
  },
  "iguatemi/sketch": {
-  "r": 1.1577,
+  "r": 1.3437,
   "w": [
-   367
+   640,
+   1280,
+   2000
   ]
  },
  "iguatemi/street": {
@@ -341,6 +343,22 @@ window.IMAGES = {
    1273
   ]
  },
+ "sketch/bay": {
+  "r": 1.4146,
+  "w": [
+   640,
+   1280,
+   2000
+  ]
+ },
+ "sketch/bay-line": {
+  "r": 1.4146,
+  "w": [
+   640,
+   1280,
+   2000
+  ]
+ },
  "sketch/cathedral": {
   "r": 0.7599,
   "w": [
@@ -355,6 +373,21 @@ window.IMAGES = {
    1139
   ]
  },
+ "sketch/hortensias": {
+  "r": 1.3652,
+  "w": [
+   640,
+   643
+  ]
+ },
+ "sketch/houses-story": {
+  "r": 0.6973,
+  "w": [
+   640,
+   1280,
+   1781
+  ]
+ },
  "sketch/lisbon": {
   "r": 3.9773,
   "w": [
@@ -364,38 +397,106 @@ window.IMAGES = {
   ]
  },
  "sketch/multifamily-block": {
-  "r": 1.1216,
+  "r": 1.2974,
   "w": [
    640,
-   1144
+   1280,
+   2000
   ]
  },
  "sketch/multifamily-house": {
-  "r": 1.3939,
+  "r": 1.0231,
   "w": [
-   637
+   640,
+   975
   ]
  },
  "sketch/plaza": {
-  "r": 1.4061,
+  "r": 1.4146,
   "w": [
    640,
    1280,
-   1513
+   2000
   ]
  },
- "sketch/plaza-studies": {
-  "r": 3.9634,
+ "sketch/plaza-pencil": {
+  "r": 1.4146,
   "w": [
    640,
    1280,
-   1514
+   2000
   ]
  },
- "sketch/storytelling": {
-  "r": 0.4201,
+ "sketch/rocks": {
+  "r": 1.9593,
   "w": [
-   513
+   640,
+   1280,
+   2000
+  ]
+ },
+ "sketch/rocks-few": {
+  "r": 2.4367,
+  "w": [
+   640,
+   1280,
+   2000
+  ]
+ },
+ "sketch/terrace": {
+  "r": 1.4146,
+  "w": [
+   640,
+   1280,
+   2000
+  ]
+ },
+ "sketch/terrace-pencil": {
+  "r": 1.4146,
+  "w": [
+   640,
+   1280,
+   2000
+  ]
+ },
+ "sketch/towers": {
+  "r": 1.362,
+  "w": [
+   640,
+   1280,
+   2000
+  ]
+ },
+ "sketch/tree": {
+  "r": 1.1251,
+  "w": [
+   640,
+   1280,
+   2000
+  ]
+ },
+ "sketch/valley": {
+  "r": 1.4146,
+  "w": [
+   640,
+   1280,
+   2000
+  ]
+ },
+ "sketch/valley-pencil": {
+  "r": 1.4146,
+  "w": [
+   640,
+   1280,
+   2000
+  ]
+ },
+ "sketch/village": {
+  "r": 1.6092,
+  "w": [
+   640,
+   1280,
+   2000
   ]
  },
  "tramandai/approach": {

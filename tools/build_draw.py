@@ -105,19 +105,53 @@ def smooth_noise(shape, scale):
     return z
 
 
-def build(d, meta, preview=None):
-    key = d["img"]
+def load_key(key, meta, crop=None):
     w = meta[key]["w"]
-    pick = max([x for x in w if x <= MAXW] or [w[0]])
+    pick = max(w)  # the largest generated width, then scaled down here
     im = Image.open(os.path.join(ROOT, f"assets/img/{key}-{pick}.webp")).convert("RGB")
-    if d.get("crop"):  # trim stray edges of a scan, in % of the image
-        c = d["crop"]
+    if crop:  # trim stray edges of a scan, in % of the image
+        c = crop
         im = im.crop((round(c[0] / 100 * im.width), round(c[1] / 100 * im.height), round(c[2] / 100 * im.width), round(c[3] / 100 * im.height)))
     if im.width > MAXW:
         im = im.resize((MAXW, round(im.height * MAXW / im.width)), Image.LANCZOS)
+    return im
+
+
+def register(pencil, colour):
+    """Move the pencil scan onto the coloured scan of the same sheet (affine, ECC on the lines)."""
+    import cv2
+    a = np.asarray(pencil.resize(colour.size, Image.LANCZOS))
+    b = np.asarray(colour)
+    S = 700
+    ga = cv2.cvtColor(a, cv2.COLOR_RGB2GRAY).astype(np.float32) / 255
+    gb = cv2.cvtColor(b, cv2.COLOR_RGB2GRAY).astype(np.float32) / 255
+    k = S / gb.shape[1]
+    sa = cv2.GaussianBlur(1 - cv2.resize(ga, (S, round(ga.shape[0] * k))), (0, 0), 2)
+    sb = cv2.GaussianBlur(1 - cv2.resize(gb, (S, round(gb.shape[0] * k))), (0, 0), 2)
+    warp = np.eye(2, 3, dtype=np.float32)
+    cc, warp = cv2.findTransformECC(sb, sa, warp, cv2.MOTION_AFFINE,
+                                    (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 400, 1e-7), None, 5)
+    warp[:, 2] /= k  # translation back to full size
+    out = cv2.warpAffine(a, warp, (b.shape[1], b.shape[0]), flags=cv2.INTER_LINEAR | cv2.WARP_INVERSE_MAP,
+                         borderMode=cv2.BORDER_CONSTANT, borderValue=(255, 255, 255))
+    return Image.fromarray(out), float(cc)
+
+
+def build(d, meta, preview=None):
+    im = load_key(d["img"], meta, d.get("crop"))
     a = np.asarray(im).astype(float) / 255
     H, W = a.shape[:2]
     paper, line, colour = classify(a, d.get("paper", 0.975))
+    pair = None
+    if d.get("pencil"):
+        # two stages, as the drawing was made: the pencil sheet first, then the same sheet in colour
+        pim, cc = register(load_key(d["pencil"], meta, d.get("pencilCrop")), im)
+        print("  registered", d["pencil"], "correlation", round(cc, 3))
+        pa = np.asarray(pim).astype(float) / 255
+        pL = pa.mean(2)
+        line = pL < d.get("pencilLine", 0.72)
+        colour = np.zeros_like(line)  # no wash in the pencil stage
+        pair = {"img": pim, "a": pa}
     steps = d["steps"]
     # region of every pixel: the first step whose rectangle contains it; else the last step
     reg = np.full((H, W), len(steps) - 1, int)
@@ -183,21 +217,58 @@ def build(d, meta, preview=None):
             T[ys, xs] = t + s * dur
             t += dur
     total = t
-    T = T / total * 0.97
-    T[paper] = 0
-    T[(T == 0) & ~paper] = 1e-4
-    q = np.clip(np.round(T * 65535), 0, 65535).astype(np.uint16)
     rgb = np.zeros((H, W, 3), np.uint8)
+    end = 0.97
+    TB = None
+    if pair:
+        split = d.get("split", 0.5)
+        end = split
+        # colour stage: the coloured sheet washes in, step by step, over the pencil
+        inkB = ~paper | line
+        TB = np.zeros((H, W))
+        tb = 0.0
+        for si in range(len(steps)):
+            m = inkB & (reg == si)
+            if not m.any():
+                continue
+            ys, xs = np.nonzero(m)
+            dirx, diry = steps[si].get("wash", [1, 0.6])
+            proj = xs * dirx + ys * diry
+            proj = (proj - proj.min()) / (np.ptp(proj) + 1e-9)
+            s = np.clip(0.75 * proj + 0.25 * smooth_noise((H, W), 40)[ys, xs], 0, 1)
+            dur = max(np.sqrt(len(ys)), 1.0)
+            TB[ys, xs] = tb + s * dur
+            tb += dur
+        TB = split + 0.02 + TB / tb * (0.98 - split - 0.02)
+        TB[~inkB] = 0
+        bq = np.where(inkB, np.clip(np.round((TB - split) / (0.98 - split) * 254) + 1, 1, 255), 0).astype(np.uint8)
+        rgb[..., 2] = bq
+    T = T / total * end
+    if pair:
+        T[~line] = 0
+    else:
+        T[paper] = 0
+        T[(T == 0) & ~paper] = 1e-4
+    q = np.clip(np.round(T * 65535), 0, 65535).astype(np.uint16)
     rgb[..., 0] = q >> 8
     rgb[..., 1] = q & 255
     os.makedirs(OUT, exist_ok=True)
     im.save(os.path.join(OUT, f"{d['id']}.webp"), "WEBP", quality=86, method=6)
+    if pair:
+        pair["img"].save(os.path.join(OUT, f"{d['id']}-a.webp"), "WEBP", quality=86, method=6)
     Image.fromarray(rgb).save(os.path.join(OUT, f"{d['id']}-t.webp"), "WEBP", lossless=True, quality=100, method=6)
     if preview:
         frames = []
-        for f in [0.15, 0.35, 0.55, 0.75, 0.97]:
-            show = (T <= f) | paper
-            fr = np.where(show[..., None], a, 1.0)
+        for f in ([0.15, 0.35, 0.5, 0.7, 0.98] if pair else [0.15, 0.35, 0.55, 0.75, 0.97]):
+            if pair:
+                fr = np.ones_like(a)
+                sa = (T > 0) & (T <= f)
+                fr[sa] = pair["a"][sa]
+                sb = (TB > 0) & (TB <= f)
+                fr[sb] = a[sb]
+            else:
+                show = (T <= f) | paper
+                fr = np.where(show[..., None], a, 1.0)
             frames.append(Image.fromarray((fr * 255).astype(np.uint8)))
         tw = 360
         th = round(H * tw / W)
@@ -205,7 +276,12 @@ def build(d, meta, preview=None):
         for i, fr in enumerate(frames):
             sheet.paste(fr.resize((tw, th)), (i * tw, 0))
         sheet.save(os.path.join(preview, d["id"] + ".jpg"))
-    return {"id": d["id"], "w": W, "h": H, "steps": [round(float(s) / total * 0.97, 4) for s in starts]}
+    out = {"id": d["id"], "w": W, "h": H, "steps": [round(float(s) / total * end, 4) for s in starts]}
+    if pair:
+        out["steps"].append(round(end + 0.02, 4))  # the colour caption ("colourText")
+        out["pair"] = True
+        out["split"] = end
+    return out
 
 
 def main():
@@ -225,9 +301,11 @@ def main():
         if only and d["id"] not in only:
             continue
         r = build(d, meta, preview)
-        old[d["id"]] = {"w": r["w"], "h": r["h"], "steps": r["steps"]}
+        old[d["id"]] = {k: v for k, v in r.items() if k != "id"}
         print(d["id"], r["w"], r["h"], r["steps"],
               os.path.getsize(os.path.join(OUT, d["id"] + "-t.webp")) // 1024, "KB map")
+    ids = {d["id"] for d in cfg}
+    old = {k: v for k, v in old.items() if k in ids}  # forget drawings no longer in draw.json
     with open(out_path, "w") as f:
         f.write("// Generated by tools/build_draw.py. Do not edit by hand.\n")
         f.write("window.DRAW = " + json.dumps(old, indent=1, sort_keys=True) + ";\n")

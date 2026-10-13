@@ -232,7 +232,7 @@ function home() {
 <div class="wrap split rev">
 <div class="sketch-strip">
 <a href="sketchbook.html#quinta">${img(r, "sketch/cathedral", "Pen drawing of an ornate Portuguese church facade", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
-<a href="sketchbook.html#storytelling">${img(r, "sketch/storytelling", "Sequence of drawings: rocks, a tree among them and green building volumes", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
+<a href="sketchbook.html#storytelling">${img(r, "sketch/tree", "Ink and watercolour drawing of a tree growing among rocks", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
 <a href="sketchbook.html#housing">${img(r, "sketch/multifamily-house", "Coloured sketch of a dwelling with terraces and planting", { sizes: "(min-width: 900px) 18vw, 33vw" })}</a>
 </div>
 <div>
@@ -346,19 +346,31 @@ const SKETCHBOOK = [
   { id: "atmosphere", label: "03 · Visual studies", title: "Drawing the atmosphere before the render",
     text: "Hand drawings requested for a highly complex project, used to guide the renderings in its early stages: the character of the landscape, the planting and the life of a public plaza.",
     items: [
-      ["sketch/plaza-studies", "Three small watercolour studies of terraced landscape and planting", "Landscape studies", "c12"],
-      ["sketch/plaza", "Watercolour perspective of a palm-lined public plaza with people walking", "Plaza perspective", "c12"]] },
+      ["sketch/valley", "Watercolour aerial view of a green valley with a road, gardens and rocky peaks behind", "The valley"],
+      ["sketch/bay", "Watercolour aerial view of terraced landscape and buildings above a long curved bay", "Above the bay"],
+      ["sketch/village", "Watercolour view of a hillside village of terraced buildings below rocky peaks", "The hillside village"],
+      ["sketch/terrace", "Watercolour view of a roof terrace with lawn, planting and a pool beside a timber wall", "The roof terrace"],
+      ["sketch/plaza", "Watercolour perspective of a palm-lined public plaza with people walking", "The plaza"]] },
   { id: "storytelling", label: "04 · Storytelling", title: "A concept told in drawings",
     text: "Drawings used to tell the concept of a project as a sequence: rocks, a tree growing among them, and the building volumes that follow.",
     items: [
-      ["sketch/storytelling", "Vertical sequence of drawings: a pile of rocks, smaller rocks, a tree among rocks and green building volumes", "Concept sequence", "c4 o3"],
-      ["iguatemi/sketch", "Watercolour sketch of a green, twisting tower among existing buildings", "Iguatemi 306 — concept sketch", "c4"]] },
+      ["sketch/rocks", "Ink and wash drawing of a pile of rocks", "Rocks"],
+      ["sketch/rocks-few", "Ink and wash drawing of a few rocks set apart", "Fewer rocks"],
+      ["sketch/tree", "Ink and watercolour drawing of a tree growing among rocks", "A tree among the rocks"],
+      ["sketch/towers", "Ink and grey wash drawing of towers, one of them traced in green", "The towers"],
+      ["iguatemi/sketch", "Watercolour sketch of a green, twisting tower among existing buildings", "Iguatemi 306 — the green tower"]] },
   { id: "barrinhas", label: "05 · Hotel Barrinhas, Ceará", title: "Arranging a hotel by the sea",
     text: "Early sketches for the arrangement of guest buildings, pools and gardens on the site.",
     link: ["projects/hotel-barrinhas.html", "See the Hotel Barrinhas project"],
     items: [
       ["barrinhas/sketch-1", "Coloured axonometric sketch of hotel pavilions, pools and dunes", "Site sketch", "c7"],
-      ["barrinhas/sketch-2", "Line sketches of guest buildings around a pool", "Guest buildings", "c5"]] }
+      ["barrinhas/sketch-2", "Line sketches of guest buildings around a pool", "Guest buildings", "c5"]] },
+  { id: "gramado", label: "06 · Gramado, Rio Grande do Sul", title: "Houses among the pines",
+    text: "Sketches for a residential project on Avenida das Hortênsias, in Gramado.",
+    link: ["projects/gramado.html", "See the Gramado project"],
+    items: [
+      ["sketch/hortensias", "Watercolour sketch of a tall gabled building among pine trees beside the avenue", "Avenida das Hortênsias"],
+      ["sketch/houses-story", "Four small coloured sketches of houses: timber-framed, gabled and a simple cabin", "Houses, as a short story"]] }
 ];
 /* Sketchbook: every drawing draws itself while the page is scrolled (assets/js/app.js,
    data from tools/build_draw.py). Without JavaScript, or with reduced motion, the
@@ -369,8 +381,10 @@ function sketchbook() {
   const scene = ([key, alt, cap]) => {
     const c = DRAW_CFG.find((x) => x.img === key), d = c && DRAW[c.id];
     const num = pad(++n);
-    const steps = c ? c.steps.map((st, i) => `<li data-t="${d.steps[i]}" data-n="${pad(i + 1)}">${esc(st.text)}</li>`).join("") : "";
-    return `<section class="dw-scene" id="d-${c ? c.id : n}"${c ? ` data-draw="${r}assets/draw/${c.id}" data-w="${d.w}" data-h="${d.h}" style="--steps:${c.steps.length}"` : ""}>
+    // pencil-then-colour drawings get one more caption, for the colour stage
+    const texts = c ? c.steps.map((st) => st.text).concat(d.pair ? [c.colourText || "Then the colour."] : []) : [];
+    const steps = texts.map((t, i) => `<li data-t="${d.steps[i]}" data-n="${pad(i + 1)}">${esc(t)}</li>`).join("");
+    return `<section class="dw-scene" id="d-${c ? c.id : n}"${c ? ` data-draw="${r}assets/draw/${c.id}" data-w="${d.w}" data-h="${d.h}"${d.pair ? ` data-split="${d.split}"` : ""} style="--steps:${texts.length}"` : ""}>
 <div class="dw-stage">
 <div class="dw-text">
 <p class="dw-num mono">${num}</p>

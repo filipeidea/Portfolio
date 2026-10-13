@@ -22,35 +22,61 @@
  {"id": "quinta-elevations", "img": "quinta/elevations", "steps": [
    {"box": [0, 0, 100, 50], "pen": [0, 20], "text": "One elevation: long, low buildings."},
    {"box": [0, 50, 100, 100], "text": "Another, set in the landscape."}]},
+
  {"id": "multifamily-house", "img": "sketch/multifamily-house", "group": "box", "steps": [
-   {"box": [8, 0, 62, 75], "pen": [30, 0], "text": "The dwelling: two tall volumes."},
-   {"box": [50, 25, 100, 100], "text": "Terraces, a deck and the garden."},
-   {"box": [0, 0, 100, 100], "text": "Planting along the walls."}]},
+   {"box": [8, 0, 64, 62], "pen": [30, 5], "text": "The dwelling: two tall volumes."},
+   {"box": [50, 30, 100, 100], "text": "Terraces, a deck and the garden."},
+   {"box": [0, 0, 100, 100], "text": "The walls and the planting along the plot."}]},
  {"id": "multifamily-block", "img": "sketch/multifamily-block", "group": "box", "steps": [
-   {"box": [0, 50, 40, 100], "pen": [15, 60], "text": "The first houses, at the foot of the slope."},
-   {"box": [30, 22, 100, 70], "text": "The row steps up the hill."},
+   {"box": [0, 35, 38, 85], "pen": [15, 50], "text": "The first houses, at the foot of the slope."},
+   {"box": [30, 0, 100, 60], "text": "The row steps up the hill."},
    {"box": [0, 0, 100, 100], "text": "Trees and the ground around it."}]},
- {"id": "plaza-studies", "img": "sketch/plaza-studies", "steps": [
-   {"box": [0, 0, 33, 100], "pen": [0, 50], "text": "Quick studies of the landscape: one…"},
-   {"box": [33, 0, 66, 100], "text": "…two…"},
-   {"box": [66, 0, 100, 100], "text": "…three."}]},
- {"id": "plaza", "img": "sketch/plaza", "crop": [0, 1.6, 100, 100], "group": "box", "steps": [
-   {"box": [0, 0, 55, 60], "pen": [0, 10], "text": "The wall and its hanging planting."},
+
+ {"id": "valley", "img": "sketch/valley", "pencil": "sketch/valley-pencil", "group": "box", "colourText": "Then the same sheet, in watercolour.", "steps": [
+   {"box": [0, 0, 100, 32], "pen": [0, 15], "text": "In pencil: the peaks on the horizon."},
+   {"box": [0, 0, 100, 100], "text": "The valley floor: the road, the trees, the gardens."}]},
+ {"id": "bay", "img": "sketch/bay", "pencil": "sketch/bay-line", "group": "box", "colourText": "Then the same view, in watercolour.", "steps": [
+   {"box": [0, 0, 100, 40], "pen": [100, 5], "text": "In ink: the bay, curving away."},
+   {"box": [0, 0, 100, 100], "text": "Terraces, paths and buildings on the slope."}]},
+ {"id": "village", "img": "sketch/village", "group": "box", "steps": [
+   {"box": [0, 0, 100, 42], "pen": [20, 10], "text": "The village on the rocks."},
+   {"box": [0, 0, 100, 100], "text": "The terraces below, curving along the hill."}]},
+ {"id": "terrace", "img": "sketch/terrace", "pencil": "sketch/terrace-pencil", "group": "box", "colourText": "Then the same sheet, in watercolour.", "steps": [
+   {"box": [0, 0, 38, 100], "pen": [5, 5], "text": "In pencil: the timber wall and its planting."},
+   {"box": [0, 0, 100, 100], "text": "The terrace: the lawn, a figure at the rail, the pool."}]},
+ {"id": "plaza", "img": "sketch/plaza", "pencil": "sketch/plaza-pencil", "group": "box", "colourText": "Then the same sheet, in watercolour.", "steps": [
+   {"box": [0, 0, 55, 60], "pen": [0, 10], "text": "In pencil: the wall and its hanging planting."},
    {"box": [55, 15, 100, 75], "text": "Palms, and the life of the plaza."},
    {"box": [0, 0, 100, 100], "text": "People walking in the foreground."}]},
- {"id": "storytelling", "img": "sketch/storytelling", "steps": [
-   {"box": [0, 0, 100, 25], "pen": [10, 5], "text": "First, the rocks."},
-   {"box": [0, 25, 100, 42], "text": "Fewer rocks, set apart."},
-   {"box": [0, 42, 100, 73], "text": "A tree grows among them."},
-   {"box": [0, 73, 100, 100], "text": "Then the building volumes follow."}]},
- {"id": "iguatemi", "img": "iguatemi/sketch", "group": "box", "speed": 0.5, "steps": [
-   {"box": [[0, 30, 33, 100], [52, 35, 100, 100]], "pen": [0, 50], "text": "The existing towers around the site."},
+
+ {"id": "rocks", "img": "sketch/rocks", "steps": [
+   {"box": [0, 0, 100, 100], "pen": [0, 50], "text": "First, the rocks."}]},
+ {"id": "rocks-few", "img": "sketch/rocks-few", "steps": [
+   {"box": [0, 0, 100, 100], "pen": [0, 50], "text": "Fewer rocks, set apart."}]},
+ {"id": "tree", "img": "sketch/tree", "group": "box", "steps": [
+   {"box": [0, 58, 100, 100], "pen": [50, 95], "text": "The rocks again."},
+   {"box": [0, 0, 100, 100], "text": "A tree grows among them."}]},
+ {"id": "towers", "img": "sketch/towers", "group": "box", "steps": [
+   {"box": [[0, 0, 38, 100], [62, 0, 100, 100]], "pen": [0, 60], "text": "Then the city: the existing towers."},
+   {"box": [0, 0, 100, 100], "text": "One of them, traced in green."}]},
+ {"id": "iguatemi", "img": "iguatemi/sketch", "group": "box", "steps": [
+   {"box": [[0, 30, 31, 100], [56, 30, 100, 100]], "pen": [0, 50], "text": "The existing towers around the site."},
    {"box": [0, 0, 100, 100], "text": "A green tower twisting among them."}]},
+
  {"id": "barrinhas-1", "img": "barrinhas/sketch-1", "group": "box", "steps": [
    {"box": [0, 25, 55, 85], "pen": [10, 45], "text": "The guest buildings and the pool."},
    {"box": [40, 0, 90, 50], "text": "More pavilions along the shore."},
    {"box": [0, 0, 100, 100], "text": "Dunes, palms and the sea."}]},
  {"id": "barrinhas-2", "img": "barrinhas/sketch-2", "steps": [
    {"box": [0, 0, 55, 100], "pen": [0, 30], "text": "Guest buildings around a pool."},
-   {"box": [55, 0, 100, 100], "text": "A second arrangement."}]}
+   {"box": [55, 0, 100, 100], "text": "A second arrangement."}]},
+
+ {"id": "hortensias", "img": "sketch/hortensias", "group": "box", "steps": [
+   {"box": [30, 10, 75, 68], "pen": [50, 15], "text": "The building, under one long gabled roof."},
+   {"box": [0, 0, 100, 100], "text": "Pines all around, and the avenue in front."}]},
+ {"id": "houses-story", "img": "sketch/houses-story", "steps": [
+   {"box": [0, 0, 100, 27], "pen": [40, 2], "text": "A chalet with carved eaves."},
+   {"box": [0, 27, 52, 58], "text": "A half-timbered house."},
+   {"box": [52, 27, 100, 58], "text": "Steep pointed gables."},
+   {"box": [0, 58, 100, 100], "text": "And a simple timber house."}]}
 ]

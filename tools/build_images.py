@@ -44,7 +44,7 @@ MANIFEST = {
     "iguatemi/tower": ("S", "aeb/AAM_IGUATEMI_EV02_240618_R00.jpg"),
     "iguatemi/street": ("S", "aeb/AAM_IGUATEMI_EV02_C03_240618_R00.jpg"),
     "iguatemi/facade": ("S", "aeb/AAM_IGUATEMI_EV02_C04_240618_R00.jpg"),
-    "iguatemi/sketch": ("S", "aeb/croqui.jpg"),
+    "iguatemi/sketch": ("C", "k-arvore-pedra-4.png"),  # croquis\ÁRVORE PEDRA 4.png (was aeb/croqui.jpg)
     "iguatemi/model": ("S", "aeb/maquete.jpg"),
     "iguatemi/axo": ("S", "aeb/iso.jpg"),
     "gaivota/tower": ("S", "NORTIS/NORTIS_GAIVOTA 530_EV02_C02-01.jpg"),
@@ -79,11 +79,24 @@ MANIFEST = {
     "tramandai/siteplan": ("C", "tcc-siteplan.png"),
     "tramandai/elevations": ("C", "tcc-elevations.png"),
     "tramandai/section": ("C", "tcc-section.png"),
-    "sketch/multifamily-house": ("C", "sk-multifamily-a.png"),
-    "sketch/multifamily-block": ("C", "sk-multifamily-b.png"),
-    "sketch/plaza": ("C", "sk-render-plaza.png"),
-    "sketch/plaza-studies": ("C", "sk-render-studies.png"),
-    "sketch/storytelling": ("C", "sk-storytelling.png"),
+    # Sketchbook, from portfólio\croquis (scans at 600 dpi; "-pencil" = the same sheet before colour)
+    "sketch/multifamily-house": ("C", "k-perspectiva-bm8.png"),  # Perspectiva BM8.png
+    "sketch/multifamily-block": ("C", "k-croqui-geral-bm8.png"),  # Croqui geral BM8 2.png
+    "sketch/valley": ("C", "k-20240611191627.jpg"),
+    "sketch/valley-pencil": ("C", "k-20240611180009.jpg"),
+    "sketch/bay": ("C", "k-20240612135921.jpg"),
+    "sketch/bay-line": ("C", "k-vista-montanha-3.png"),  # vista montanha 3.png
+    "sketch/terrace": ("C", "k-20240612191947.jpg"),
+    "sketch/terrace-pencil": ("C", "k-20240612184747.jpg"),
+    "sketch/village": ("C", "k-20240612192042.jpg"),
+    "sketch/plaza": ("C", "k-20240612154429.jpg"),
+    "sketch/plaza-pencil": ("C", "k-20240612151817.jpg"),
+    "sketch/rocks": ("C", "k-arvore-pedra-12.png"),  # ÁRVORE PEDRA 12.png
+    "sketch/rocks-few": ("C", "k-arvore-pedra-1.png"),  # ÁRVORE PEDRA 1.png
+    "sketch/tree": ("C", "k-arvore-pedra.png"),  # ÁRVORE PEDRA.png
+    "sketch/towers": ("C", "k-arvore-pedra-3.png"),  # ÁRVORE PEDRA 3.png
+    "sketch/hortensias": ("C", "k-av-hortensias.png"),  # Av. das Hortensias.png
+    "sketch/houses-story": ("C", "k-casinhas-historia.png"),  # Casinhas história.png
     "sketch/cathedral": ("C", "sk-quinta-cathedral.png"),
     "sketch/lisbon": ("C", "sk-quinta-lisbon.png"),
     "sketch/details": ("C", "sk-quinta-details.png"),

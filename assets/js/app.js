@@ -259,22 +259,40 @@
     });
     var build = function (sc) {
       sc.state = 1;
-      Promise.all([loadImg(sc.base + ".webp"), loadImg(sc.base + "-t.webp")]).then(function (ims) {
+      /* Events: "pixel p takes its colour from source s at moment k" (k in 1/65535).
+         One source: the drawing itself. Pencil-then-colour drawings (data-split): first the
+         pencil sheet (source 0, moment in red+green), then the coloured sheet (source 1,
+         moment in blue, between split and 0.98). */
+      var split = sc.el.hasAttribute("data-split") ? +sc.el.getAttribute("data-split") : -1;
+      var files = [loadImg(sc.base + ".webp"), loadImg(sc.base + "-t.webp")];
+      if (split >= 0) files.push(loadImg(sc.base + "-a.webp"));
+      Promise.all(files).then(function (ims) {
         if (sc.state !== 1) return;
-        var w = sc.w, h = sc.h, n = w * h;
-        var src = pixels(ims[0], w, h), map = pixels(ims[1], w, h);
-        var time = new Uint16Array(n), count = new Uint32Array(65537), i, v;
-        for (i = 0; i < n; i++) { v = (map[i * 4] << 8) | map[i * 4 + 1]; if (v === 0) v = 64880; time[i] = v; count[v + 1]++; } // paper (0) shows its faint tints last
-        for (i = 1; i < 65537; i++) count[i] += count[i - 1];  // count[v] = pixels with time < v
-        var order = new Uint32Array(n), pos = count.slice(0, 65536);
-        for (i = 0; i < n; i++) order[pos[time[i]]++] = i;
-        var out = sc.ctx.createImageData(w, h), o = out.data;
-        o.fill(255);
-        sc.src = src; sc.order = order; sc.cum = count; sc.out = out; sc.k = 0; sc.state = 2; sc.t = -1;
+        var w = sc.w, h = sc.h, n = w * h, pair = split >= 0;
+        var srcB = pixels(ims[0], w, h), map = pixels(ims[1], w, h), srcA = pair ? pixels(ims[2], w, h) : srcB;
+        var tA = new Uint16Array(n), tB = pair ? new Uint16Array(n) : null, count = new Uint32Array(65537), i, v, b, m = 0;
+        for (i = 0; i < n; i++) {
+          v = (map[i * 4] << 8) | map[i * 4 + 1];
+          if (!pair) { if (v === 0) v = 64880; tA[i] = v; count[v + 1]++; m++; continue; } // paper shows its faint tints last
+          if (v) { tA[i] = v; count[v + 1]++; m++; }
+          b = map[i * 4 + 2];
+          if (b) { v = Math.round((split + (b - 1) / 254 * (0.98 - split)) * 65535); tB[i] = v; count[v + 1]++; m++; }
+        }
+        for (i = 1; i < 65537; i++) count[i] += count[i - 1];  // count[k] = events before moment k
+        var ev = new Uint32Array(m), pos = count.slice(0, 65536);
+        for (i = 0; i < n; i++) {
+          if (pair) {
+            if (tA[i]) ev[pos[tA[i]]++] = i * 2;
+            if (tB[i]) ev[pos[tB[i]]++] = i * 2 + 1;
+          } else ev[pos[tA[i]]++] = i * 2 + 1;
+        }
+        var out = sc.ctx.createImageData(w, h);
+        out.data.fill(255);
+        sc.srcA = srcA; sc.srcB = srcB; sc.tA = pair ? tA : null; sc.ev = ev; sc.cum = count; sc.out = out; sc.k = 0; sc.state = 2; sc.t = -1;
         update(sc);
       }).catch(function () { sc.state = 0; sc.el.classList.add("dw-fail"); });
     };
-    var drop = function (sc) { if (sc.state === 2) { sc.src = sc.order = sc.cum = sc.out = null; } sc.state = 0; };
+    var drop = function (sc) { if (sc.state === 2) { sc.srcA = sc.srcB = sc.tA = sc.ev = sc.cum = sc.out = null; } sc.state = 0; };
     var progress = function (sc) {
       var r = sc.el.getBoundingClientRect(), vh = window.innerHeight;
       var run = r.height - vh;
@@ -290,9 +308,15 @@
       sc.bar.style.transform = "scaleX(" + t + ")";
       if (sc.state !== 2 || t === sc.t) return;
       sc.t = t;
-      var target = sc.cum[Math.min(65536, Math.floor(t * 65535) + 1)], k = sc.k, o = sc.out.data, src = sc.src, ord = sc.order, i, p;
-      if (target > k) for (i = k; i < target; i++) { p = ord[i] * 4; o[p] = src[p]; o[p + 1] = src[p + 1]; o[p + 2] = src[p + 2]; }
-      else for (i = target; i < k; i++) { p = ord[i] * 4; o[p] = o[p + 1] = o[p + 2] = 255; }
+      var key = Math.min(65535, Math.floor(t * 65535)), target = sc.cum[key + 1], k = sc.k, o = sc.out.data, ev = sc.ev, tA = sc.tA, i, e, p, s;
+      if (target > k) for (i = k; i < target; i++) {
+        e = ev[i]; p = (e >>> 1) * 4; s = e & 1 ? sc.srcB : sc.srcA;
+        o[p] = s[p]; o[p + 1] = s[p + 1]; o[p + 2] = s[p + 2];
+      } else for (i = k - 1; i >= target; i--) {  // scrolling back: undo, newest first
+        e = ev[i]; p = (e >>> 1) * 4;
+        if (e & 1 && tA && tA[e >>> 1] && tA[e >>> 1] <= key) { s = sc.srcA; o[p] = s[p]; o[p + 1] = s[p + 1]; o[p + 2] = s[p + 2]; }
+        else o[p] = o[p + 1] = o[p + 2] = 255;
+      }
       sc.k = target;
       sc.ctx.putImageData(sc.out, 0, 0);
     };
