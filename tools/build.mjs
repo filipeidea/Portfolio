@@ -160,7 +160,7 @@ const person = {
 // ---------- home ----------
 /* Opening: a static composition of three existing project images on the grid — one main
    image and two smaller ones beside it, each linked to its project. No slideshow. */
-const OPENING = [["monolyt", "monolyt/corner"], ["quinta", "quinta/court"], ["masterplan-urucuca", "urucuca/canopy"]];
+const OPENING = [["masterplan-urucuca", "urucuca/canopy"], ["quinta", "quinta/court"], ["monolyt", "monolyt/front"]];
 const OPEN_SIZES = ["(min-width: 900px) 64vw, 100vw", "(min-width: 900px) 32vw, 50vw", "(min-width: 900px) 32vw, 50vw"];
 function home() {
   const r = "";
