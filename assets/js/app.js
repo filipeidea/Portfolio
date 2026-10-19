@@ -361,4 +361,25 @@
     secret.appendChild(b);
     setTimeout(function () { location.href = href; }, 520);
   });
+
+  /* sequence: the diagrams play once, one step after another, when the figure comes into view;
+     choosing a step stops the play and shows that step */
+  $$("[data-seq]").forEach(function (fig) {
+    var layers = fig.querySelectorAll(".seq-layer"), btns = fig.querySelectorAll(".seq-steps button"), cur = 0, timer = null, played = false;
+    function show(n) {
+      cur = n;
+      layers.forEach(function (l, k) { l.classList.toggle("on", k === n); });
+      btns.forEach(function (b, k) { if (k === n) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+    }
+    function stop() { clearTimeout(timer); timer = null; }
+    function play() {
+      stop(); show(0);
+      (function next() { if (cur < layers.length - 1) timer = setTimeout(function () { show(cur + 1); next(); }, 1500); })();
+    }
+    btns.forEach(function (b, k) { b.addEventListener("click", function () { stop(); show(k); }); });
+    if (reduceMotion || !("IntersectionObserver" in window)) { show(layers.length - 1); return; }
+    new IntersectionObserver(function (es, io) {
+      es.forEach(function (e) { if (e.isIntersecting && !played) { played = true; play(); io.disconnect(); } });
+    }, { threshold: 0.5 }).observe(fig);
+  });
 })();

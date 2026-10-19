@@ -96,18 +96,33 @@ window.PROJECTS = [
     summary:
       "A masterplan in Serra Grande, on the coast of southern Bahia, with timber houses and hospitality buildings set within the forest and beside the water.",
     description: [
-      "Small buildings are distributed through the trees, and a large radial timber canopy marks a communal space by the water."
+      "Small buildings are distributed through the trees, and a large radial timber canopy marks a communal space by the water.",
+      "The schematic design places 51 bungalows of 30, 60 and 80 m² on the ocean plot and 32 flats on the continental plot, with the hotel reception and administration, a spa, a small mall and a beach club around a natural pool.",
+      "The beach club roof follows a simple logic: the site limits and the 30 m protection strip set the area that can be built; the kitchen, toilets, bar and lookout are placed inside it; that area is extruded into a roof, completed, and given its timber structure and movement."
     ],
     cover: "urucuca/lagoon",
     gallery: [
       { layout: "full", img: "urucuca/lagoon", alt: "Dusk view across a lagoon to a long, low timber canopy lit from within, with palms behind" },
       { layout: "wide", img: "urucuca/canopy", alt: "Underside of a radial timber roof with a glazed core and a dining terrace beside a pool" },
+      { layout: "wide", img: "urucuca/masterplan", natural: true, alt: "Masterplan seen from above: two plots on either side of the road, with buildings and paths among the trees and the sea on the right", caption: "Masterplan" },
       { layout: "pair", images: [
         { img: "urucuca/houses", alt: "Three timber houses with pitched roofs set in tropical garden" },
         { img: "urucuca/stone", alt: "A stone and timber building emerging from dense forest with figures walking past" }
       ] },
+      { layout: "wide", img: "urucuca/bungalow", natural: true, alt: "Plans and elevations of a pair of 30 m² bungalows with pitched roofs, joined by a stair", caption: "Bungalows of 30 m²: plans and elevations" },
       { layout: "wide", img: "urucuca/forest", alt: "Aerial view of roofs scattered within the forest canopy in morning mist" },
-      { layout: "wide", img: "urucuca/site", alt: "Plan of the site showing the building clusters along a green corridor", caption: "Site plan" }
+      { layout: "pair", images: [
+        { img: "urucuca/club-plan", alt: "Plan and elevations of the beach club: the hall, bar, kitchen and lookout under one roof, beside a natural pool", caption: "Beach club: plan and elevations" },
+        { img: "urucuca/club-layers", alt: "Exploded diagram of the beach club: roof covering, roof structure, lookout, kitchen and bars, and the hall", caption: "Beach club: the parts of the building" }
+      ] },
+      { layout: "sequence", title: "Beach club: the logic of the roof", steps: [
+        { img: "urucuca/roof-1", label: "Site limits", alt: "Axonometric diagram of the plot limits, the residential lot, the high-water line and the 30 m protection strip, with the area that can be built shaded" },
+        { img: "urucuca/roof-2", label: "Kitchen and toilets", alt: "The kitchen and toilets placed inside the buildable area" },
+        { img: "urucuca/roof-3", label: "Bar and lookout", alt: "A round bar and a spiral lookout added beside the kitchen" },
+        { img: "urucuca/roof-4", label: "Extruding the roof", alt: "The buildable area extruded into the outline of the roof" },
+        { img: "urucuca/roof-5", label: "Completing the roof", alt: "The roof completed as one long curved shape over the buildings" },
+        { img: "urucuca/roof-6", label: "Structure and movement", alt: "The finished roof in black, with the lookout's open timber dome at its tip" }
+      ] }
     ],
     team: "Greg Bousquet, Sávio Jobim, Carolina Passos, Daniela Bertuol, Filipe Meltzer, Thiago Buccieri, Larissa Oliveira",
     featured: true

@@ -33,6 +33,16 @@ MANIFEST = {
     "urucuca/stone": ("S", "radyr/RADYR_ULHEUS_EP03_C04.jpg"),
     "urucuca/canopy": ("S", "radyr/RADYR_ULHEUS_EP03_C05.jpg"),
     "urucuca/site": ("S", "radyr/Screenshot_1.jpg"),
+    "urucuca/roof-1": ("C", "uru-roof-1.png"),  # schematic design deck, p. 34
+    "urucuca/roof-2": ("C", "uru-roof-2.png"),  # schematic design deck, p. 35
+    "urucuca/roof-3": ("C", "uru-roof-3.png"),  # schematic design deck, p. 36
+    "urucuca/roof-4": ("C", "uru-roof-4.png"),  # schematic design deck, p. 37
+    "urucuca/roof-5": ("C", "uru-roof-5.png"),  # schematic design deck, p. 38
+    "urucuca/roof-6": ("C", "uru-roof-6.png"),  # schematic design deck, p. 39
+    "urucuca/masterplan": ("C", "uru-p10.png"),  # schematic design deck, p. 10
+    "urucuca/bungalow": ("C", "uru-p23.png"),  # p. 23
+    "urucuca/club-plan": ("C", "uru-p42.png"),  # p. 42
+    "urucuca/club-layers": ("C", "uru-p44.png"),  # p. 44
     "quinta/approach": ("S", "manuel marateca/MANUEL_MARATECA_EV03_C01.jpg"),
     "quinta/court": ("S", "manuel marateca/MANUEL_MARATECA_EV03_C02.jpg"),
     "quinta/wing": ("S", "manuel marateca/MANUEL_MARATECA_EV03_C04.jpg"),

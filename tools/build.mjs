@@ -274,6 +274,12 @@ function project(p, i) {
     if (g.layout === "pair") return `<div class="g-row g-2">${g.images.map((o) => gfig(o, "f-43", 50)).join("")}</div>`;
     if (g.layout === "trio") return `<div class="g-row g-3">${g.images.map((o) => gfig(o, "f-11", 33)).join("")}</div>`;
     if (g.layout === "small") return gfig(g, "f-169", 100);
+    if (g.layout === "sequence") { // a set of diagrams shown one after another (app.js plays it once in view)
+      const m = need(g.steps[0].img);
+      const layers = g.steps.map((st, k) => `<div class="seq-layer${k ? "" : " on"}">${img(r, st.img, st.alt, { sizes: "(min-width: 760px) 70vw, 100vw" })}</div>`).join("");
+      const steps = g.steps.map((st, k) => `<li><button type="button" data-n="${k}"${k ? "" : ' aria-current="step"'}><span class="seq-n">${k + 1}</span> <span class="seq-l">${esc(st.label)}</span></button></li>`).join("");
+      return `<figure class="seq" data-seq><div class="seq-stage" style="aspect-ratio: ${m.r.toFixed(4)}">${layers}</div><figcaption><p class="mono seq-title">${esc(g.title)}</p><ol class="seq-steps" role="list">${steps}</ol></figcaption></figure>`;
+    }
     if (g.natural) return gfig(g, "f-nat", 100); // a drawing much wider than any frame: shown at its own proportions
     const rr = need(g.img).r, frame = rr >= 2.2 ? "f-125" : rr >= 1.5 ? "f-169" : "f-32"; // panoramas keep their 12:5 frame
     return gfig(g, frame, 100, g.layout === "full" ? " g-full" : "");
