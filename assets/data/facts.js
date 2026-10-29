@@ -159,6 +159,17 @@ window.FACTS = {
       links: [{ label: "Read", url: "https://www.thearchitecturecommunity.com/monolyt-ao-world-design-awards-2023/" }] }
   ],
 
+  /* AI and digital tools (profile, résumé and CV). Text approved by Filipe, 29 Oct 2026; the time saved per
+     study is left out until he has the figure. */
+  headline: "Architect who builds his own digital tools, using AI to speed up feasibility, documentation and presentation.",
+  aiTools: [
+    { title: "Feasibility and code-compliance tools", text: "Built AI-assisted apps that translate zoning laws and building codes (FAR, site coverage, setbacks, height limits) into quick checks for feasibility studies." },
+    { title: "CAD/3D automation", text: "Developed scripts and routines for AutoCAD and Rhino to automate repetitive drafting and massing tasks." },
+    { title: "AI in concept and presentation", text: "Use generative AI (ChatGPT, image models) for atmosphere studies, render briefs and project storytelling, going from sketch to AI image to final render." },
+    { title: "Portfolio website", text: "Directed the design and build of my bilingual portfolio site with AI: briefing, design decisions, accessibility and iterative review." },
+    { title: "Product from idea to finish", text: "Designed and produced a complete card game with AI, covering rules, card system, interface, sound and playtest tools." }
+  ],
+
   skills: ["Concept design", "Feasibility studies", "Zoning and area studies", "Urban analysis", "Project coordination",
     "Construction documents", "Residential design", "Mixed-use developments", "Architectural storytelling",
     "Hand sketching", "Presentation graphics"],

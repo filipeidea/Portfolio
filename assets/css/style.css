@@ -576,3 +576,15 @@ figcaption { margin-top: 10px; }
 .seq-n { font-family: var(--mono); font-size: 15px; min-width: 1.2em; }
 .seq-steps button[aria-current] .seq-n { color: var(--accent); }
 @media (max-width: 760px) { .seq { grid-template-columns: 1fr; } }
+
+/* ---------- AI and digital tools (profile, résumé) ---------- */
+.ai-list { margin: 28px 0 0; border-top: 1px solid var(--line); }
+.ai-list > div { display: grid; grid-template-columns: minmax(180px, 2fr) 5fr; gap: 6px 28px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.ai-list dt { font-weight: 500; }
+.ai-list dd { margin: 0; color: var(--ink-2); max-width: 62ch; }
+@media (max-width: 760px) { .ai-list > div { grid-template-columns: 1fr; } }
+.ai-r { margin: 0 0 8px; padding: 0; list-style: none; }
+.ai-r li { margin: 0 0 6px; padding-left: 22px; position: relative; break-inside: avoid; }
+.ai-r li::before { content: "—"; position: absolute; left: 0; color: var(--muted); }
+.ai-r strong { font-weight: 600; }
+.ai-r strong::after { content: "."; }

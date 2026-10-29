@@ -490,6 +490,15 @@ function profile() {
 <div class="entries">${entries(FACTS.experience, true)}</div>
 </section>
 
+<section class="cv-block" aria-labelledby="ai">
+<h2 id="ai" class="mono">AI and digital tools</h2>
+<div>
+<p class="lede">${esc(FACTS.headline)}</p>
+<dl class="ai-list">${FACTS.aiTools.map((t) => `<div><dt>${esc(t.title)}</dt><dd>${esc(t.text)}</dd></div>`).join("")}</dl>
+<p class="actions"><a class="link-arrow" href="lab.html">Two of the tools are free to use in the Lab ${ARROW}</a></p>
+</div>
+</section>
+
 <section class="cv-block" aria-labelledby="rec">
 <h2 id="rec" class="mono">Recognition</h2>
 <div>
@@ -532,12 +541,15 @@ function resume() {
 <h1 id="r-name">${esc(FACTS.name)}</h1>
 <p class="role">${esc(FACTS.title)}</p>
 <p class="contact-line"><span>${esc(FACTS.base)}</span><a href="${FACTS.linkedin}" rel="noopener">linkedin.com/in/filipemeltzer</a>${FACTS.email ? `<a href="mailto:${esc(FACTS.email)}">${esc(FACTS.email)}</a>` : ""}<span>${esc(FACTS.registration)}</span></p>
-<p class="summary">Architect and urbanist working on residential, mixed-use, hospitality, corporate and urban-scale projects. Concept design, feasibility, zoning and area studies, schematic design, coordination with engineering consultants and architectural representation, including hand sketching.</p>
+<p class="summary"><span>${esc(FACTS.headline)}</span> <span>Architect and urbanist working on residential, mixed-use, hospitality, corporate and urban-scale projects. Concept design, feasibility, zoning and area studies, schematic design, coordination with engineering consultants and architectural representation, including hand sketching.</span></p>
 <div class="r-grid">
 <div>
 <h2>Experience</h2>
 <div class="entry"><h3>${esc(ao.org)}</h3><span class="when">${esc(ao.when)}</span><span class="where">${esc(ao.role)} · ${esc(ao.where)}</span><ul>${ao.points.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>
 ${entries(FACTS.experience.slice(1), true)}
+<h2>AI and digital tools</h2>
+<ul class="ai-r">${FACTS.aiTools.map((t) => `<li><strong>${esc(t.title)}</strong> <span>${esc(t.text)}</span></li>`).join("")}</ul>
+<p class="muted-s">Two of the tools can be used at <a href="lab.html">filipeidea.github.io/Portfolio/lab.html</a>.</p>
 <h2>Education</h2>
 <ul class="small-list">${FACTS.education.map((e) => `<li>${esc(e.what)}<span>${esc(e.where)} · ${e.when}</span></li>`).join("")}</ul>
 </div>

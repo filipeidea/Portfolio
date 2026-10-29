@@ -763,5 +763,20 @@
  "A round bar and a spiral lookout added beside the kitchen": "Um bar circular e um mirante em espiral junto à cozinha",
  "The buildable area extruded into the outline of the roof": "A área edificável extrudada no contorno da cobertura",
  "The roof completed as one long curved shape over the buildings": "A cobertura complementada como uma única forma longa e curva sobre os edifícios",
- "The finished roof in black, with the lookout's open timber dome at its tip": "A cobertura final em preto, com a cúpula vazada de madeira do mirante na ponta"
+ "The finished roof in black, with the lookout's open timber dome at its tip": "A cobertura final em preto, com a cúpula vazada de madeira do mirante na ponta",
+ "AI and digital tools": "IA e ferramentas digitais",
+ "Architect who builds his own digital tools, using AI to speed up feasibility, documentation and presentation.": "Arquiteto que cria as próprias ferramentas digitais e usa IA para agilizar viabilidade, documentação e apresentação.",
+ "Feasibility and code-compliance tools": "Ferramentas de viabilidade e legislação",
+ "Built AI-assisted apps that translate zoning laws and building codes (FAR, site coverage, setbacks, height limits) into quick checks for feasibility studies.": "Desenvolvi, com apoio de IA, aplicativos que traduzem leis de zoneamento e normas (CA, TO, recuos, gabarito) em verificações rápidas para estudos de viabilidade.",
+ "CAD/3D automation": "Automação CAD/3D",
+ "Developed scripts and routines for AutoCAD and Rhino to automate repetitive drafting and massing tasks.": "Criei rotinas para AutoCAD e Rhino que automatizam tarefas repetitivas de desenho e volumetria.",
+ "AI in concept and presentation": "IA na concepção e na apresentação",
+ "Use generative AI (ChatGPT, image models) for atmosphere studies, render briefs and project storytelling, going from sketch to AI image to final render.": "Uso IA generativa para estudos de atmosfera, briefings de render e storytelling de projeto, do croqui à imagem gerada e ao render final.",
+ "Portfolio website": "Site de portfólio",
+ "Directed the design and build of my bilingual portfolio site with AI: briefing, design decisions, accessibility and iterative review.": "Dirigi o projeto e a construção do meu site bilíngue com IA: briefing, decisões de design, acessibilidade e revisão iterativa.",
+ "Product from idea to finish": "Produto do início ao fim",
+ "Designed and produced a complete card game with AI, covering rules, card system, interface, sound and playtest tools.": "Concebi e produzi um jogo de cartas completo com IA, incluindo regras, sistema de cartas, interface, sons e ferramentas de teste.",
+ "Two of the tools are free to use in the Lab": "Duas das ferramentas estão abertas a todos no Lab",
+ "Two of the tools can be used at": "Duas das ferramentas podem ser usadas em",
+ "filipeidea.github.io/Portfolio/lab.html": "filipeidea.github.io/Portfolio/pt/lab.html"
 }

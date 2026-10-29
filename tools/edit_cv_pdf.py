@@ -16,6 +16,10 @@ Edits (approved by Filipe, 12 Oct 2026):
   p1  "458,000+ m²" -> "492,000+ m²" (project spreadsheet, 13 Oct 2026)
   p2  "more than 450,000" -> "492,000+"; corporate 68,504 -> 76,947 m²; hotels 5,109 -> 2,653 m²
   p3  add Balneário Camboriú to the map
+Edits (approved by Filipe, 29 Oct 2026):
+  p1  summary: the "Passionate…" lines become "Builds his own digital tools, using AI to speed up
+      feasibility, documentation and presentation."; new section "AI and digital tools" under
+      Education and Software, with a link to the Lab
   all metadata (title, author, language)
 """
 import io, re, sys, os
@@ -160,16 +164,26 @@ s = "".join(c for c, _ in chars); j = s.index("seven")
 new = chars[:j] + [(c, 0.0) for c in "eight"] + chars[j + 5:]
 ops[i] = ([to_tj(new, light)], ops[i][1])
 
-# b) remove the two "Passionate…" lines
-for t in ("Passionate about", "architecture, technology and design"):
+# b) the two "Passionate…" lines become the AI line of the summary (approved 29 Oct 2026). They sit
+#    below the portrait, so they may run a little wider than the lines beside it.
+AI_SUMMARY = ("Builds his own digital tools, using AI to speed", "up feasibility, documentation and presentation.")
+for t, n in zip(("Passionate about", "architecture, technology and design"), AI_SUMMARY):
     i = find(ops, "TJ", t, light)
-    ops[i] = ([pikepdf.Array([])], ops[i][1])
+    w = 10.5 * advance([(c, 0.0) for c in n], light, 0, 0)
+    tc = min(0.0, (238.6765 - 28.3465 - w) / (10.5 * len(n)))  # a touch of tracking to keep to the column
+    assert tc > -0.03, (n, tc)
+    for j in range(i - 1, i - 6, -1):
+        if str(ops[j][1]) == "Tc": ops[j] = ([round(tc, 4)], ops[j][1])
+        if str(ops[j][1]) == "Tw": ops[j] = ([0], ops[j][1])
+        if str(ops[j][1]) == "BT": break
+    ops[i] = ([to_tj([(ch, 0.0) for ch in n], light)], ops[i][1])
+SUMMARY_LAST_Y = 667.8608
 
-# c) move the contact line up into the freed space
+# c) the contact line moves down by one line: it sits under the summary, with the email below it
 i = find(ops, "TJ", "São Paulo, Brazil", bold1)
 tm = ops[i - 1]
 assert str(tm[1]) == "Tm"
-CONTACT_Y = 697.8608 - 17.8006  # same gap as before, below the new last line of the summary
+CONTACT_Y = SUMMARY_LAST_Y - 17.8006  # same gap as before, below the last line of the summary
 EMAIL_Y = CONTACT_Y - 11
 ops[i - 1] = ([*tm[0][:5], CONTACT_Y], tm[1])
 contact_chars = text_of(ops[i][0][0], bold1)
@@ -240,6 +254,77 @@ def emit(ops, i, chars, size, x0, y0, tc, tw):
 for start, old, new in (("Natal) and Iguatemi 306 (41,400", "41,400", "49,811"),
                         ("23 projects totalling 458,000+", "458,000+", "492,000+")):
     emit(ops, *rewrite_light(ops, start, old, new))
+
+# e) "AI and digital tools": a section across both columns under Education and Software, in the
+#    CV's own fonts (Helvetica Light for text, Bold for titles) and colours. Text approved 29 Oct 2026.
+BODY = (0.75, 0.675, 0.075, 0)
+AI_COLS = [
+    [("Code compliance and feasibility tools.", "AI-assisted apps that turn zoning laws and building codes (FAR, site coverage, setbacks, height limits) into fast checks for feasibility studies."),
+     ("CAD/3D automation.", "Scripts and routines for AutoCAD and Rhino that automate repetitive drafting and massing tasks.")],
+    [("AI in concept and presentation.", "Generative AI for atmosphere studies, render briefs and project storytelling, from sketch to AI image to final render."),
+     ("Portfolio website.", "Directed the design and build of my bilingual portfolio site with AI: briefing, design decisions, accessibility and iterative review."),
+     ("Card game.", "Designed and produced a complete card game with AI: rules, card system, interface, sound and playtest tools.")]]
+LAB_URL = "filipeidea.github.io/Portfolio/lab.html"
+AI_SIZE, AI_LEAD, AI_GAP = 8.5, 11.0, 4.0
+COL_X, COL_W = (28.3465, 247.1811), 210.331
+RULE_Y = 184.2 - 22.7          # same distance below the last line of Software as between the other sections
+HEAD_Y = RULE_Y - 13.1643      # heading baseline, as in Experience and Education
+FIRST_Y = HEAD_Y - 21.504      # first line, as in Experience
+LINKS = []
+
+
+def ai_lines(title, text, width):
+    """greedy wrap of a bold title followed by light text; returns lines of (font, string) runs"""
+    words = [(bold1, w) for w in title.split()] + [(light, w) for w in text.split()]
+    wid = lambda f, t: AI_SIZE * advance([(c, 0.0) for c in t], f, 0, 0)
+    lines, cur, x = [], [], 0.0
+    for f, w in words:
+        sp = wid(cur[-1][0], " ") if cur else 0.0
+        if cur and x + sp + wid(f, w) > width:
+            lines.append(cur); cur, x, sp = [], 0.0, 0.0
+        cur.append((f, w)); x += sp + wid(f, w)
+    lines.append(cur)
+    out = []
+    for ln in lines:  # merge words into runs; the space after a word belongs to that word's run
+        runs = []
+        for k, (f, w) in enumerate(ln):
+            t = w + (" " if k < len(ln) - 1 else "")
+            if runs and runs[-1][0] is f: runs[-1] = (f, runs[-1][1] + t)
+            else: runs.append((f, t))
+        out.append(runs)
+    return out
+
+
+def line_ops(runs, x, y):
+    out = [([], O("BT")), ([0], O("Tc")), ([0], O("Tw")), ([AI_SIZE, 0, 0, AI_SIZE, x, y], O("Tm"))]
+    for f, txt in runs:
+        nm = pikepdf.Name("/T1_3") if f is bold1 else pikepdf.Name("/T1_2")
+        out += [([nm, 1], O("Tf")), (list(NAVY if f is bold1 else BODY), O("k")), ([to_tj([(c, 0.0) for c in txt], f)], O("TJ"))]
+    return out + [([], O("ET"))]
+
+
+new_ops = [([], O("q")), (list(NAVY), O("K")), ([0.25], O("w")),
+           ([1, 0, 0, 1, 28.3465, RULE_Y], O("cm")), ([0, 0], O("m")), ([457.512 - 28.3465, 0], O("l")), ([], O("S")), ([], O("Q")),
+           ([], O("BT")), ([pikepdf.Name("/T1_3"), 1], O("Tf")), (list(NAVY), O("k")), ([0.01], O("Tc")), ([-0.01], O("Tw")),
+           ([10, 0, 0, 10, 28.3465, HEAD_Y], O("Tm")), ([to_tj([(c, 0.0) for c in "AI and digital tools"], bold1)], O("TJ")), ([], O("ET"))]
+for col, items in enumerate(AI_COLS):
+    y = FIRST_Y
+    for title, text in items:
+        for runs in ai_lines(title, text, COL_W):
+            new_ops += line_ops(runs, COL_X[col], y); y -= AI_LEAD
+        y -= AI_GAP
+    if col == 0:  # where two of the tools can be used
+        lab = [(light, "Two of the tools can be used at "), (bold1, LAB_URL)]
+        lab_lines = [[lab[0]], [lab[1]]]
+        for runs in lab_lines:
+            new_ops += line_ops(runs, COL_X[col], y)
+            if runs[0][0] is bold1:
+                w = AI_SIZE * advance([(c, 0.0) for c in LAB_URL], bold1, 0, 0)
+                LINKS.append((COL_X[col], y, COL_X[col] + w))
+            y -= AI_LEAD
+    assert y + AI_LEAD + AI_GAP > 28, "AI section runs into the bottom margin"
+ops += new_ops
+
 p1.Contents = pdf.make_stream(pikepdf.unparse_content_stream(ops))
 
 # ---------- page 2: "more than 450,000" -> "458,000+" ----------
@@ -326,6 +411,8 @@ writer.pages[0].merge_page(overlay.pages[0])
 writer.pages[2].merge_page(overlay.pages[2])
 writer.add_annotation(0, Link(rect=(LINK_X0 - 1, CONTACT_Y - 2.5, LINK_X1 + 1, CONTACT_Y + 8), url=LINKEDIN))
 writer.add_annotation(0, Link(rect=(27.3, EMAIL_Y - 2.5, 28.3465 + email_w + 1, EMAIL_Y + 8), url="mailto:" + EMAIL))
+for x0, y0, x1 in LINKS:
+    writer.add_annotation(0, Link(rect=(x0 - 1, y0 - 2.5, x1 + 1, y0 + 7.5), url="https://" + LAB_URL))
 writer.add_metadata({
     "/Title": "Filipe Meltzer — Architect — CV",
     "/Author": "Filipe Meltzer",
