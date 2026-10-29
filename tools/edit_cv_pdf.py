@@ -19,7 +19,8 @@ Edits (approved by Filipe, 12 Oct 2026):
 Edits (approved by Filipe, 29 Oct 2026):
   p1  summary: the "Passionate…" lines become "Builds his own digital tools, using AI to speed up
       feasibility, documentation and presentation."; new section "AI and digital tools" under
-      Education and Software, with a link to the Lab
+      Education and Software, with a link to the Lab; email filipeidea@gmail.com (replaces Outlook);
+      Revit at the end of the software list, "(basic)"
   all metadata (title, author, language)
 """
 import io, re, sys, os
@@ -34,7 +35,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 
 SRC, DST = sys.argv[1], sys.argv[2]
 HERE = os.path.dirname(os.path.abspath(__file__))
-EMAIL = "filipemeltzer@outlook.com"
+EMAIL = "filipeidea@gmail.com"  # changed by Filipe, 29 Oct 2026
 LINKEDIN = "https://www.linkedin.com/in/filipemeltzer"
 NAVY = (1, 0.9, 0.1, 0)  # CMYK used for the CV's navy text
 
@@ -254,6 +255,16 @@ def emit(ops, i, chars, size, x0, y0, tc, tw):
 for start, old, new in (("Natal) and Iguatemi 306 (41,400", "41,400", "49,811"),
                         ("23 projects totalling 458,000+", "458,000+", "492,000+")):
     emit(ops, *rewrite_light(ops, start, old, new))
+
+# d2) Software: Revit moves to the end of the list, marked "(basic)" (Filipe, 29 Oct 2026)
+SOFTWARE = ("AutoCAD · Rhino · SketchUp · Enscape ·", "Corona Renderer · Adobe CC · Revit (basic)")  # "CC" so the line keeps to the column
+for t, n in zip(("AutoCAD · Revit · Rhino", "Corona Renderer · Adobe"), SOFTWARE):
+    i = find(ops, "TJ", t, light)
+    t_i = i - 1
+    while str(ops[t_i][1]) != "Tm": t_i -= 1
+    size = float(ops[t_i][0][0])
+    assert size * advance([(c, 0.0) for c in n], light, 0, 0) < 210.331, n
+    ops[i] = ([to_tj([(ch, 0.0) for ch in n], light)], ops[i][1])
 
 # e) "AI and digital tools": a section across both columns under Education and Software, in the
 #    CV's own fonts (Helvetica Light for text, Bold for titles) and colours. Text approved 29 Oct 2026.

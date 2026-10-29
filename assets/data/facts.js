@@ -15,7 +15,7 @@ window.FACTS = {
   title: "Architect & Urbanist",
   base: "São Paulo, Brazil",
   registration: "CAU/BR 145917-1", // PF, cover page
-  email: "filipemeltzer@outlook.com", // confirmed by Filipe, 12 Oct 2026
+  email: "filipeidea@gmail.com", // changed by Filipe, 29 Oct 2026 (was the Outlook address)
   linkedin: "https://www.linkedin.com/in/filipemeltzer", // CV
   cv: "assets/docs/Filipe-Meltzer-CV.pdf",
 
@@ -173,6 +173,6 @@ window.FACTS = {
   skills: ["Concept design", "Feasibility studies", "Zoning and area studies", "Urban analysis", "Project coordination",
     "Construction documents", "Residential design", "Mixed-use developments", "Architectural storytelling",
     "Hand sketching", "Presentation graphics"],
-  software: ["AutoCAD", "Revit", "Rhino", "SketchUp", "Enscape", "Corona Renderer", "Adobe Creative Cloud"],
+  software: ["AutoCAD", "Rhino", "SketchUp", "Enscape", "Corona Renderer", "Adobe Creative Cloud", "Revit (basic)"],
   languages: [["Portuguese", "Native"], ["Spanish", "Fluent"], ["English", "Intermediate"]]
 };
